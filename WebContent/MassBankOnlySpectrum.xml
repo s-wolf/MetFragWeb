@@ -1,0 +1,33 @@
+<cml xmlns="http://www.xml-cml.org/schema" convention="mzAnnot">
+	<spectrum xmlns:cml="http://www.xml-cml.org/dict/cml"
+		xmlns:cmlDict="http://www.xml-cml.org/dict/cmlDict" xmlns:macie="http://www.xml-cml.org/dict/macie"
+		xmlns:ms="http://www.massbank.jp/dict" xmlns:siUnits="http://www.xml-cml.org/units/siUnits"
+		xmlns:subst="http://www.xml-cml.org/dict/substDict" xmlns:units="http://www.xml-cml.org/units/units"
+		id="massbank:" moleculeRef="PubChem:932" type="MS2">
+		<conditionList>
+			<scalar dataType="xsd:integer" dictRef="cml:collisionenergy"
+				units="siUnits:eV">15</scalar>
+			<scalar dataType="xsd:string" dictRef="cml:polarity">positive</scalar>
+		</conditionList>
+		<metadataList>
+			<metadata name="ms:assignmentMethod" content="MetFrag" />
+			<metadata name="ms:name" content="Naringenin" />
+			<metadata name="ms:exactMass" content="272.068" />
+		</metadataList>
+		<peakList>
+			<peak xValue="147.044" xUnits="units:mz" yValue="20.0" yUnits="units:cps"
+				id="peak0" />
+			<peak xValue="153.019" xUnits="units:mz" yValue="30.0" yUnits="units:cps"
+				id="peak1" />
+			<peak xValue="273.076" xUnits="units:mz" yValue="999.0" yUnits="units:cps"
+				id="peak2" />
+			<peak xValue="274.083" xUnits="units:mz" yValue="30.0" yUnits="units:cps"
+				id="peak3" />
+		</peakList>
+	</spectrum>
+	<list dictRef="cdk:moleculeSet">
+		<moleculeList>
+			<molecule />
+		</moleculeList>
+	</list>
+</cml>

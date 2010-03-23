@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE web-app PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+  "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <context-param>
+        <param-name>com.icesoft.faces.debugDOMUpdate</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+        <description>
+            State saving method: "client" or "server" (= default)
+            See JSF Specification 2.5.2
+        </description>
+    </context-param>
+    
+    <context-param>
+        <param-name>com.icesoft.faces.concurrentDOMViews</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>com.icesoft.faces.synchronousUpdate</param-name>
+        <param-value>false</param-value>
+    </context-param>
+	
+	<context-param>
+		<param-name>com.icesoft.faces.connectionTimeout</param-name>
+		<param-value>360000</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.heartbeatInterval</param-name>
+		<param-value>180000</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.heartbeatTimeout</param-name>
+		<param-value>180000</param-value>
+		</context-param>
+	<context-param>
+		<param-name>com.icesoft.faces.heartbeatRetries</param-name>
+		<param-value>30</param-value>
+	</context-param>
+	<context-param>
+            <param-name>com.icesoft.faces.uploadDirectory</param-name>
+            <param-value>upload</param-value>
+    </context-param>
+    <context-param>
+        <param-name>com.icesoft.faces.uploadMaxFileSize</param-name>
+        <param-value>1048576</param-value>
+    </context-param>
+    
+	
+	<listener>
+		<listener-class>com.icesoft.faces.util.event.servlet.ContextEventRepeater</listener-class>
+	</listener>
+	
+	 <listener>
+  		<listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
+	</listener>
+  
+    <!-- Faces Servlet -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <!-- file upload Servlet -->
+    <servlet>
+         <servlet-name>uploadServlet</servlet-name>
+         <servlet-class>com.icesoft.faces.component.inputfile.FileUploadServlet</servlet-class>
+         <load-on-startup> 1 </load-on-startup>
+    </servlet>
+    <servlet-mapping>
+         <servlet-name>uploadServlet</servlet-name>
+         <url-pattern>/uploadHtml</url-pattern>
+    </servlet-mapping>  
+
+    <servlet>
+        <servlet-name>Persistent Faces Servlet</servlet-name>
+        <servlet-class>com.icesoft.faces.webapp.xmlhttp.PersistentFacesServlet</servlet-class>
+        <load-on-startup> 1 </load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>Blocking Servlet</servlet-name>
+        <servlet-class>com.icesoft.faces.webapp.xmlhttp.BlockingServlet</servlet-class>
+        <load-on-startup> 1 </load-on-startup>
+    </servlet>
+
+    <!-- extension mapping -->
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Persistent Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Persistent Faces Servlet</servlet-name>
+        <url-pattern>*.iface</url-pattern>
+    </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>Persistent Faces Servlet</servlet-name>
+        <url-pattern>*.jspx</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Persistent Faces Servlet</servlet-name>
+        <url-pattern>/xmlhttp/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Blocking Servlet</servlet-name>
+        <url-pattern>/block/*</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+      <session-timeout>60</session-timeout>
+    </session-config>
+
+    
+    <!-- Welcome files -->
+    <welcome-file-list>
+    	<welcome-file>MetFragICE.jspx</welcome-file>
+        <welcome-file>index.jsf</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+</web-app>

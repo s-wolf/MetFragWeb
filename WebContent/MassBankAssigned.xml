@@ -1,0 +1,292 @@
+<cml xmlns="http://www.xml-cml.org/schema" convention="mzAnnot">
+	<spectrum xmlns:cml="http://www.xml-cml.org/dict/cml"
+		xmlns:cmlDict="http://www.xml-cml.org/dict/cmlDict" xmlns:macie="http://www.xml-cml.org/dict/macie"
+		xmlns:ms="http://www.massbank.jp/dict" xmlns:siUnits="http://www.xml-cml.org/units/siUnits"
+		xmlns:subst="http://www.xml-cml.org/dict/substDict" xmlns:units="http://www.xml-cml.org/units/units"
+		id="massbank:" moleculeRef="PubChem:932" type="MS2">
+		<conditionList>
+			<scalar dataType="xsd:integer" dictRef="cml:collisionenergy"
+				units="siUnits:eV">15</scalar>
+			<scalar dataType="xsd:string" dictRef="cml:polarity">positive</scalar>
+		</conditionList>
+		<metadataList>
+			<metadata name="ms:assignmentMethod" content="MetFrag" />
+			<metadata name="ms:name" content="Naringenin" />
+			<metadata name="ms:exactMass" content="272.068" />
+		</metadataList>
+		<peakList>
+			<peak xValue="147.044" xUnits="units:mz" yValue="20.0" yUnits="units:cps"
+				id="peak0">
+				<molecule ref="f1" />
+				<molecule ref="f2" />
+			</peak>
+			<peak xValue="153.019" xUnits="units:mz" yValue="30.0" yUnits="units:cps"
+				id="peak1">
+				<molecule ref="f3" />
+			</peak>
+			<peak xValue="273.076" xUnits="units:mz" yValue="999.0" yUnits="units:cps"
+				id="peak2" />
+			<peak xValue="274.083" xUnits="units:mz" yValue="30.0" yUnits="units:cps"
+				id="peak3" />
+		</peakList>
+	</spectrum>
+	<reactionList>
+		<reaction>
+			<reactantList>
+				<reactant>
+					<molecule ref="m0" />
+				</reactant>
+			</reactantList>
+			<productList>
+				<product>
+					<molecule ref="f1" />
+				</product>
+				<product>
+					<molecule ref="f3" />
+				</product>
+				<product>
+					<molecule ref="f2" />
+				</product>
+			</productList>
+		</reaction>
+	</reactionList>
+	<list dictRef="cdk:moleculeSet">
+		<moleculeList>
+			<molecule id="f1">
+				<atomArray>
+					<atom id="a25" elementType="C" x2="1345.0" y2="-754.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a22" elementType="C" x2="1345.0" y2="-949.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a21" elementType="C" x2="1178.0" y2="-1049.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a23" elementType="O" x2="1176.0" y2="-1245.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a24" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a26" elementType="C" x2="1516.0" y2="-655.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a27" elementType="C" x2="1516.0" y2="-458.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a28" elementType="C" x2="1686.0" y2="-357.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a29" elementType="C" x2="1857.0" y2="-456.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a30" elementType="C" x2="1857.0" y2="-653.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a31" elementType="C" x2="1686.0" y2="-752.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a32" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a33" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a34" elementType="O" x2="2027.0" y2="-360.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a35" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a36" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a37" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+				</atomArray>
+				<bondArray>
+					<bond id="b21" atomRefs2="a21 a22" order="S" />
+					<bond id="b22" atomRefs2="a21 a23" order="D" />
+					<bond id="b23" atomRefs2="a22 a24" order="S" />
+					<bond id="b24" atomRefs2="a25 a26" order="S" />
+					<bond id="b25" atomRefs2="a26 a27" order="D" />
+					<bond id="b26" atomRefs2="a27 a28" order="S" />
+					<bond id="b27" atomRefs2="a29 a28" order="D" />
+					<bond id="b28" atomRefs2="a30 a29" order="S" />
+					<bond id="b29" atomRefs2="a31 a30" order="D" />
+					<bond id="b30" atomRefs2="a26 a31" order="S" />
+					<bond id="b31" atomRefs2="a31 a32" order="S" />
+					<bond id="b32" atomRefs2="a30 a33" order="S" />
+					<bond id="b33" atomRefs2="a29 a34" order="S" />
+					<bond id="b34" atomRefs2="a34 a35" order="S" />
+					<bond id="b35" atomRefs2="a28 a36" order="S" />
+					<bond id="b36" atomRefs2="a27 a37" order="S" />
+					<bond id="b37" atomRefs2="a25 a22" order="D" />
+				</bondArray>
+			</molecule>
+			<molecule id="f3">
+				<atomArray>
+					<atom id="a56" elementType="O" x2="1178.0" y2="-657.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a55" elementType="C" x2="1007.0" y2="-754.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a57" elementType="C" x2="1007.0" y2="-949.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a58" elementType="C" x2="836.0" y2="-1048.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a59" elementType="C" x2="665.0" y2="-949.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a60" elementType="C" x2="665.0" y2="-754.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a61" elementType="C" x2="838.0" y2="-657.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a62" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a63" elementType="O" x2="494.0" y2="-656.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a64" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a65" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a66" elementType="O" x2="836.0" y2="-1245.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a67" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a68" elementType="C" x2="1178.0" y2="-1049.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a69" elementType="O" x2="1176.0" y2="-1245.0"
+						formalCharge="0" isotopeNumber="16" />
+				</atomArray>
+				<bondArray>
+					<bond id="b55" atomRefs2="a55 a56" order="S" />
+					<bond id="b56" atomRefs2="a57 a55" order="S" />
+					<bond id="b57" atomRefs2="a58 a57" order="D" />
+					<bond id="b58" atomRefs2="a59 a58" order="S" />
+					<bond id="b59" atomRefs2="a60 a59" order="D" />
+					<bond id="b60" atomRefs2="a60 a61" order="S" />
+					<bond id="b61" atomRefs2="a55 a61" order="D" />
+					<bond id="b62" atomRefs2="a61 a62" order="S" />
+					<bond id="b63" atomRefs2="a60 a63" order="S" />
+					<bond id="b64" atomRefs2="a63 a64" order="S" />
+					<bond id="b65" atomRefs2="a59 a65" order="S" />
+					<bond id="b66" atomRefs2="a58 a66" order="S" />
+					<bond id="b67" atomRefs2="a66 a67" order="S" />
+					<bond id="b68" atomRefs2="a57 a68" order="S" />
+					<bond id="b69" atomRefs2="a68 a69" order="D" />
+				</bondArray>
+			</molecule>
+			<molecule id="f2">
+				<atomArray>
+					<atom id="a38" elementType="O" x2="1178.0" y2="-657.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a39" elementType="C" x2="1345.0" y2="-754.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a40" elementType="C" x2="1516.0" y2="-655.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a41" elementType="C" x2="1686.0" y2="-752.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a42" elementType="C" x2="1857.0" y2="-653.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a43" elementType="C" x2="1857.0" y2="-456.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a44" elementType="C" x2="1686.0" y2="-357.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a45" elementType="C" x2="1516.0" y2="-458.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a46" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a47" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a48" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a49" elementType="C" x2="1345.0" y2="-949.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a50" elementType="C" x2="1178.0" y2="-1049.0"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a51" elementType="O" x2="1176.0" y2="-1245.0"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a52" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a53" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+					<atom id="a54" elementType="H" x2="0.0" y2="0.0" formalCharge="0"
+						isotopeNumber="1" />
+				</atomArray>
+				<bondArray>
+					<bond id="b38" atomRefs2="a38 a39" order="S" />
+					<bond id="b39" atomRefs2="a39 a40" order="S" />
+					<bond id="b40" atomRefs2="a40 a41" order="S" />
+					<bond id="b41" atomRefs2="a41 a42" order="D" />
+					<bond id="b42" atomRefs2="a42 a43" order="S" />
+					<bond id="b43" atomRefs2="a43 a44" order="D" />
+					<bond id="b44" atomRefs2="a45 a44" order="S" />
+					<bond id="b45" atomRefs2="a40 a45" order="D" />
+					<bond id="b46" atomRefs2="a45 a46" order="S" />
+					<bond id="b47" atomRefs2="a42 a47" order="S" />
+					<bond id="b48" atomRefs2="a41 a48" order="S" />
+					<bond id="b49" atomRefs2="a49 a39" order="S" />
+					<bond id="b50" atomRefs2="a50 a49" order="S" />
+					<bond id="b51" atomRefs2="a50 a51" order="D" />
+					<bond id="b52" atomRefs2="a49 a52" order="S" />
+					<bond id="b53" atomRefs2="a49 a53" order="S" />
+					<bond id="b54" atomRefs2="a39 a54" order="S" />
+				</bondArray>
+			</molecule>
+			<molecule id="m1">
+				<atomArray>
+					<atom id="a1" elementType="C" x2="5.3109" y2="-2.8454"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a2" elementType="C" x2="5.3143" y2="-2.0143"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a3" elementType="C" x2="6.0281" y2="-3.2592"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a4" elementType="C" x2="4.5971" y2="-3.2592"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a5" elementType="O" x2="6.035" y2="-1.604"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a6" elementType="C" x2="4.5971" y2="-1.6005"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a7" elementType="C" x2="6.7454" y2="-2.8523"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a8" elementType="O" x2="6.0247" y2="-4.0902"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a9" elementType="C" x2="3.8764" y2="-2.8454"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a10" elementType="O" x2="4.6005" y2="-4.0868"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a11" elementType="C" x2="6.7488" y2="-2.0212"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a12" elementType="C" x2="3.8764" y2="-2.0143"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a13" elementType="C" x2="7.4695" y2="-1.6074"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a14" elementType="O" x2="3.1592" y2="-1.6005"
+						formalCharge="0" isotopeNumber="16" />
+					<atom id="a15" elementType="C" x2="8.1833" y2="-2.0316"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a16" elementType="C" x2="7.4695" y2="-0.7798"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a17" elementType="C" x2="8.904" y2="-1.6178"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a18" elementType="C" x2="8.1902" y2="-0.373"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a19" elementType="C" x2="8.9074" y2="-0.7867"
+						formalCharge="0" isotopeNumber="12" />
+					<atom id="a20" elementType="O" x2="9.6281" y2="-0.3764"
+						formalCharge="0" isotopeNumber="16" />
+				</atomArray>
+				<bondArray>
+					<bond id="b1" atomRefs2="a1 a2" order="S" />
+					<bond id="b2" atomRefs2="a1 a3" order="S" />
+					<bond id="b3" atomRefs2="a1 a4" order="D" />
+					<bond id="b4" atomRefs2="a2 a5" order="S" />
+					<bond id="b5" atomRefs2="a2 a6" order="D" />
+					<bond id="b6" atomRefs2="a3 a7" order="S" />
+					<bond id="b7" atomRefs2="a3 a8" order="D" />
+					<bond id="b8" atomRefs2="a4 a9" order="S" />
+					<bond id="b9" atomRefs2="a4 a10" order="S" />
+					<bond id="b10" atomRefs2="a5 a11" order="S" />
+					<bond id="b11" atomRefs2="a6 a12" order="S" />
+					<bond id="b12" atomRefs2="a11 a13" order="S">
+						<bondStereo dictRef="cml:H" />
+					</bond>
+					<bond id="b13" atomRefs2="a12 a14" order="S" />
+					<bond id="b14" atomRefs2="a13 a15" order="D" />
+					<bond id="b15" atomRefs2="a13 a16" order="S" />
+					<bond id="b16" atomRefs2="a15 a17" order="S" />
+					<bond id="b17" atomRefs2="a16 a18" order="D" />
+					<bond id="b18" atomRefs2="a17 a19" order="D" />
+					<bond id="b19" atomRefs2="a19 a20" order="S" />
+					<bond id="b20" atomRefs2="a7 a11" order="S" />
+					<bond id="b21" atomRefs2="a9 a12" order="D" />
+					<bond id="b22" atomRefs2="a18 a19" order="S" />
+				</bondArray>
+			</molecule>
+		</moleculeList>
+	</list>
+</cml>

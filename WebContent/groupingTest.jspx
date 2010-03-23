@@ -1,0 +1,92 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:ice="http://www.icesoft.com/icefaces/component">
+
+<ice:outputDeclaration doctypeRoot="HTML"
+                       doctypePublic="-//W3C//DTD XHTML 1.0 Transitional//EN"
+                       doctypeSystem="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+
+<html>
+<head>
+	<ice:outputStyle id="rime" href="css/rime/rime.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+    <meta name="keywords" lang="en" content="MetFrag, MzAnnotate, Fragmenter, Chemistry, Compound" />
+	<meta name="description" content="MetFrag web interface and MzAnnotate viewer" />
+    <title>MetFrag</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/metfrag_favicon.ico" />
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+	<!-- TODO: compress JS libraries -->
+	<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="js/raphael-min.js"></script>
+	<script type="text/javascript" src="js/spectrumViewer.js"></script>
+	<script type="text/javascript" src="js/tip.js" ></script>
+	
+</head>
+
+<body>
+	<ice:form>
+    <ice:panelGroup styleClass="exampleBox expandableTableContainer">
+
+        <!-- Basic table -->
+        <ice:dataTable id="dataTable"
+                         value="#{resultRowManager.filesGroupRecordBeans}"
+                       var="filesRecord"
+                       cellpadding="0">
+            <!-- contract/expand column -->
+            <ice:column >
+                <ice:panelGroup styleClass="#{filesRecord.indentStyleClass}">
+                    <!-- Render the expand/contract if there is an image -->
+                    <ice:commandLink actionListener="#{filesRecord.toggleSubGroupAction}">
+                        <ice:graphicImage id="expandContractImage"
+                                            value="#{filesRecord.expandContractImage}"
+                                          style="border: 0px solid;"/>
+                    </ice:commandLink>
+                </ice:panelGroup>
+            </ice:column>
+         <!-- Description -->
+         <ice:column>
+             <f:facet name="header">
+                 <ice:outputText value="score"/>
+             </f:facet>
+             <ice:panelGroup styleClass="#{filesRecord.rowStyleClass}"
+                             style="width: 130px;">
+                 <ice:outputText value="#{filesRecord.score}"/>
+             </ice:panelGroup>
+         </ice:column>
+         <!-- Date Modified -->
+         <ice:column>
+             <f:facet name="header">
+                 <ice:outputText value="explained peaks"/>
+             </f:facet>
+             <ice:panelGroup styleClass="#{filesRecord.rowStyleClass}"
+                             style="width: 130px;">
+                 <ice:outputText value="#{filesRecord.explainedPeaks}"/>
+             </ice:panelGroup>
+         </ice:column>
+         <!-- Size -->
+         <ice:column>
+             <f:facet name="header">
+                 <ice:outputText value="trivial name"/>
+             </f:facet>
+             <ice:panelGroup styleClass="#{filesRecord.rowStyleClass}"
+                             style="width: 60px;">
+                 <ice:outputText value="#{filesRecord.molName}"/>
+             </ice:panelGroup>
+         </ice:column>
+         <!-- Kind -->
+         <ice:column>
+             <f:facet name="header">
+                 <ice:outputText value="database"/>
+             </f:facet>
+             <ice:panelGroup styleClass="#{filesRecord.rowStyleClass}"
+                             style="width: 60px;">
+                 <ice:outputText value="#{filesRecord.databaseLink}"/>
+             </ice:panelGroup>
+         </ice:column>
+
+        </ice:dataTable>
+    </ice:panelGroup>
+	</ice:form>
+</body>
+</html>
+</f:view>

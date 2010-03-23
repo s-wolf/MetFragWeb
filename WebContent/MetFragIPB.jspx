@@ -1,0 +1,765 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:ice="http://www.icesoft.com/icefaces/component">
+
+<ice:outputDeclaration doctypeRoot="HTML"
+                       doctypePublic="-//W3C//DTD XHTML 1.0 Transitional//EN"
+                       doctypeSystem="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+
+<html>
+<head>
+	<ice:outputStyle id="rime" href="css/rime/rime.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+    <meta name="keywords" lang="en" content="MetFrag, MzAnnotate, Fragmenter, Chemistry, Compound" />
+	<meta name="description" content="MetFrag web interface and MzAnnotate viewer" />
+    <title>MetFrag</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/metfrag_favicon.ico" />
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+	<!-- TODO: compress JS libraries -->
+	<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="js/raphael-min.js"></script>
+	<script type="text/javascript" src="js/spectrumViewer.js"></script>
+	<script type="text/javascript" src="js/tip.js" ></script>
+	<script type="text/javascript" src="js/tools.js" ></script>
+	<meta name="google-site-verification" content="hBG5Ug9O6X-YCxQhntBS2QXEyy4TJYbVhSnecY-HwvQ" />
+</head>
+
+
+<f:loadBundle basename="de.ipbhalle.metfrag.web.controller.messages" var="msg" />
+		
+<body>
+	<div id="page">
+		<div id="header">
+			<a href="http://msbi.ipb-halle.de/MetFrag/" title="MetFrag"><ice:graphicImage alt="MetFrag" value="images/MetLogoCube_Green.png" style="float: left; border: 0px;"></ice:graphicImage></a>
+			<div id="title">
+				<h1><ice:outputLink title="MetFrag" value="http://msbi.ipb-halle.de/MetFrag/">MetFrag - Match Predicted Fragments with Mass Spectra</ice:outputLink><br /> IPB edition - parallel execution</h1>
+			</div>
+			<div class="connectionStatus">
+			<ice:outputConnectionStatus id="connectStat"
+                            styleClass="navConnectionStatus"
+                            showPopupOnDisconnect="true" displayHourglassWhenActive="true"/>
+       		 </div>
+		</div>
+		<br />
+			<ice:form>
+				<ice:panelGroup id="tabSetTabs">
+				    <ice:panelTabSet id="icePnlTbSet"
+				            summary="MetFrag fragmentation web interface and MzAnnotate viewer">
+				
+				        <!-- Panel Tab 1 defined with some basic content -->
+				        <ice:panelTab label="MetFrag"
+				                      icon="images/menu/recent.gif"
+				                      title="MetFrag">
+				            <ice:panelGrid columns="2" columnClasses="inputData, inputDataRight" width="100%" >	
+				            
+				            		<div id="input">
+									 	<div id="cpdLib">
+									 		<span class="subheading">Database Settings</span>
+									 		
+									 		<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData3">
+									 		
+										 		<div>
+													<ice:panelGroup panelTooltip="databaseTooltip" >
+														<ice:outputText value="Database: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="databaseTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="This is the database which is used for the 
+															retrieval of the compounds: 
+															KEGG - only a few structures, but probably very fast
+															Pubchem, Chemspider - Many hits, may take a long time to finish" escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>	
+												</div>
+												
+												<ice:selectOneRadio value="#{metFragBean.database}" partialSubmit="true"
+	                                                       valueChangeListener="#{metFragBean.checkForLocalDatabase}">
+														<f:selectItem itemLabel="KEGG" itemValue="kegg" />
+														<f:selectItem itemLabel="PubChem" itemValue="pubchem" />
+														<f:selectItem itemLabel="ChemSpider" itemValue="chemspider" />
+														<f:selectItem itemLabel="Beilstein" itemValue="beilstein" />
+														<f:selectItem itemLabel="Local SDF" itemValue="sdf" />
+												</ice:selectOneRadio>
+												<ice:panelGroup rendered="#{metFragBean.SDFSelected}">
+													<ice:panelGroup panelTooltip="fileUploadTooltip" >
+														<ice:outputText value="Upload SDF: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="fileUploadTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="Upload your own SDF file
+																 containing 1 - many structures." escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>	
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{metFragBean.SDFSelected}">
+													<ice:inputFile id="inputFileComponent" fileNamePattern=".+\.sdf"
+										                           uniqueFolder="true"
+										                           actionListener="#{metFragBean.checkFileLocation}" 
+										                           progressListener="#{metFragBean.progressListener}" />
+								        			<ice:message for="inputFileComponent" />
+								        			<ice:outputProgress labelComplete="#{metFragBean.currentFile.fileName}"
+								                            value="#{metFragBean.fileProgress}" />
+												</ice:panelGroup>
+									 		
+									 		</h:panelGrid>
+									 		
+									 		<ice:panelGrid columns="4" id="inputData" style="width: 100%;" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputText, input, inputSearch" >
+												<div>
+												<ice:panelGroup panelTooltip="massTooltip" >
+													<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
+												</ice:panelGroup>
+												<ice:panelTooltip id="massTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="The calculated mass. This value is used for the database search if no molecular formula is given." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:inputText style="width: 100px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
+												<div>
+												<ice:panelGroup panelTooltip="searchPPMTooltip" >
+													<ice:outputText value="Search PPM: " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="searchPPMTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="This is the allowed variation if the exact mass is used for the database search. E.g.: 10" escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:inputText style="width: 80px" id="searchPPM" value="#{metFragBean.searchPPM}"></h:inputText>		
+											</ice:panelGrid>
+											
+											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData4">
+											
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<ice:panelGroup panelTooltip="molFormulaTooltip" >
+														<ice:outputText value="Molecular formula (optional alternative): " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="molFormulaTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="This value is used for the database search if a molecular formula is given." escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<h:inputText style="width: 300px" id="sumformula" value="#{metFragBean.sumFormula}"></h:inputText>
+												</ice:panelGroup>
+												
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<ice:panelGroup panelTooltip="filterBioTooltip" >
+														<ice:outputText value="Only biological compounds: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="filterBioTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="Only use compounds which only consist of C,H,O,N,P and S
+															In addition do not use any compounds which only have C and H atoms." escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<h:selectBooleanCheckbox value="#{metFragBean.bioCompound}" />
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<ice:panelGroup panelTooltip="limitTooltip" >
+														<ice:outputText value="Limit # of structures: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="limitTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="The processing stops when the given number of structures is reached." escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<h:inputText style="width: 300px" id="limit" value="#{metFragBean.limit}"></h:inputText>
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<ice:panelGroup panelTooltip="databaseIDTooltip" >
+														<ice:outputText value="Database ID's: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="databaseIDTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="If this ID is given only those particular compounds are tested! E.g. 
+																			        Comma separated list of database identifiers: C00509,C06561
+																			        Choose the corresponding database!!!" escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
+												</ice:panelGroup>
+												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+													<h:inputText style="width: 300px" id="databaseID" value="#{metFragBean.databaseID}"></h:inputText>
+												</ice:panelGroup>
+												<!-- Progress bar and command button -->
+										        <div id="searchUpstream">
+												        <ice:commandButton action="#{metFragBean.start}" id="startButton"
+															value="Search upstream DB"
+															style="margin: 9px 0px 5px;" onclick="this.disabled=true;"/>
+												</div>
+											</h:panelGrid>
+										</div>
+										
+										<div id="metFragOptions">
+											<span class="subheading">MetFrag Settings</span>
+											<h:panelGrid columns="2" columnClasses="input" id="inputData2">
+												<div>
+												<ice:panelGroup panelTooltip="tdTooltip" >
+													<ice:outputText value="TreeDepth: " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="Carsten will das." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:inputText value="#{metFragBean.treeDepth}"></h:inputText>										
+												
+												<div>
+												<ice:panelGroup panelTooltip="modeTooltip" >
+													<ice:outputText value="Mode: " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="modeTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="Positive or negative mode are implemented." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:selectOneRadio value="#{metFragBean.mode}">
+														<f:selectItem itemLabel="#{msg.posMode}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg.negMode}" itemValue="-1" />
+												</h:selectOneRadio>
+												<div>
+												<ice:panelGroup panelTooltip="mzabsTooltip" >
+													<ice:outputText value="Mzabs (e.g. 0.01): " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="mzabsTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="This is the allowed variation for the fragments
+														when they are matched with the peaks. Mzabs and mzppm are used together." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:inputText style="width: 300px" id="mzabs" value="#{metFragBean.mzabs}"></h:inputText>
+												<div>
+												<ice:panelGroup panelTooltip="mzppmTooltip" >
+													<ice:outputText value="Mzppm (e.g. 10): " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="mzppmTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="This is the allowed variation for the fragments
+														when they are matched with the peaks. Mzabs and mzppm are used together." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:inputText style="width: 300px" id="mzppm" value="#{metFragBean.mzppm}"></h:inputText>
+											</h:panelGrid>
+											<!-- Progress bar and command button -->
+									        <div id="progress">
+									        		<ice:outputProgress
+											            id="progress"
+											            label="#{metFragBean.count} of #{metFragBean.hitsDatabase} compounds processed"
+											            labelComplete="Process Done"
+											            value="#{metFragBean.percentDone}"/>
+													<ice:commandButton action="#{metFragBean.startMetFragParallel}"
+														value="Process all #{metFragBean.hitsDatabase} compounds! START"
+														rendered="#{metFragBean.enabled}" style="margin: 9px 0px 5px;" onclick="this.disabled=true;"/>
+													<ice:commandButton action="#{metFragBean.stop}" value="Stop" rendered="#{metFragBean.enabled}"
+														style="margin: 9px 0px 5px;" />
+											</div>
+										</div>
+										
+								</div>
+				            		        	
+								<div id="peaks">
+									<h:panelGrid columns="2" columnClasses="inputData" style="height: 100%">
+										<div>
+											<ice:panelGroup panelTooltip="peakTooltip" >
+												<ice:outputText value="Peaks: " />
+											</ice:panelGroup>
+											<ice:panelTooltip id="peakTooltip" styleClass="tooltip">
+												<f:facet name="body">
+														<h:outputText value="Each peak and its intensity (separated by space/tab) one line: 
+													[m/z] [intensity - optional] [rel. intensity]
+													e.g.: 119.051 467.616 45
+													or 119.051 45
+													Like the MassBank format." escape="false"/>
+												</f:facet>
+											</ice:panelTooltip>
+										</div>
+										<h:inputTextarea id="peaks"	value="#{metFragBean.peaks}" style="height:350px; width:200px;" />
+									</h:panelGrid>
+									<ice:commandLink id="peaksDebug" action="#{metFragBean.openPopup5}" style="color:red; text-align:right; float:right;">
+										<ice:outputText value="Debug peaks" nospan="true"/>
+									</ice:commandLink>
+							 	</div>
+								 		
+					        	<!-- Feedback panel -->		
+					        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="true">
+					                <f:facet name="header">
+					                	<div>
+					                        <ice:outputText style="color: #000;" value="Debug Peaks"/>
+					                        <div style="float:right; padding: 2px;">
+					                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup5}" title="Close this draggable popup"/>
+					                        </div>
+					                    </div>
+					                </f:facet>
+					                <f:facet name="body">
+							            <ice:outputText value="#{metFragBean.parsedPeaksDebug}" escape="false"></ice:outputText>
+					                </f:facet>
+					            </ice:panelPopup>
+
+			                <br/>
+			                
+				            </ice:panelGrid>
+				           
+							<!--
+					            Specify sort columns with ice:commandSortHeader and whether to display
+					            an arrow that shows the sort direction.
+					        -->
+					        <div id="top">
+					        
+					        <ice:dataPaginator id="scroll_2"
+		                         for="resultData"
+		                         fastStep="10"
+		                         pageCountVar="pageCount"
+		                         pageIndexVar="pageIndex"
+		                         paginator="true"
+		                         paginatorMaxPages="9"
+		                         rendered="#{metFragBean.displayResults}"
+		                         >
+		 
+				                <f:facet name="first">
+				                         <ice:graphicImage url="css/xp/css-images/arrow-first.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="last">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-last.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="previous">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-previous.gif" style="border:none;" onclick="backToTop(true);"/>
+				                </f:facet>
+				 
+				                <f:facet name="next">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-next.gif" style="border:none;" onclick="backToTop(true);"/>
+				                </f:facet>
+				 
+				                <f:facet name="fastforward">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-ff.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="fastrewind">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-fr.gif" style="border:none;" />
+				                </f:facet>
+		 
+		        			</ice:dataPaginator>
+					        
+					        </div>
+					        <ice:dataTable id="resultData"
+					                       value="#{metFragBean.filesGroupRecordBeans}"
+					                       var="row"
+					                       width="100%"
+					                       sortColumn="#{metFragBean.sortColumnName}"
+										   sortAscending="#{metFragBean.ascending}"
+					                       rows="10" rendered="#{metFragBean.displayResults}">
+					                         
+					            <!-- contract/expand column -->
+					            <ice:column >
+					                <ice:panelGroup styleClass="#{row.indentStyleClass}">
+					                    <!-- Render the expand/contract if there is an image -->
+					                    <ice:commandLink actionListener="#{row.toggleSubGroupAction}">
+					                        <ice:graphicImage id="expandContractImage"
+					                                            value="#{row.expandContractImage}"
+					                                          style="border: 0px solid;"/>
+					                    </ice:commandLink>
+					                </ice:panelGroup>
+					            </ice:column>
+					            <ice:column>
+					                <f:facet name="header">
+					                	<ice:commandSortHeader columnName="Score" arrow="true" >
+					                    	<ice:outputText value="Score"/>
+					                    </ice:commandSortHeader>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<ice:outputText value="#{row.score}"/>
+             						</ice:panelGroup> 
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                    <ice:commandSortHeader columnName="# Explained Peaks" >
+					                        <ice:outputText value="# Explained Peaks"/>
+					                    </ice:commandSortHeader>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<ice:outputText id="region" value="#{row.explainedPeaks}"/>
+             						</ice:panelGroup>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                      <ice:outputText value="Trivial Name"/>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<ice:outputText value="#{row.molName}" escape="false"/>
+             						</ice:panelGroup>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                	<ice:outputText value="Exact Mass"/>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<ice:outputText escape="false" value="#{row.molecularFormula}"/><br />
+					                	<ice:outputText value="#{row.mass}"/>
+             						</ice:panelGroup>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                	<ice:outputText value="Structure"/>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<h:graphicImage url="#{row.image}.png"></h:graphicImage>
+										<a href=".#{row.image}_Large.png" class="tooltip" onclick="return false;"><h:graphicImage url="images/magnifier.jpg" alt="gallery thumbnail" style="border:0;"></h:graphicImage></a>
+             						</ice:panelGroup>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                    <ice:commandSortHeader columnName="Database ID" >
+					                        <ice:outputText value="Database ID"/>
+					                    </ice:commandSortHeader>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<ice:outputLink value="#{row.databaseLink}" target="_blank" >
+											<ice:outputText value="#{row.ID}" nospan="true"></ice:outputText>
+										</ice:outputLink>
+             						</ice:panelGroup>
+					                
+					            </ice:column>
+					            
+					            <ice:column>
+					                <f:facet name="header">
+					                    <ice:outputText value="Actions"/>
+					                </f:facet>
+					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
+					                	<ice:commandLink id="editlink" value="Show Frags" action="#{popupBean.openPopup2}" actionListener="#{metFragBean.listenRowAction}">
+						                	<f:attribute name="currentRow" value="#{row}"/>
+						                </ice:commandLink>
+             						</ice:panelGroup>
+					            </ice:column>
+					    	</ice:dataTable>
+					    	
+					    	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{popupBean.visible2}" modal="true">
+				                <f:facet name="header">
+				                	<div>
+				                        <ice:outputText style="color: #000;" value="Fragments"/>
+				                        <div style="float:right; padding: 2px;">
+				                        	<ice:commandButton image="images/modal/close.png" action="#{popupBean.closePopup2}" title="Close this draggable popup"/>
+				                        </div>
+				                    </div>
+				                </f:facet>
+				                <f:facet name="body">
+						            <h:panelGrid columns="1" style="text-align:center;">
+										<div id="spectrum_small"></div>
+							            <div id="fragments">
+								            <ice:panelSeries var="currentCpd" value="#{metFragBean.currentFrags}" >
+												<ice:panelGroup style="background: #fff; float: left; width: 215px; height: 240px; margin-top: 5px; border: 1px #efefef solid; ">
+													<div class="headerFragment" style="margin: 5px 0px 0px;">
+														<h:outputText value="Mass: #{currentCpd.mass}" escape="false" style="padding: 3px 0px; font-size: 0.9em;"></h:outputText>
+													</div>
+													<h:graphicImage url="#{currentCpd.path}.png"></h:graphicImage>
+													<a href=".#{currentCpd.path}_Large.png" class="tooltip" onclick="return false;"><h:graphicImage url="images/magnifier.jpg" alt="gallery thumbnail" style="border:0; float: right; margin-top: -10px; position: relative;"></h:graphicImage></a>
+												</ice:panelGroup>
+											</ice:panelSeries>
+										</div>		
+						            </h:panelGrid>  
+				                </f:facet>
+				            </ice:panelPopup>
+					    	
+				    		<ice:dataPaginator id="scroll_1"
+		                         for="resultData"
+		                         fastStep="10"
+		                         pageCountVar="pageCount"
+		                         pageIndexVar="pageIndex"
+		                         paginator="true"
+		                         paginatorMaxPages="9"
+		                         rendered="#{metFragBean.displayResults}"
+		                         >
+		 
+				                <f:facet name="first">
+				                         <ice:graphicImage url="css/xp/css-images/arrow-first.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="last">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-last.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="previous">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-previous.gif" style="border:none;" onclick="/*backToTop(true);*/ return false;"/>
+				                </f:facet>
+				 
+				                <f:facet name="next">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-next.gif" style="border:none;" onclick="/*backToTop(true);*/ return false;"/>
+				                </f:facet>
+				 
+				                <f:facet name="fastforward">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-ff.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="fastrewind">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-fr.gif" style="border:none;" />
+				                </f:facet>
+		 
+		        			</ice:dataPaginator>
+			        				
+			        				
+			        	<ice:commandLink id="MetFragFeedback" action="#{metFragBean.openPopup3}" style="color:red; text-align:right; float:right;">
+							<ice:outputText value="Feedback" nospan="true"/>
+						</ice:commandLink>
+			        	<!-- Feedback panel -->		
+			        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible3}" modal="true">
+			                <f:facet name="header">
+			                	<div>
+			                        <ice:outputText style="color: #000;" value="Feedback"/>
+			                        <div style="float:right; padding: 2px;">
+			                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup3}" title="Close this draggable popup"/>
+			                        </div>
+			                    </div>
+			                </f:facet>
+			                <f:facet name="body">
+					            <h:panelGrid columns="2" columnClasses="feedbackCol">
+									<ice:outputText value="Email (if you allow to contact you)"/>
+									<ice:inputText value="#{metFragBean.email}"></ice:inputText>
+									<ice:outputText value="Comment"/>
+									<ice:inputTextarea value="#{metFragBean.comment}" rows="10" style="width: 300px;"></ice:inputTextarea>
+									<ice:outputText value="Permission to store the peaklist and settings together with your comment (required)" />
+									<ice:selectBooleanCheckbox value="#{metFragBean.feedbackAllow}" />
+									<ice:commandButton action="#{metFragBean.feedback}" value="Send"></ice:commandButton>
+									<ice:outputText style="color: red;" value="#{metFragBean.error}"></ice:outputText>
+					            </h:panelGrid>  
+			                </f:facet>
+			            </ice:panelPopup>
+			        	
+			        	<br />
+			        	<ice:commandLink id="MetFragFeedbackAdmin" action="#{metFragBean.openPopup4}">
+							<h:outputText value="FeedbackAdmin" style="color:#afafaf; text-align:right; font-size: 10px; float: right;"></h:outputText>
+						</ice:commandLink>
+			        	<!-- Feedback panel -->		
+			        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" autoPosition="200, 35" modal="false" style="width: 800px;">
+			                <f:facet name="header">
+			                	<div>
+			                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
+			                        <div style="float:right; padding: 2px;">
+			                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup4}" title="Close this draggable popup"/>
+			                        </div>
+			                    </div>
+			                </f:facet>
+			                <f:facet name="body">
+			                	<div>
+			                	 <ice:panelGroup rendered="#{metFragBean.showLoginData}">
+				                	 <ice:outputText value="Username:" />
+				                	 <ice:inputText value="#{metFragBean.adminUserInput}" />
+				                	 <br />
+				                	 <ice:outputText value="Password:" />
+				                	 <ice:inputSecret value="#{metFragBean.adminPassInput}" />
+				                	 <br />
+				                	 <ice:commandButton action="#{metFragBean.getFeedback}" value="Login" />
+				                	 <br />
+				                	 <ice:outputText value="#{metFragBean.adminError}" style="color: red;"/>
+			                	 </ice:panelGroup>
+			                	 <ice:panelGroup rendered="#{not metFragBean.showLoginData}">
+						             <ice:dataTable id="feedbackData"
+						                       value="#{metFragBean.feedbackList}"
+						                       var="rowFeedback"
+						                       width="100%"
+						                       rows="5" rendered="#{not metFragBean.showLoginData}">
+							            <ice:column>
+							                <f:facet name="header">
+							                    <ice:outputText value="Date"/>
+							                </f:facet>
+							                <ice:outputText value="#{rowFeedback.date}"/>
+							            </ice:column>
+							
+							            <ice:column>
+							                <f:facet name="header">
+							                    <ice:outputText value="Email"/>
+							                </f:facet>
+							                <ice:outputText id="region" value="#{rowFeedback.eMail}"/>
+							            </ice:column>
+							
+							            <ice:column>
+							                <f:facet name="header">
+							                      <ice:outputText value="Comment"/>
+							                </f:facet>
+							                <ice:outputText value="#{rowFeedback.comment}"/>
+							            </ice:column>
+							
+							            <ice:column>
+							                <f:facet name="header">
+							                	<ice:outputText value="Fixed"/>
+							                </f:facet>
+							                <ice:outputText value="#{rowFeedback.fixed}"/>
+							                <ice:commandLink value="Done?" actionListener="#{metFragBean.listenFixedFeedbackAction}">
+							                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+							                </ice:commandLink>
+							            </ice:column>
+							
+							            <ice:column>
+							                <f:facet name="header">
+							                	<ice:outputText value="Answered"/>
+							                </f:facet>
+												<ice:outputText value="#{rowFeedback.answered}"/>
+												<ice:commandLink value="Done?" actionListener="#{metFragBean.listenAnsweredFeedbackAction}">
+								                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+								                </ice:commandLink>
+								        </ice:column>						            
+							            <ice:column>
+							                <f:facet name="header">
+							                    <ice:outputText value="Actions"/>
+							                </f:facet>
+							                <ice:commandLink id="editlink" value="Show Used Values" actionListener="#{metFragBean.listenRowFeedbackAction}">
+							                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+							                </ice:commandLink>
+							            </ice:column>
+							    	</ice:dataTable>
+							    	
+							    	<ice:dataPaginator id="scroll_feedback"
+				                         for="feedbackData"
+				                         fastStep="10"
+				                         pageCountVar="pageCount"
+				                         pageIndexVar="pageIndex"
+				                         paginatorMaxPages="9"
+				                         paginator="true" rendered="#{not metFragBean.showLoginData}"
+				                         >
+			 
+						                <f:facet name="first" >
+						                         <ice:graphicImage url="css/xp/css-images/arrow-first.gif" style="border:none;"/>
+						                </f:facet>
+						 
+						                <f:facet name="last">
+						                        <ice:graphicImage url="css/xp/css-images/arrow-last.gif" style="border:none;" />
+						                </f:facet>
+						 
+						                <f:facet name="previous">
+						                        <ice:graphicImage url="css/xp/css-images/arrow-previous.gif" style="border:none;" />
+						                </f:facet>
+						 
+						                <f:facet name="next">
+						                        <ice:graphicImage url="css/xp/css-images/arrow-next.gif" style="border:none;" />
+						                </f:facet>
+						 
+						                <f:facet name="fastforward">
+						                        <ice:graphicImage url="css/xp/css-images/arrow-ff.gif" style="border:none;" />
+						                </f:facet>
+						 
+						                <f:facet name="fastrewind">
+						                        <ice:graphicImage url="css/xp/css-images/arrow-fr.gif" style="border:none;" />
+						                </f:facet>
+				        			</ice:dataPaginator>
+				        			<br />
+				        			<ice:commandButton action="#{metFragBean.logout}" value="Logout" />
+				        		</ice:panelGroup>
+			        			</div>
+			                </f:facet>
+			            </ice:panelPopup>
+			        	
+			        		  		
+				        </ice:panelTab>
+				        
+				        
+				        
+				
+				        <!-- Panel Tab 2 defined with some basic content -->
+				        <ice:panelTab label="MzAnnotate Viewer" title="MzAnnotate Viewer Test Application">
+							<h:panelGrid columns="2" columnClasses="inputDataRight" id="inputMzAnnotate">
+								<div>
+									<ice:panelGroup panelTooltip="mzAnnotateTooltip" >
+											<h:outputText value="mzAnnotate: " />
+									</ice:panelGroup>
+									<ice:panelTooltip id="mzAnnotateTooltip" styleClass="tooltip">
+										<f:facet name="body">
+												<h:outputText value="Copy a complete mzAnnotate file in the textfield!" escape="false"/>
+										</f:facet>
+									</ice:panelTooltip>
+								</div>
+								<h:inputTextarea id="mzAnnotateRaw"	value="#{mzAnnotateBean.mzAnnotate}" style="height:300px; width:700px" />
+							</h:panelGrid>
+							<ice:commandButton id="viewMzAnnot"
+									value="View MzAnnotate"
+									style="margin: 9px 0px 5px;" 
+									actionListener="#{mzAnnotateBean.viewMzAnnotate}"
+									>
+							</ice:commandButton>
+							<ice:commandButton id="example1" action="#{mzAnnotateBean.mzAnnotateEx1}"
+									value="Example 1 - MassBank"
+									 style="margin: 9px 0px 5px;">
+							</ice:commandButton>
+							<ice:commandButton action="#{mzAnnotateBean.mzAnnotateEx2}" id="example2"
+									value="Example 2 - MassBank without Structure"
+									 style="margin: 9px 0px 5px;">
+							</ice:commandButton>
+							<ice:commandButton action="#{mzAnnotateBean.mzAnnotateEx3}" id="example3"
+									value="Example 3 - MetFrag Assigned Peaks"
+									 style="margin: 9px 0px 5px;" >
+							</ice:commandButton>
+							<ice:panelGroup id="resultMzAnnot" rendered="#{mzAnnotateBean.displayResult}">
+							<div >
+									<strong>Spectrum:</strong>
+									<br />
+									<div id="spectrum"></div>
+									<br />
+									<h:outputText value="#{mzAnnotateBean.mzAnnoResultSpectrum}" escape="false"></h:outputText>
+									<br />
+									<strong>Fragments:</strong><br />
+									<h:outputText value="#{mzAnnotateBean.mzAnnoResultFragments}" escape="false"></h:outputText>
+							</div>
+							</ice:panelGroup>
+				        </ice:panelTab>
+				
+				
+				    </ice:panelTabSet>
+				</ice:panelGroup>
+				<div style="float:left;">
+		        <ice:commandLink id="linkMetFragRev" action="#{popupBean.openPopup1}">
+					<h:outputText value="MetFrag Revision: #{metFragBean.revision} build: #{metFragBean.buildDate}" style="color:grey; text-align:right;"></h:outputText>
+				</ice:commandLink>
+				</div>
+				<div style="float: right;">
+				<ice:commandLink  id="linkMetFragWebRev" action="#{popupBean.openPopup}">
+					<h:outputText value="MetFragWeb Revision: #{metFragBean.revisionWeb} build: #{metFragBean.buildDateWeb}" style="color:grey; text-align:right;"></h:outputText>
+				</ice:commandLink>
+				</div>
+	            
+	            <ice:panelPopup draggable="true" visible="#{popupBean.visible}" modal="true" style="z-index: 1000; top: 30%; left: 10%; position: absolute;">
+	                <f:facet name="header">
+	                    <ice:panelGrid width="100%" cellpadding="0" cellspacing="0" columns="2" style="text-align: center;">
+	                        <ice:outputText style="color: #000;" value="SVN Log MetFrag Web Interface"/>
+	                        <ice:commandButton image="images/modal/close.png" action="#{popupBean.closePopup}" title="Close this draggable popup"/>
+	                    </ice:panelGrid>
+	                </f:facet>
+	                <f:facet name="body">
+	                    <div class="svnLog">
+							<h:outputText escape="false" value="#{metFragBean.svnLogWeb}" />
+						</div>
+	                </f:facet>
+	            </ice:panelPopup>
+	            
+	            <ice:panelPopup draggable="true" visible="#{popupBean.visible1}" modal="true" style="z-index: 1000; top: 30%; left: 10%; position: absolute;">
+	                <f:facet name="header">
+	                    <ice:panelGrid width="100%" cellpadding="0" cellspacing="0" columns="2" style="text-align: center;">
+	                        <ice:outputText style="color: #000;" value="SVN Log MetFrag"/>
+	                        <ice:commandButton image="images/modal/close.png" action="#{popupBean.closePopup1}" title="Close this draggable popup"/>
+	                    </ice:panelGrid>
+	                </f:facet>
+	                <f:facet name="body">
+	                    <div class="svnLog">
+							<h:outputText escape="false" value="#{metFragBean.svnLog}" />
+						</div>
+	                </f:facet>
+	            </ice:panelPopup>
+		    	<br />
+		    	
+
+			</ice:form>
+		</div>
+</body>
+</html>
+</f:view>

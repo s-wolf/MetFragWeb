@@ -1,0 +1,190 @@
+body{
+	font-size: 0.8em;
+	margin: 5px;
+	padding: 0px;
+}
+
+#page{
+	width: 1000px;
+	margin: 20px auto;
+}
+.connectionStatus{
+	float: right;
+	margin-top: 60px;
+	padding: 0px;
+	display: inline;
+}
+
+#header{
+	height: 150px;
+}
+
+#input{
+}
+
+#spectrum {
+	width: 800px;
+	height: 200px;
+	background-color: #fff;
+	padding: 0px 2px;
+	border: 1px #c0c0c0 solid;
+}
+
+#spectrumData {
+	line-height: 1.5;
+}
+
+#spectrum_small {
+	width: 650px;
+	height: 200px;
+	background-color: #fff;
+	padding: 0px 2px;
+	border: 1px #c0c0c0 solid;
+}
+
+.input{
+	vertical-align: middle;
+	padding: 3px;
+}
+
+.inputText{
+	vertical-align: middle;
+	padding: 3px;
+	width: 170px;
+}
+
+.inputSearch{
+	vertical-align: middle;
+	padding: 3px;
+	width: 90px;
+}
+
+.inputData{
+	vertical-align: top;
+	width: 710px
+}
+
+.inputDataRight{
+	vertical-align: top;
+}
+
+.resultTable{
+	text-align: center;
+}
+
+.tooltip{
+	width: 200px; 
+	height: 200px;
+}
+
+.tooltipLarge{
+	width: 370px; 
+	height: 370px;
+}
+
+#results{
+	float: left;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.bodyFrags{
+	padding: 0px;
+}
+
+#peaks{
+	border: #fff 1px solid;
+}
+
+#cpdLib{
+	border: #fff 1px solid;
+	margin-left: 5px;
+}
+
+#metFragOptions{
+	border: #fff 1px solid;
+	margin-left: 5px;
+}
+
+#progress{
+	margin: 5px 0px 0px;	
+}
+
+    
+#input textarea, #input input[type="text"]{
+	background: #fff;
+	background-image: none;
+}
+
+#fragments {
+	overflow-y:auto!important;
+	height: 310px;
+	width: 675px;
+	}
+	
+.fragment {
+	width: 205px;
+	}
+
+
+.svnLog {
+	height: 460px;
+	width: 400px;
+	overflow-y:auto!important;
+	}
+
+.subheading {
+	border-bottom: 1px dashed #000000;
+	}
+	
+.iceCmdLnk, .iceOutLnk {
+	color:#333333;
+	text-decoration:underline;
+}
+
+a:hover {
+	text-decoration:none;
+}
+
+.resultMzAnnot{
+	background: #FFF;
+	padding: 10px;
+	line-height: 1.5em;
+	display: none;
+}
+
+#tooltip{
+	position:absolute;
+	border:1px solid #ccc;
+	background:#efefef;
+	padding:5px;
+	display:none;
+	color:#fff;
+	z-index: 30000;
+	}
+
+h1{
+	margin: 5px 0px 5px 300px; 
+	padding: 20px 0px 0px;
+	font-size: 1.3em;
+}
+
+.feedbackCol{
+	width: 150px;
+	}
+
+.icePnlTbSetCnt {
+	padding: 10px;
+}
+
+.childRowIndentStyle {
+	height: 215px;
+	background: orange;	
+}
+
+.childRowStyle {
+}
+
+.headerFragment{
+	
+}

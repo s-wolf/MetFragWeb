@@ -1,0 +1,8 @@
+db = jdbc:mysql://url
+user = user
+password = pass
+adminuser = user
+adminpass = pass
+mailserver = mail.smtp.de
+mailfrom = feedback@metfrag.bla
+mailto = support@metfrag.bla
