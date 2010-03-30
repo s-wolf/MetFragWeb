@@ -190,7 +190,10 @@
 										        <div id="searchUpstream">
 												        <ice:commandButton action="#{metFragBean.start}" id="startButton"
 															value="Search upstream DB"
-															style="margin: 9px 0px 5px;" onclick="this.disabled=true;"/>
+															style="margin: 9px 0px 5px;" onclick="this.disabled=true;" />
+												</div>
+												<div>
+													<ice:outputText style="color:red; vertical-align: middle;" value="#{metFragBean.databaseMessage}"></ice:outputText>
 												</div>
 											</h:panelGrid>
 										</div>
