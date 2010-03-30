@@ -288,7 +288,7 @@
 										<h:inputTextarea id="peaks"	value="#{metFragBean.peaks}" style="height:350px; width:200px;" />
 									</h:panelGrid>
 									<ice:commandLink id="peaksDebug" action="#{metFragBean.openPopup5}" style="color:red; text-align:right; float:right;">
-										<ice:outputText value="Debug peaks" nospan="true"/>
+										<ice:outputText value="Analyse peaks" nospan="true"/>
 									</ice:commandLink>
 							 	</div>
 								 		
@@ -720,6 +720,7 @@
 				
 				    </ice:panelTabSet>
 				</ice:panelGroup>
+				<!--  
 				<div style="float:left;">
 		        <ice:commandLink id="linkMetFragRev" action="#{popupBean.openPopup1}">
 					<h:outputText value="MetFrag Revision: #{metFragBean.revision} build: #{metFragBean.buildDate}" style="color:grey; text-align:right;"></h:outputText>
@@ -730,6 +731,7 @@
 					<h:outputText value="MetFragWeb Revision: #{metFragBean.revisionWeb} build: #{metFragBean.buildDateWeb}" style="color:grey; text-align:right;"></h:outputText>
 				</ice:commandLink>
 				</div>
+				-->
 	            
 	            <ice:panelPopup draggable="true" visible="#{popupBean.visible}" modal="true" style="z-index: 1000; top: 30%; left: 10%; position: absolute;">
 	                <f:facet name="header">
