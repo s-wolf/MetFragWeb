@@ -278,10 +278,8 @@
 											<ice:panelTooltip id="peakTooltip" styleClass="tooltip">
 												<f:facet name="body">
 														<h:outputText value="Each peak and its intensity (separated by space/tab) one line: 
-													[m/z] [intensity - optional] [rel. intensity]
-													e.g.: 119.051 467.616 45
-													or 119.051 45
-													Like the MassBank format." escape="false"/>
+													[m/z] [intensity]
+													e.g.: 119.051 467.616" escape="false"/>
 												</f:facet>
 											</ice:panelTooltip>
 										</div>
@@ -293,7 +291,7 @@
 							 	</div>
 								 		
 					        	<!-- Feedback panel -->		
-					        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="true">
+					        	<ice:panelPopup draggable="true" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="false">
 					                <f:facet name="header">
 					                	<div>
 					                        <ice:outputText style="color: #000;" value="Debug Peaks"/>
@@ -546,9 +544,9 @@
 							<h:outputText value="FeedbackAdmin" style="color:#afafaf; text-align:right; font-size: 10px; float: right;"></h:outputText>
 						</ice:commandLink>
 			        	<!-- Feedback panel -->		
-			        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" autoPosition="200, 35" modal="false" style="width: 800px;">
+			        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;">
 			                <f:facet name="header">
-			                	<div>
+			                	<div style="width: 100%;">
 			                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
 			                        <div style="float:right; padding: 2px;">
 			                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup4}" title="Close this draggable popup"/>
