@@ -32,7 +32,7 @@
 		<div id="header">
 			<a href="http://msbi.ipb-halle.de/MetFrag/" title="MetFrag"><ice:graphicImage alt="MetFrag" value="images/MetLogoCube_Green.png" style="float: left; border: 0px;"></ice:graphicImage></a>
 			<div id="title">
-				<h1><ice:outputLink title="MetFrag" value="http://msbi.ipb-halle.de/MetFrag/">MetFrag - Match Predicted Fragments with Mass Spectra</ice:outputLink></h1>
+				<h1><ice:outputLink title="MetFrag" value="http://msbi.ipb-halle.de/MetFrag/">MetFrag - Match Predicted Fragments with Mass Spectra</ice:outputLink><br /> IPB edition - parallel execution</h1>
 			</div>
 			<div class="connectionStatus">
 			<ice:outputConnectionStatus id="connectStat"
@@ -189,17 +189,28 @@
 										        <div id="searchUpstream">
 												        <ice:commandButton action="#{metFragBean.start}" id="startButton"
 															value="Search upstream DB"
-															style="margin: 9px 0px 5px;" onclick="this.disabled=true;"/>
+															style="margin: 9px 0px 5px;" onclick="this.disabled=true;" />
 												</div>
 												<div>
-													<ice:outputText style="color:red; vertical-align: middle;" value="#{metFragBean.databaseMessage}"></ice:outputText>
+													<ice:outputText style="color:red; vertical-align: middle;" value="#{metFragBean.databaseMessage}" ></ice:outputText>
 												</div>
 											</h:panelGrid>
 										</div>
 										
 										<div id="metFragOptions">
 											<span class="subheading">MetFrag Settings</span>
-											<h:panelGrid columns="2" columnClasses="input" id="inputData2">			
+											<h:panelGrid columns="2" columnClasses="input" id="inputData2">
+												<div>
+												<ice:panelGroup panelTooltip="tdTooltip" >
+													<ice:outputText value="TreeDepth: " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="Carsten will das." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<h:inputText value="#{metFragBean.treeDepth}"></h:inputText>										
 												
 												<div>
 												<ice:panelGroup panelTooltip="modeTooltip" >
@@ -279,7 +290,7 @@
 							 	</div>
 								 		
 					        	<!-- Feedback panel -->		
-					        	<ice:panelPopup draggable="true" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="false">
+					        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="false">
 					                <f:facet name="header">
 					                	<div>
 					                        <ice:outputText style="color: #000;" value="Debug Peaks"/>
@@ -289,7 +300,12 @@
 					                    </div>
 					                </f:facet>
 					                <f:facet name="body">
-							            <ice:outputText value="#{metFragBean.parsedPeaksDebug}" escape="false"></ice:outputText>
+					                	<div>
+					                		<div id="spectrumAnalyze"></div>
+					                		<div style="overflow-y:auto!important; height:310px; width:805px;">
+					                			<ice:outputText value="#{metFragBean.parsedPeaksDebug}" escape="false"></ice:outputText>
+					                		</div>
+							            </div>
 					                </f:facet>
 					            </ice:panelPopup>
 
@@ -532,9 +548,9 @@
 							<h:outputText value="FeedbackAdmin" style="color:#afafaf; text-align:right; font-size: 10px; float: right;"></h:outputText>
 						</ice:commandLink>
 			        	<!-- Feedback panel -->		
-			        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;">
+			        	<ice:panelPopup draggable="false" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;" autoPosition="35,200">
 			                <f:facet name="header">
-			                	<div>
+			                	<div style="width: 100%;">
 			                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
 			                        <div style="float:right; padding: 2px;">
 			                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup4}" title="Close this draggable popup"/>
@@ -542,7 +558,7 @@
 			                    </div>
 			                </f:facet>
 			                <f:facet name="body">
-			                	<div style="width: 100%;">
+			                	<div>
 			                	 <ice:panelGroup rendered="#{metFragBean.showLoginData}">
 				                	 <ice:outputText value="Username:" />
 				                	 <ice:inputText value="#{metFragBean.adminUserInput}" />
@@ -706,7 +722,6 @@
 				
 				    </ice:panelTabSet>
 				</ice:panelGroup>
-				
 				<!--  
 				<div style="float:left;">
 		        <ice:commandLink id="linkMetFragRev" action="#{popupBean.openPopup1}">
@@ -718,7 +733,7 @@
 					<h:outputText value="MetFragWeb Revision: #{metFragBean.revisionWeb} build: #{metFragBean.buildDateWeb}" style="color:grey; text-align:right;"></h:outputText>
 				</ice:commandLink>
 				</div>
-	            -->
+				-->
 	            
 	            <ice:panelPopup draggable="true" visible="#{popupBean.visible}" modal="true" style="z-index: 1000; top: 30%; left: 10%; position: absolute;">
 	                <f:facet name="header">

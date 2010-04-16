@@ -28,7 +28,7 @@ import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
 import de.ipbhalle.metfrag.fragmenter.Fragmenter;
 import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
 import de.ipbhalle.metfrag.spectrum.AssignFragmentPeak;
-import de.ipbhalle.metfrag.main.PeakMolPair;
+import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
@@ -38,9 +38,9 @@ import de.ipbhalle.metfrag.read.Molfile;
 import de.ipbhalle.metfrag.scoring.Scoring;
 import de.ipbhalle.metfrag.spectrum.CleanUpPeakList;
 import de.ipbhalle.metfrag.spectrum.WrapperSpectrum;
-import de.ipbhalle.metfrag.tools.DisplayStructureVector;
 import de.ipbhalle.metfrag.tools.MolecularFormulaTools;
 import de.ipbhalle.metfrag.tools.PPMTool;
+import de.ipbhalle.metfrag.tools.renderer.StructureToFile;
 import de.ipbhalle.metfrag.web.model.MetFragObject;
 import de.ipbhalle.metfrag.web.model.ResultPeaks;
 import de.ipbhalle.metfrag.web.model.ResultPic;
@@ -150,9 +150,11 @@ public class ParallelFragmentation implements Runnable {
 	//	        adder.addImplicitHydrogens(molecule);
 	//	        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule); 
 			
-			DisplayStructureVector dsvOrig = new DisplayStructureVector(200,200, currentFolder, false, true);
+			StructureToFile dsvOrig = new StructureToFile(200,200, currentFolder, false, true);
+//			DisplayStructureVector dsvOrig = new DisplayStructureVector(200,200, currentFolder, false, true);
 			dsvOrig.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + ".png");
-			DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(350,350, currentFolder, false, true);
+			StructureToFile dsvOrigLarge = new StructureToFile(350,350, currentFolder, false, true);
+//			DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(350,350, currentFolder, false, true);
 			dsvOrigLarge.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + "_Large.png");
 			
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(molecule);
@@ -200,14 +202,16 @@ public class ParallelFragmentation implements Runnable {
 			Vector<PeakMolPair> allHits = afp.getAllHits();
 			allHits = sortBackwards(allHits);
 			for (PeakMolPair peakMolPair : allHits) {
-				DisplayStructureVector dsv = null;
-				DisplayStructureVector dsvLarge = null;
+				StructureToFile dsv = null;
+				StructureToFile dsvLarge = null;
+//				DisplayStructureVector dsv = null;
+//				DisplayStructureVector dsvLarge = null;
 				if(databaseID.equals(""))	
-					dsv = new DisplayStructureVector(200,200, currentFolder, false, false);
+					dsv = new StructureToFile(200,200, currentFolder, false, false);
 				else
-					dsv = new DisplayStructureVector(200,200, currentFolder, false, false);
+					dsv = new StructureToFile(200,200, currentFolder, false, false);
 					
-				dsvLarge = new DisplayStructureVector(350,350, currentFolder, false, false);
+				dsvLarge = new StructureToFile(350,350, currentFolder, false, false);
 				
 				dsv.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + ".png");
 				dsvLarge.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + "_Large.png");
@@ -231,7 +235,7 @@ public class ParallelFragmentation implements Runnable {
 			
 			
 			//now "real" scoring --> depends on intensities
-			Scoring score = new Scoring(spectrum.getPeakList());
+			Scoring score = new Scoring(spectrum.getPeakList(), candidateID);
 			double currentScore = 0.0;
 			if(bondEnergyScoring)
 				currentScore = score.computeScoringWithBondEnergies(hits);

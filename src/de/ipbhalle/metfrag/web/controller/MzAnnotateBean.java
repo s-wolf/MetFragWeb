@@ -29,7 +29,7 @@ import com.icesoft.faces.webapp.xmlhttp.PersistentFacesState;
 import com.icesoft.faces.webapp.xmlhttp.RenderingException;
 
 import de.ipbhalle.metfrag.TEMP.PeakMzAnno;
-import de.ipbhalle.metfrag.tools.DisplayStructureVector;
+import de.ipbhalle.metfrag.tools.renderer.StructureToFile;
 
 public class MzAnnotateBean {
 	
@@ -213,7 +213,8 @@ public class MzAnnotateBean {
 		Fragment fragMeasured = Tools.getMeasuredCompound(fragList.getFragList());
 		if(fragMeasured.isStructureKnown())
 		{
-			DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(250,250, currentFolder, false, true);
+			StructureToFile dsvOrigLarge = new StructureToFile(250,250, currentFolder, false, true);
+//			DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(250,250, currentFolder, false, true);
 			dsvOrigLarge.writeMOL2PNGFile(fragMeasured.getMolecule(), "mzAnnoMeasured_" + count + ".png");
 			htmlOutput += "<table cellspcing='0' cellpadding='2' border='0'>" +
 							"<tr>" +
@@ -233,7 +234,8 @@ public class MzAnnotateBean {
 		   "</table>";
 		}
 		
-		DisplayStructureVector dsv = new DisplayStructureVector(200,200, currentFolder, false, true);
+		StructureToFile dsv = new StructureToFile(200,200, currentFolder, false, true);
+//		DisplayStructureVector dsv = new DisplayStructureVector(200,200, currentFolder, false, true);
 		htmlOutput += "<table cellspacing='0' cellpadding='2' border='0'><tr>";
 		int numCols = 3;
 		int colCount = 0;

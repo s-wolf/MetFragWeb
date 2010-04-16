@@ -57,7 +57,7 @@ import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
 import de.ipbhalle.metfrag.fragmenter.Fragmenter;
 import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
 import de.ipbhalle.metfrag.spectrum.AssignFragmentPeak;
-import de.ipbhalle.metfrag.main.PeakMolPair;
+import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
 import de.ipbhalle.metfrag.molDatabase.PubChemLocal;
@@ -69,7 +69,7 @@ import de.ipbhalle.metfrag.similarity.Similarity;
 import de.ipbhalle.metfrag.similarity.SimilarityGroup;
 import de.ipbhalle.metfrag.spectrum.CleanUpPeakList;
 import de.ipbhalle.metfrag.spectrum.WrapperSpectrum;
-import de.ipbhalle.metfrag.tools.DisplayStructureVector;
+import de.ipbhalle.metfrag.tools.renderer.*;
 import de.ipbhalle.metfrag.tools.MolecularFormulaTools;
 import de.ipbhalle.metfrag.tools.PPMTool;
 import de.ipbhalle.metfrag.web.buildinfo.BuildInfoWeb;
@@ -345,6 +345,11 @@ public class MetFragBean extends SortableList{
      */
     public void checkForLocalDatabase(ValueChangeEvent event){
     	String newValue = (String)event.getNewValue();
+    	
+    	//delete previous query
+    	reset();
+    	databaseMessage = "";
+    	
     	if(newValue.equals("sdf"))
     	{
     		sdfSelect = true;
@@ -412,6 +417,7 @@ public class MetFragBean extends SortableList{
 		//double mzppm = Double.parseDouble(this.mzppm);
 		
 		System.out.println("Search PPM: " + this.searchPPM);
+		List<String> notFound = null;
 		
 		if(isSDFFile)
 		{
@@ -459,30 +465,73 @@ public class MetFragBean extends SortableList{
 			candidates = new Vector<String>();
 			String[] idList = databaseID.split(",");
 			for (int i = 0; i < idList.length; i++) {
-				candidates.add(idList[i]);
+				if(existingDBEntries(idList[i]))
+					candidates.add(idList[i]);
+				else
+					databaseMessage += "Error retrieving: " + idList[i] + "\n";
 			}
 		}
 		
-		if(Integer.parseInt(this.limit) < this.hitsDatabase)
-			this.hitsDatabase = Integer.parseInt(this.limit);
-		else
-			this.hitsDatabase = candidates.size();
-		
-
 		//no hits
 		if(candidates == null || candidates.size() == 0)
 		{
-			reset();
-			databaseMessage = "No hits!";
+			databaseMessage += "No hits!";
+			candidates = new Vector<String>();
+			hitsDatabase = 0;
 		}
 		else
-		{
-			databaseMessage = candidates.size() + " hits!";
+		{	
+			databaseMessage += candidates.size() + " hits!";
+			this.hitsDatabase = candidates.size();
 		}
 		
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), "document.getElementById(\"searchUpstream\").firstChild.disabled = false;");
 
 		return "";
+	}
+	
+	
+	/**
+	 * Gets the non existing db entries.
+	 * 
+	 * @param db the db
+	 * @param idList the id list
+	 * 
+	 * @return the non existing db entries
+	 */
+	private boolean existingDBEntries(String id)
+	{
+		IAtomContainer test = null;
+		try
+		{
+			if(this.database.equals("kegg"))
+			{
+				test = KeggWebservice.getMol(id, "/vol/mirrors/kegg/mol", true);
+			}
+			else if(this.database.equals("chemspider"))
+			{
+				test = ChemSpider.getMol(id, true);
+			}
+			else if(this.database.equals("pubchem"))
+			{
+				test = pubchemLocal.getMol(id, true);
+			}
+			else if(this.database.equals("beilstein"))
+			{
+				test = beilstein.getMol(id, true);
+			}
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			System.err.println("Error retrieving compound.");
+		}
+		
+		if(test == null)
+			return false;
+		else
+			return true;
+
 	}
 	
 	public String startMetFrag()
@@ -517,6 +566,7 @@ public class MetFragBean extends SortableList{
 	 */
 	public String reset()
 	{
+		databaseMessage = "";
 		setStop(true);
 		percentDone = 0;
 		count[0] = 0;
@@ -936,11 +986,29 @@ public class MetFragBean extends SortableList{
     				"<td>Peak#</td><td>m/z</td><td>abs. int.</td><td>rel. int.</td>" +
     			"</tr>";
     	int count = 1;
+    	
+    	String peakString = "";
+    	String peakIntString = "";
+    	int temp = 0;
+    	
     	for (Peak peak : peakListParsed) {
-			parsedPeaksDebug += "<tr><td>" + count + "</td><td>" + peak.getMass() + "</td><td>" + peak.getIntensity() + "</td><td>" + peak.getRelIntensity() + "</td><td></tr>";
+    		if(temp == (peakListParsed.size() - 1))
+    		{
+    			peakString += peak.getMass();
+        		peakIntString += peak.getRelIntensity();
+    		}
+    		else
+    		{
+    			peakString += peak.getMass() + ",";
+        		peakIntString += peak.getRelIntensity() + ",";
+    		}
+    		parsedPeaksDebug += "<tr><td>" + count + "</td><td>" + peak.getMass() + "</td><td>" + peak.getIntensity() + "</td><td>" + peak.getRelIntensity() + "</td><td></tr>";
 			count++;
 		}
     	parsedPeaksDebug += "</table>";
+    	
+    	JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), "drawSpectrum(800, 200, 'spectrumAnalyze', [" + peakString + "],[" + peakIntString + "],[],[],[],[]);");
+
     }
     
     
@@ -1236,9 +1304,11 @@ public class MetFragBean extends SortableList{
 			//	        adder.addImplicitHydrogens(molecule);
 			//	        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule); 
 						
-						DisplayStructureVector dsvOrig = new DisplayStructureVector(200,200, currentFolder, false, true);
+						StructureToFile dsvOrig = new StructureToFile(200,200, currentFolder, false, true);
+//						DisplayStructureVector dsvOrig = new DisplayStructureVector(200,200, currentFolder, false, true);
 						dsvOrig.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + ".png");
-						DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(350,350, currentFolder, false, true);
+						StructureToFile dsvOrigLarge = new StructureToFile(350,350, currentFolder, false, true);
+//						DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(350,350, currentFolder, false, true);
 						dsvOrigLarge.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + "_Large.png");
 						
 						IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(molecule);
@@ -1286,14 +1356,16 @@ public class MetFragBean extends SortableList{
 						Vector<PeakMolPair> allHits = afp.getAllHits();
 						allHits = sortBackwards(allHits);
 						for (PeakMolPair peakMolPair : allHits) {
-							DisplayStructureVector dsv = null;
-							DisplayStructureVector dsvLarge = null;
+							StructureToFile dsv = null;
+							StructureToFile dsvLarge = null;
+//							DisplayStructureVector dsv = null;
+//							DisplayStructureVector dsvLarge = null;
 							if(databaseID.equals(""))	
-								dsv = new DisplayStructureVector(200,200, currentFolder, false, false);
+								dsv = new StructureToFile(200,200, currentFolder, false, false);
 							else
-								dsv = new DisplayStructureVector(200,200, currentFolder, false, false);
+								dsv = new StructureToFile(200,200, currentFolder, false, false);
 								
-							dsvLarge = new DisplayStructureVector(350,350, currentFolder, false, false);
+							dsvLarge = new StructureToFile(350,350, currentFolder, false, false);
 							
 							dsv.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + ".png");
 							dsvLarge.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + "_Large.png");
@@ -1317,7 +1389,7 @@ public class MetFragBean extends SortableList{
 						
 						
 						//now "real" scoring --> depends on intensities
-						Scoring score = new Scoring(spectrum.getPeakList());
+						Scoring score = new Scoring(spectrum.getPeakList(), candidateID);
 						double currentScore = 0.0;
 						if(bondEnergyScoring)
 							currentScore = score.computeScoringWithBondEnergies(hits);

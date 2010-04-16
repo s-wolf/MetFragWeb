@@ -193,7 +193,7 @@
 															style="margin: 9px 0px 5px;" onclick="this.disabled=true;" />
 												</div>
 												<div>
-													<ice:outputText style="color:red; vertical-align: middle;" value="#{metFragBean.databaseMessage}"></ice:outputText>
+													<ice:outputText style="color:red; vertical-align: middle;" value="#{metFragBean.databaseMessage}" ></ice:outputText>
 												</div>
 											</h:panelGrid>
 										</div>
@@ -291,7 +291,7 @@
 							 	</div>
 								 		
 					        	<!-- Feedback panel -->		
-					        	<ice:panelPopup draggable="true" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="false">
+					        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible5}" modal="false">
 					                <f:facet name="header">
 					                	<div>
 					                        <ice:outputText style="color: #000;" value="Debug Peaks"/>
@@ -301,7 +301,12 @@
 					                    </div>
 					                </f:facet>
 					                <f:facet name="body">
-							            <ice:outputText value="#{metFragBean.parsedPeaksDebug}" escape="false"></ice:outputText>
+					                	<div>
+					                		<div id="spectrumAnalyze"></div>
+					                		<div style="overflow-y:auto!important; height:310px; width:805px;">
+					                			<ice:outputText value="#{metFragBean.parsedPeaksDebug}" escape="false"></ice:outputText>
+					                		</div>
+							            </div>
 					                </f:facet>
 					            </ice:panelPopup>
 
@@ -544,7 +549,7 @@
 							<h:outputText value="FeedbackAdmin" style="color:#afafaf; text-align:right; font-size: 10px; float: right;"></h:outputText>
 						</ice:commandLink>
 			        	<!-- Feedback panel -->		
-			        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;">
+			        	<ice:panelPopup draggable="false" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;" autoPosition="35,200">
 			                <f:facet name="header">
 			                	<div style="width: 100%;">
 			                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
