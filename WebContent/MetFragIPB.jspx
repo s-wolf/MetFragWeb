@@ -41,7 +41,7 @@
        		 </div>
 		</div>
 		<br />
-			<ice:form>
+			<ice:form>			
 				<ice:panelGroup id="tabSetTabs">
 				    <ice:panelTabSet id="icePnlTbSet"
 				            summary="MetFrag fragmentation web interface and MzAnnotate viewer">
@@ -544,134 +544,17 @@
 			                </f:facet>
 			            </ice:panelPopup>
 			        	
+			        				        	
 			        	<br />
 			        	<ice:commandLink id="MetFragFeedbackAdmin" action="#{metFragBean.openPopup4}">
 							<h:outputText value="FeedbackAdmin" style="color:#afafaf; text-align:right; font-size: 10px; float: right;"></h:outputText>
 						</ice:commandLink>
-			        	<!-- Feedback panel -->		
-			        	<ice:panelPopup draggable="false" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;" autoPosition="35,200">
-			                <f:facet name="header">
-			                	<div style="width: 100%;">
-			                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
-			                        <div style="float:right; padding: 2px;">
-			                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup4}" title="Close this draggable popup"/>
-			                        </div>
-			                    </div>
-			                </f:facet>
-			                <f:facet name="body">
-			                	<div>
-			                	 <ice:panelGroup rendered="#{metFragBean.showLoginData}">
-				                	 <ice:outputText value="Username:" />
-				                	 <ice:inputText value="#{metFragBean.adminUserInput}" />
-				                	 <br />
-				                	 <ice:outputText value="Password:" />
-				                	 <ice:inputSecret value="#{metFragBean.adminPassInput}" />
-				                	 <br />
-				                	 <ice:commandButton action="#{metFragBean.getFeedback}" value="Login" />
-				                	 <br />
-				                	 <ice:outputText value="#{metFragBean.adminError}" style="color: red;"/>
-			                	 </ice:panelGroup>
-			                	 <ice:panelGroup rendered="#{not metFragBean.showLoginData}">
-						             <ice:dataTable id="feedbackData"
-						                       value="#{metFragBean.feedbackList}"
-						                       var="rowFeedback"
-						                       width="100%"
-						                       rows="5" rendered="#{not metFragBean.showLoginData}">
-							            <ice:column>
-							                <f:facet name="header">
-							                    <ice:outputText value="Date"/>
-							                </f:facet>
-							                <ice:outputText value="#{rowFeedback.date}"/>
-							            </ice:column>
-							
-							            <ice:column>
-							                <f:facet name="header">
-							                    <ice:outputText value="Email"/>
-							                </f:facet>
-							                <ice:outputText id="region" value="#{rowFeedback.eMail}"/>
-							            </ice:column>
-							
-							            <ice:column>
-							                <f:facet name="header">
-							                      <ice:outputText value="Comment"/>
-							                </f:facet>
-							                <ice:outputText value="#{rowFeedback.comment}"/>
-							            </ice:column>
-							
-							            <ice:column>
-							                <f:facet name="header">
-							                	<ice:outputText value="Fixed"/>
-							                </f:facet>
-							                <ice:outputText value="#{rowFeedback.fixed}"/>
-							                <ice:commandLink value="Done?" actionListener="#{metFragBean.listenFixedFeedbackAction}">
-							                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
-							                </ice:commandLink>
-							            </ice:column>
-							
-							            <ice:column>
-							                <f:facet name="header">
-							                	<ice:outputText value="Answered"/>
-							                </f:facet>
-												<ice:outputText value="#{rowFeedback.answered}"/>
-												<ice:commandLink value="Done?" actionListener="#{metFragBean.listenAnsweredFeedbackAction}">
-								                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
-								                </ice:commandLink>
-								        </ice:column>						            
-							            <ice:column>
-							                <f:facet name="header">
-							                    <ice:outputText value="Actions"/>
-							                </f:facet>
-							                <ice:commandLink id="editlink" value="Show Used Values" actionListener="#{metFragBean.listenRowFeedbackAction}">
-							                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
-							                </ice:commandLink>
-							            </ice:column>
-							    	</ice:dataTable>
-							    	
-							    	<ice:dataPaginator id="scroll_feedback"
-				                         for="feedbackData"
-				                         fastStep="10"
-				                         pageCountVar="pageCount"
-				                         pageIndexVar="pageIndex"
-				                         paginatorMaxPages="9"
-				                         paginator="true" rendered="#{not metFragBean.showLoginData}"
-				                         >
-			 
-						                <f:facet name="first" >
-						                         <ice:graphicImage url="css/xp/css-images/arrow-first.gif" style="border:none;"/>
-						                </f:facet>
-						 
-						                <f:facet name="last">
-						                        <ice:graphicImage url="css/xp/css-images/arrow-last.gif" style="border:none;" />
-						                </f:facet>
-						 
-						                <f:facet name="previous">
-						                        <ice:graphicImage url="css/xp/css-images/arrow-previous.gif" style="border:none;" />
-						                </f:facet>
-						 
-						                <f:facet name="next">
-						                        <ice:graphicImage url="css/xp/css-images/arrow-next.gif" style="border:none;" />
-						                </f:facet>
-						 
-						                <f:facet name="fastforward">
-						                        <ice:graphicImage url="css/xp/css-images/arrow-ff.gif" style="border:none;" />
-						                </f:facet>
-						 
-						                <f:facet name="fastrewind">
-						                        <ice:graphicImage url="css/xp/css-images/arrow-fr.gif" style="border:none;" />
-						                </f:facet>
-				        			</ice:dataPaginator>
-				        			<br />
-				        			<ice:commandButton action="#{metFragBean.logout}" value="Logout" />
-				        		</ice:panelGroup>
-			        			</div>
-			                </f:facet>
-			            </ice:panelPopup>
 			        	
+
 			        		  		
 				        </ice:panelTab>
 				        
-				        
-				        
+
 				
 				        <!-- Panel Tab 2 defined with some basic content -->
 				        <ice:panelTab label="MzAnnotate Viewer" title="MzAnnotate Viewer Test Application">
@@ -765,7 +648,143 @@
 	            </ice:panelPopup>
 		    	<br />
 		    	
+		    	
+		    	<!-- Feedback panel -->		
+	        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" modal="false" style="width: 800px; top:5em; left:5em;" autoPosition="manual" autoCentre="false" positionOnLoadOnly="200,10">
+	                <f:facet name="header">
+	                	<div style="width: 100%;">
+	                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
+	                        <div style="float:right; padding: 2px;">
+	                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup4}" title="Close this draggable popup"/>
+	                        </div>
+	                    </div>
+	                </f:facet>
+	                <f:facet name="body">
+	                			                	
+	                	<div>
 
+	                	 <ice:panelGroup rendered="#{metFragBean.showLoginData}">
+		                	 <ice:outputText value="Username:" />
+		                	 <ice:inputText value="#{metFragBean.adminUserInput}" />
+		                	 <br />
+		                	 <ice:outputText value="Password:" />
+		                	 <ice:inputSecret value="#{metFragBean.adminPassInput}" />
+		                	 <br />
+		                	 <ice:commandButton action="#{metFragBean.getFeedback}" value="Login" />
+		                	 <br />
+		                	 <ice:outputText value="#{metFragBean.adminError}" style="color: red;"/>
+	                	 </ice:panelGroup>
+	                	 <ice:panelGroup rendered="#{not metFragBean.showLoginData}">
+				             <ice:dataTable id="feedbackData"
+				                       value="#{metFragBean.feedbackList}"
+				                       var="rowFeedback"
+				                       width="100%"
+				                       rows="5" rendered="#{not metFragBean.showLoginData}">
+					            <ice:column>
+					                <f:facet name="header">
+					                    <ice:outputText value="Date"/>
+					                </f:facet>
+					                <ice:outputText value="#{rowFeedback.date}"/>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                    <ice:outputText value="Email"/>
+					                </f:facet>
+					                <ice:outputText id="region" value="#{rowFeedback.eMail}"/>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                      <ice:outputText value="Comment"/>
+					                </f:facet>
+					                <ice:outputText value="#{rowFeedback.comment}"/>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                	<ice:outputText value="Fixed"/>
+					                </f:facet>
+					                <ice:outputText value="#{rowFeedback.fixed}"/>
+					                <ice:commandLink value="Done?" actionListener="#{metFragBean.listenFixedFeedbackAction}">
+					                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+					                </ice:commandLink>
+					            </ice:column>
+					
+					            <ice:column>
+					                <f:facet name="header">
+					                	<ice:outputText value="Answered"/>
+					                </f:facet>
+										<ice:outputText value="#{rowFeedback.answered}"/>
+										<!-- workaround for wrong position of the confirmation panel -->
+										<div style="position: fixed; left: 0px; top: 0px">
+											<ice:panelConfirmation id="isDoneConfirmPanel" message="Really done?" acceptLabel="Done" cancelLabel="No" autoCentre="true" displayAtMouse="false" draggable="true"/>
+										</div>
+										<ice:commandLink panelConfirmation="isDoneConfirmPanel" value="Done?" actionListener="#{metFragBean.listenAnsweredFeedbackAction}" >
+						                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+						                </ice:commandLink>
+						        </ice:column>	
+						        <ice:column>
+					                <f:facet name="header">
+					                    <ice:outputText value="Delete"/>
+					                </f:facet>
+					                <div style="position: fixed; left: 0px; top: 0px">
+											<ice:panelConfirmation id="deleteConfirmPanel" message="Really delete this entry?" acceptLabel="Delete" cancelLabel="No" />
+									</div>
+					                <ice:commandButton id="deletelink" value="Delete" panelConfirmation="deleteConfirmPanel" actionListener="#{metFragBean.listenDeleteFeedbackAction}">
+					                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+					                </ice:commandButton>
+					            </ice:column>					            
+					            <ice:column>
+					                <f:facet name="header">
+					                    <ice:outputText value="Actions"/>
+					                </f:facet>
+					                <ice:commandLink id="editlink" value="Show Used Values" actionListener="#{metFragBean.listenRowFeedbackAction}">
+					                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
+					                </ice:commandLink>
+					            </ice:column>
+					    	</ice:dataTable>
+					    	
+					    	<ice:dataPaginator id="scroll_feedback"
+		                         for="feedbackData"
+		                         fastStep="10"
+		                         pageCountVar="pageCount"
+		                         pageIndexVar="pageIndex"
+		                         paginatorMaxPages="9"
+		                         paginator="true" rendered="#{not metFragBean.showLoginData}"
+		                         >
+	 
+				                <f:facet name="first" >
+				                         <ice:graphicImage url="css/xp/css-images/arrow-first.gif" style="border:none;"/>
+				                </f:facet>
+				 
+				                <f:facet name="last">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-last.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="previous">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-previous.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="next">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-next.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="fastforward">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-ff.gif" style="border:none;" />
+				                </f:facet>
+				 
+				                <f:facet name="fastrewind">
+				                        <ice:graphicImage url="css/xp/css-images/arrow-fr.gif" style="border:none;" />
+				                </f:facet>
+		        			</ice:dataPaginator>
+		        			<br />
+		        			<ice:commandButton action="#{metFragBean.logout}" value="Logout" />
+		        		</ice:panelGroup>
+	        			</div>
+	                </f:facet>
+	            </ice:panelPopup>
+		    	
 			</ice:form>
 		</div>
 </body>

@@ -684,7 +684,9 @@ public class MetFragBean extends SortableList{
 	            pst.setString(8, databaseID);
 	            
 	            int modeTemp = 1;
-	            if(mode.equals("-1"))
+	            if(mode.equals("1"))
+	            	modeTemp = 1;
+	            else
 	            	modeTemp = -1;
 	            
 	            pst.setInt(9, modeTemp);
@@ -757,11 +759,11 @@ public class MetFragBean extends SortableList{
 			    
 	
 	            String sql = "SELECT ID, Peaklist, ExactMass, SearchPPM, MolecularFormula, DatabaseUsed, BiologicalCompound, LimitHits, " +
-	            		"DatabaseIDs, Mode, MzAbs, MzPPM, Email, Comment, Date, Fixed, Answered FROM Feedback;";
+	            		"DatabaseIDs, Mode, MzAbs, MzPPM, Email, Comment, Date, Fixed, Answered FROM Feedback ORDER BY ID desc;";
 	            Statement stmt = con.createStatement();
 	            ResultSet rs = stmt.executeQuery(sql);
 	            while(rs.next())
-	            {
+	            {	            		
 	            	feedbackList.add(new FeedbackRow(rs.getInt("ID"), rs.getString("Peaklist").replace("%BR%", "\n"), rs.getDouble("ExactMass"), rs.getInt("SearchPPM"), 
 	            			rs.getString("MolecularFormula"), rs.getString("databaseUsed"), rs.getBoolean("BiologicalCompound"), rs.getInt("LimitHits"), 
 	            			rs.getString("DatabaseIDs"), rs.getInt("Mode"), rs.getDouble("MzAbs"), rs.getInt("MzPPM"), rs.getString("Email"), rs.getString("Comment"),
@@ -1829,7 +1831,12 @@ public class MetFragBean extends SortableList{
 		bioCompound = currentFeedback.getBiologicalCompound();
 		databaseID = currentFeedback.getDatabaseIDs();
 		database = currentFeedback.getDatabaseUsed();
-		exactMass = currentFeedback.getExactMass().toString();
+		
+		if(currentFeedback.getExactMass() == 0.0)
+			exactMass = "";
+		else
+			exactMass = currentFeedback.getExactMass().toString();
+		
 		limit = currentFeedback.getLimit().toString();
 		mode = currentFeedback.getMode().toString();
 		molFormula = currentFeedback.getMolecularFormula();
@@ -1862,9 +1869,10 @@ public class MetFragBean extends SortableList{
 	        con = DriverManager.getConnection(db, user, pass);
 		    
 
-            String sql = "Update Feedback set Fixed = 1 where ID = " + id;
+            String sql = "Update Feedback set Fixed = 1 where ID = ?";
             PreparedStatement pst = null;
             pst = con.prepareStatement(sql);
+            pst.setInt(1, id);
             pst.executeUpdate();
             pst.close();
 
@@ -1907,9 +1915,56 @@ public class MetFragBean extends SortableList{
 	        con = DriverManager.getConnection(db, user, pass);
 		    
 
-            String sql = "Update Feedback set Answered = 1 where ID = " + id;
+            String sql = "Update Feedback set Answered = 1 where ID = ?";
             PreparedStatement pst = null;
             pst = con.prepareStatement(sql);
+            pst.setInt(1, id);
+            pst.executeUpdate();
+            pst.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+        finally{
+            try {
+				con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        
+        getFeedback();
+		
+	}
+	
+	/**
+	 * Delete the current Feedback
+	 * 
+	 * @param event the event
+	 */
+	public void listenDeleteFeedbackAction(ActionEvent event) {
+		//gets the current row from the data table
+		currentFeedback = (FeedbackRow) event.getComponent().getAttributes().get("currentFeedbackRow");
+		
+		//now set the the data accordingly
+		Integer id = currentFeedback.getId();
+		Connection con = null;
+		
+		try {
+	    	String driver = "com.mysql.jdbc.Driver"; 
+			Class.forName(driver); 
+			DriverManager.registerDriver (new com.mysql.jdbc.Driver()); 
+	        // JDBC-driver
+	        Class.forName(driver);
+	        con = DriverManager.getConnection(db, user, pass);
+		    
+
+            String sql = "Delete from Feedback where ID = ?";
+            PreparedStatement pst = null;
+            pst = con.prepareStatement(sql);
+            pst.setInt(1, id);
             pst.executeUpdate();
             pst.close();
 
