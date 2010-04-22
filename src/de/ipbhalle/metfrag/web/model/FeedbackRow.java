@@ -18,8 +18,8 @@ public class FeedbackRow {
 	private Integer mzPPM = 10;
 	private String eMail = "";
 	private String comment = "";
-	private Boolean fixed = false;
-	private Boolean answered = false;
+	private String fixed;
+	private String answered;
 	private Date date = null;
 	
 	/**
@@ -43,7 +43,7 @@ public class FeedbackRow {
 	 * @param date the date
 	 * @param id the id
 	 */
-	public FeedbackRow(Integer id, String peaklist, Double exactMass, Integer searchPPM, String molecularFormula, String databaseUsed, Boolean biologicalCompound, Integer limit, String databaseIDs, Integer mode, Double mzAbs, Integer mzPPM, String eMail, String comment, Boolean fixed, Boolean answered, Date date)
+	public FeedbackRow(Integer id, String peaklist, Double exactMass, Integer searchPPM, String molecularFormula, String databaseUsed, Boolean biologicalCompound, Integer limit, String databaseIDs, Integer mode, Double mzAbs, Integer mzPPM, String eMail, String comment, String fixed, String answered, Date date)
 	{
 		this.id = id;
 		this.peaklist = peaklist;
@@ -168,19 +168,19 @@ public class FeedbackRow {
 		this.comment = comment;
 	}
 
-	public Boolean getFixed() {
+	public String getFixed() {
 		return fixed;
 	}
 
-	public void setFixed(Boolean fixed) {
+	public void setFixed(String fixed) {
 		this.fixed = fixed;
 	}
 
-	public Boolean getAnswered() {
+	public String getAnswered() {
 		return answered;
 	}
 
-	public void setAnswered(Boolean answered) {
+	public void setAnswered(String answered) {
 		this.answered = answered;
 	}
 

@@ -763,11 +763,23 @@ public class MetFragBean extends SortableList{
 	            Statement stmt = con.createStatement();
 	            ResultSet rs = stmt.executeQuery(sql);
 	            while(rs.next())
-	            {	            		
+	            {	            
+	            	String knobRed = "./images/knob_red.png";
+	            	String knobGreen = "./images/knob_green.png";
+	            	
+	            	String fixed = knobRed;
+	            	if(rs.getBoolean("Fixed"))
+	            		fixed = knobGreen;
+	            	
+	            	String answered = knobRed;
+	            	if(rs.getBoolean("Answered"))
+	            		answered = knobGreen;
+	            		
+	            	
 	            	feedbackList.add(new FeedbackRow(rs.getInt("ID"), rs.getString("Peaklist").replace("%BR%", "\n"), rs.getDouble("ExactMass"), rs.getInt("SearchPPM"), 
 	            			rs.getString("MolecularFormula"), rs.getString("databaseUsed"), rs.getBoolean("BiologicalCompound"), rs.getInt("LimitHits"), 
 	            			rs.getString("DatabaseIDs"), rs.getInt("Mode"), rs.getDouble("MzAbs"), rs.getInt("MzPPM"), rs.getString("Email"), rs.getString("Comment"),
-	            			rs.getBoolean("Fixed"), rs.getBoolean("Answered"), rs.getDate("Date")));
+	            			fixed, answered, rs.getDate("Date")));
 	            }
 	
 	
@@ -973,7 +985,7 @@ public class MetFragBean extends SortableList{
     public void analyzePeaks()
     {
     	double exactMassThread = 0.0;
-		if(exactMass != "")
+		if(exactMass != null && exactMass != "")
 			exactMassThread = Double.parseDouble(exactMass);
 		else
 		{

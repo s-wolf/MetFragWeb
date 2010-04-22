@@ -650,7 +650,7 @@
 		    	
 		    	
 		    	<!-- Feedback panel -->		
-	        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" modal="false" style="width: 800px; top:5em; left:5em;" autoPosition="manual" autoCentre="false" positionOnLoadOnly="200,10">
+	        	<ice:panelPopup draggable="true" visible="#{metFragBean.visible4}" modal="false" style="width: 800px;" autoPosition="200,10" autoCentre="false">
 	                <f:facet name="header">
 	                	<div style="width: 100%;">
 	                        <ice:outputText style="color: #000;" value="Feedback Admin"/>
@@ -663,7 +663,7 @@
 	                			                	
 	                	<div>
 
-	                	 <ice:panelGroup rendered="#{metFragBean.showLoginData}">
+	                	 <ice:panelGroup rendered="#{metFragBean.showLoginData}" style="width:780px">
 		                	 <ice:outputText value="Username:" />
 		                	 <ice:inputText value="#{metFragBean.adminUserInput}" />
 		                	 <br />
@@ -705,22 +705,18 @@
 					                <f:facet name="header">
 					                	<ice:outputText value="Fixed"/>
 					                </f:facet>
-					                <ice:outputText value="#{rowFeedback.fixed}"/>
-					                <ice:commandLink value="Done?" actionListener="#{metFragBean.listenFixedFeedbackAction}">
+					                <ice:commandLink actionListener="#{metFragBean.listenFixedFeedbackAction}">
+					                	<ice:graphicImage url="#{rowFeedback.fixed}" style="border:0px;" />
 					                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
 					                </ice:commandLink>
 					            </ice:column>
 					
-					            <ice:column>
+					            <ice:column style="text-align: center;">
 					                <f:facet name="header">
 					                	<ice:outputText value="Answered"/>
 					                </f:facet>
-										<ice:outputText value="#{rowFeedback.answered}"/>
-										<!-- workaround for wrong position of the confirmation panel -->
-										<div style="position: fixed; left: 0px; top: 0px">
-											<ice:panelConfirmation id="isDoneConfirmPanel" message="Really done?" acceptLabel="Done" cancelLabel="No" autoCentre="true" displayAtMouse="false" draggable="true"/>
-										</div>
-										<ice:commandLink panelConfirmation="isDoneConfirmPanel" value="Done?" actionListener="#{metFragBean.listenAnsweredFeedbackAction}" >
+										<ice:commandLink actionListener="#{metFragBean.listenAnsweredFeedbackAction}" >
+											<ice:graphicImage  url="#{rowFeedback.answered}" style="border:0px;"/>
 						                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
 						                </ice:commandLink>
 						        </ice:column>	
@@ -728,6 +724,7 @@
 					                <f:facet name="header">
 					                    <ice:outputText value="Delete"/>
 					                </f:facet>
+					                <!-- workaround for wrong position of the confirmation panel -->
 					                <div style="position: fixed; left: 0px; top: 0px">
 											<ice:panelConfirmation id="deleteConfirmPanel" message="Really delete this entry?" acceptLabel="Delete" cancelLabel="No" />
 									</div>
@@ -739,7 +736,7 @@
 					                <f:facet name="header">
 					                    <ice:outputText value="Actions"/>
 					                </f:facet>
-					                <ice:commandLink id="editlink" value="Show Used Values" actionListener="#{metFragBean.listenRowFeedbackAction}">
+					                <ice:commandLink id="editlink" value="Show values" actionListener="#{metFragBean.listenRowFeedbackAction}">
 					                	<f:attribute name="currentFeedbackRow" value="#{rowFeedback}"/>
 					                </ice:commandLink>
 					            </ice:column>
