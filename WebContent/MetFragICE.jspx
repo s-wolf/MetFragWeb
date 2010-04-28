@@ -199,18 +199,7 @@
 										
 										<div id="metFragOptions">
 											<span class="subheading">MetFrag Settings</span>
-											<h:panelGrid columns="2" columnClasses="input" id="inputData2">
-												<div>
-												<ice:panelGroup panelTooltip="tdTooltip" >
-													<ice:outputText value="TreeDepth: " />
-												</ice:panelGroup>
-												<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
-													<f:facet name="body">
-															<h:outputText value="Carsten will das." escape="false"/>
-													</f:facet>
-												</ice:panelTooltip>
-												</div>
-												<h:inputText value="#{metFragBean.treeDepth}"></h:inputText>										
+											<h:panelGrid columns="2" columnClasses="input" id="inputData2">									
 												
 												<div>
 												<ice:panelGroup panelTooltip="modeTooltip" >

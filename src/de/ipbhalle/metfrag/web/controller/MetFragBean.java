@@ -24,9 +24,13 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.component.UICommand;
 import javax.faces.component.UIForm;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -222,6 +226,10 @@ public class MetFragBean extends SortableList{
 	private List<IAtomContainer> uploadedSDFCompounds;
 	
 	private String parsedPeaksDebug = "";
+	
+	//workaround for async synchronization
+	// Remeber the viewID so we can use it later to restore the view.
+	private PersistentFacesState persistentFacesState = null;
 
 	   
 	
@@ -230,6 +238,7 @@ public class MetFragBean extends SortableList{
 	 */
 	public MetFragBean(){
 		super(scoreCol);
+		persistentFacesState = PersistentFacesState.getInstance();
 		getConfig();
 	}
 	
@@ -990,7 +999,7 @@ public class MetFragBean extends SortableList{
 		else
 		{
 			IMolecularFormula formula = new MolecularFormula();
-			formula = MolecularFormulaManipulator.getMolecularFormula(molFormula, formula);
+			formula = MolecularFormulaManipulator.getMolecularFormula(molFormula.trim(), formula);
 			exactMassThread = MolecularFormulaTools.getMonoisotopicMass(formula);
 		}
     	WrapperSpectrum spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
@@ -1034,10 +1043,19 @@ public class MetFragBean extends SortableList{
 	public void metFragParallel()
 	{
 		this.enabled = true;
-		state = PersistentFacesState.getInstance();
+		
+		if(persistentFacesState == null)
+			persistentFacesState = PersistentFacesState.getInstance();
+		final String viewID = persistentFacesState.getFacesContext().getViewRoot().getViewId();
+		
 		// Create the progress thread
         progressThread = new Thread(new Runnable() {
         	public void run() {
+        		
+        		// Begin of the workaround
+                FacesContext facesContext = persistentFacesState.getFacesContext();
+                // End workaround
+
         		try
         		{
         			
@@ -1112,7 +1130,16 @@ public class MetFragBean extends SortableList{
 						float test = (count[0] / (float)candidates.size()) * (float)100;
 						percentDone = Math.round(test);
 						
-						state.render();
+						// Begin of the workaround
+		        		// Create a ViewRoot if it's null
+		                if (facesContext.getViewRoot() == null) {
+		                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
+		                    if (viewRoot != null) {
+		                        facesContext.setViewRoot(viewRoot);
+		                    }
+		                }
+		                // End of the workaround
+						persistentFacesState.render();
 						
 						
 						if(tempCount == Integer.parseInt(limit))
@@ -1136,7 +1163,16 @@ public class MetFragBean extends SortableList{
 						float test = (count[0] / (float)candidates.size()) * (float)100;
 						percentDone = Math.round(test);
 						
-						state.render();
+						// Begin of the workaround
+		        		// Create a ViewRoot if it's null
+		                if (facesContext.getViewRoot() == null) {
+		                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
+		                    if (viewRoot != null) {
+		                        facesContext.setViewRoot(viewRoot);
+		                    }
+		                }
+		                // End of the workaround
+						persistentFacesState.render();
 					}
 					
 					// initiate the list
@@ -1145,10 +1181,24 @@ public class MetFragBean extends SortableList{
 			        } else {
 			            resultRowGroupedBeans = new ArrayList(10);
 			        }
-					
-					
-					Application application = fc.getApplication();
-			        StyleBean styleBean = ((StyleBean) application.createValueBinding("#{styleBean}").getValue(fc));
+			        
+			        
+//			        StyleBean styleBean = (StyleBean) facesContext.getELContext().getELResolver().getValue(facesContext.getELContext(), null, "styleBean");
+			        
+			        if (facesContext.getViewRoot() == null) {
+	                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
+	                    if (viewRoot != null) {
+	                        facesContext.setViewRoot(viewRoot);
+	                    }
+	                }
+			        StyleBean styleBean = (StyleBean)facesContext.getApplication().evaluateExpressionGet(facesContext, "#{styleBean}", StyleBean.class);
+
+			        
+//			        ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
+//			        ELContext el = facesContext.getELContext();
+//			        ValueExpression ve = ef.createValueExpression(el, "#{styleBean}", StyleBean.class);
+//			        StyleBean styleBean = (StyleBean) ve.getValue(el);
+			       
 			        Similarity sim = new Similarity(candidateToStructure, 0.95f, true);
 			        
 					if(!bondEnergyScoring)
@@ -1197,7 +1247,19 @@ public class MetFragBean extends SortableList{
 					//dont show progress bar and stop button anymore
 					enabled = false;
 					
-					state.executeAndRender();
+//					state.executeAndRender();
+					// Begin of the workaround
+	                //
+	                facesContext = persistentFacesState.getFacesContext();
+	        		// Create a ViewRoot if it's null
+	                if (facesContext.getViewRoot() == null) {
+	                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
+	                    if (viewRoot != null) {
+	                        facesContext.setViewRoot(viewRoot);
+	                    }
+	                }
+	                // End of the workaround
+					persistentFacesState.render();
 					
         		}
         		catch(Exception e)
