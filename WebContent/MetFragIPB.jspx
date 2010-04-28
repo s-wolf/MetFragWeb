@@ -259,7 +259,7 @@
 											            label="#{metFragBean.count} of #{metFragBean.hitsDatabase} compounds processed"
 											            labelComplete="Process Done"
 											            value="#{metFragBean.percentDone}"/>
-													<ice:commandButton action="#{metFragBean.startMetFragParallel}"
+													<ice:commandButton action="#{metFragBean.startMetFrag}"
 														value="Process all #{metFragBean.hitsDatabase} compounds! START"
 														rendered="#{metFragBean.enabled}" style="margin: 9px 0px 5px;" onclick="this.disabled=true;"/>
 													<ice:commandButton action="#{metFragBean.stop}" value="Stop" rendered="#{metFragBean.enabled}"

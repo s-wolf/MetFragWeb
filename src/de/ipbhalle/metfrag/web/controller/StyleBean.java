@@ -36,9 +36,13 @@ package de.ipbhalle.metfrag.web.controller;
 import javax.faces.model.SelectItem;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.context.FacesContext;
+
+import com.icesoft.faces.webapp.xmlhttp.PersistentFacesState;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 import java.io.Serializable;
 
 /**
@@ -88,6 +92,11 @@ public class StyleBean implements Serializable {
         styleMap.put(ROYALE, new StylePath(
                 "./css/royale/royale.css",
                 "/css/royale/css-images/"));
+        
+        PersistentFacesState persistentFacesState = PersistentFacesState.getInstance();
+        FacesContext facesContext = persistentFacesState.getFacesContext();
+        Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
+        sessionMap.put("styleBean", this);
     }
 
     /**

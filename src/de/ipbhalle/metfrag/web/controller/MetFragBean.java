@@ -224,6 +224,7 @@ public class MetFragBean extends SortableList{
     private FileInfo currentFile;
 	private int fileProgress;
 	private List<IAtomContainer> uploadedSDFCompounds;
+	private int threads = 1;
 	
 	private String parsedPeaksDebug = "";
 	
@@ -239,6 +240,7 @@ public class MetFragBean extends SortableList{
 	public MetFragBean(){
 		super(scoreCol);
 		persistentFacesState = PersistentFacesState.getInstance();
+		new StyleBean();
 		getConfig();
 	}
 	
@@ -546,18 +548,6 @@ public class MetFragBean extends SortableList{
 	public String startMetFrag()
 	{	
 		try {
-			metFrag();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-		this.rendered = false;
-		
-		return "";
-	}
-	
-	public String startMetFragParallel()
-	{	
-		try {
 			metFragParallel();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -588,23 +578,6 @@ public class MetFragBean extends SortableList{
 		setDisplayResults(false);
 		//reset old sort to none....so the sorting is working more than once
 		oldSort = "";
-		
-		
-//		setExactMass("272.06847");
-//		setPeaks("119.051 467.616 45\n" +
-//				   "123.044 370.662 36\n" +
-//				   "147.044 6078.145 606\n" +
-//				   "153.019 10000.0 999\n" +
-//				   "179.036 141.192 13\n" +
-//				   "189.058 176.358 16\n" +
-//				   "273.076 10000.000 999\n" +
-//				   "274.083 318.003 30\n");
-//		setMzabs("0.01");
-//		setMzppm("50");
-//		setSumFormula("");
-//		setLimit("100");
-//		setSumFormulaRedundancyCheck(false);
-//		setDatabase("kegg");
 
 		
 		HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
@@ -1036,24 +1009,21 @@ public class MetFragBean extends SortableList{
     
     
     /**
-	 * MetFrag!!!! :) Just will eventually replace the old version
+	 * MetFrag!!!! :)
 	 * 
 	 * @throws Exception the exception
 	 */
 	public void metFragParallel()
 	{
 		this.enabled = true;
-		
-		if(persistentFacesState == null)
-			persistentFacesState = PersistentFacesState.getInstance();
-		final String viewID = persistentFacesState.getFacesContext().getViewRoot().getViewId();
+//		final String viewID = persistentFacesState.getFacesContext().getViewRoot().getViewId();
 		
 		// Create the progress thread
         progressThread = new Thread(new Runnable() {
         	public void run() {
         		
         		// Begin of the workaround
-                FacesContext facesContext = persistentFacesState.getFacesContext();
+        		state = PersistentFacesState.getInstance(); 
                 // End workaround
 
         		try
@@ -1129,17 +1099,8 @@ public class MetFragBean extends SortableList{
 		
 						float test = (count[0] / (float)candidates.size()) * (float)100;
 						percentDone = Math.round(test);
-						
-						// Begin of the workaround
-		        		// Create a ViewRoot if it's null
-		                if (facesContext.getViewRoot() == null) {
-		                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
-		                    if (viewRoot != null) {
-		                        facesContext.setViewRoot(viewRoot);
-		                    }
-		                }
-		                // End of the workaround
-						persistentFacesState.render();
+					
+						state.executeAndRender();
 						
 						
 						if(tempCount == Integer.parseInt(limit))
@@ -1163,16 +1124,7 @@ public class MetFragBean extends SortableList{
 						float test = (count[0] / (float)candidates.size()) * (float)100;
 						percentDone = Math.round(test);
 						
-						// Begin of the workaround
-		        		// Create a ViewRoot if it's null
-		                if (facesContext.getViewRoot() == null) {
-		                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
-		                    if (viewRoot != null) {
-		                        facesContext.setViewRoot(viewRoot);
-		                    }
-		                }
-		                // End of the workaround
-						persistentFacesState.render();
+						state.executeAndRender();
 					}
 					
 					// initiate the list
@@ -1181,23 +1133,14 @@ public class MetFragBean extends SortableList{
 			        } else {
 			            resultRowGroupedBeans = new ArrayList(10);
 			        }
-			        
-			        
-//			        StyleBean styleBean = (StyleBean) facesContext.getELContext().getELResolver().getValue(facesContext.getELContext(), null, "styleBean");
-			        
-			        if (facesContext.getViewRoot() == null) {
-	                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
-	                    if (viewRoot != null) {
-	                        facesContext.setViewRoot(viewRoot);
-	                    }
-	                }
-			        StyleBean styleBean = (StyleBean)facesContext.getApplication().evaluateExpressionGet(facesContext, "#{styleBean}", StyleBean.class);
 
+//			        StyleBean styleBean = (StyleBean)state.getApplication().evaluateExpressionGet(facesContext, "#{styleBean}", StyleBean.class);
+//			        Application application = PersistentFacesState.getApplication();
 			        
-//			        ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
-//			        ELContext el = facesContext.getELContext();
-//			        ValueExpression ve = ef.createValueExpression(el, "#{styleBean}", StyleBean.class);
-//			        StyleBean styleBean = (StyleBean) ve.getValue(el);
+			        FacesContext facesContext = persistentFacesState.getFacesContext();
+			        Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
+			        StyleBean styleBean = (StyleBean) sessionMap.get("styleBean");
+			        
 			       
 			        Similarity sim = new Similarity(candidateToStructure, 0.95f, true);
 			        
@@ -1246,21 +1189,7 @@ public class MetFragBean extends SortableList{
 
 					//dont show progress bar and stop button anymore
 					enabled = false;
-					
-//					state.executeAndRender();
-					// Begin of the workaround
-	                //
-	                facesContext = persistentFacesState.getFacesContext();
-	        		// Create a ViewRoot if it's null
-	                if (facesContext.getViewRoot() == null) {
-	                    UIViewRoot viewRoot = facesContext.getApplication().getViewHandler().restoreView(facesContext,viewID);
-	                    if (viewRoot != null) {
-	                        facesContext.setViewRoot(viewRoot);
-	                    }
-	                }
-	                // End of the workaround
-					persistentFacesState.render();
-					
+					state.executeAndRender();					
         		}
         		catch(Exception e)
         		{
@@ -1275,443 +1204,7 @@ public class MetFragBean extends SortableList{
         
 	}
     
-    
-	
-	/**
-	 * MetFrag!!!! :)
-	 * 
-	 * @throws Exception the exception
-	 */
-	public void metFrag()
-	{
-		this.enabled = true;
-		state = PersistentFacesState.getInstance();
-		// Create the progress thread
-        progressThread = new Thread(new Runnable() {
-        	public void run() {
-        		try
-        		{
-					double exactMassThread = 0.0;
-					if(exactMass != "")
-						exactMassThread = Double.parseDouble(exactMass);
-					else
-					{
-						IMolecularFormula formula = new MolecularFormula();
-						formula = MolecularFormulaManipulator.getMolecularFormula(molFormula, formula);
-						exactMassThread = MolecularFormulaTools.getMonoisotopicMass(formula);
-					}
-					double mzabsThread = Double.parseDouble(mzabs);
-					double mzppmThread = Double.parseDouble(mzppm);
-					WrapperSpectrum spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
-					Map<Integer, ArrayList<String>> scoreMap = new HashMap<Integer, ArrayList<String>>();
-					Map<Double, Vector<String>> realScoreMap = new HashMap<Double, Vector<String>>();
-					
-					
-					hitsDatabase = candidates.size();
-					
-					percentDone = 0;
-					count[0] = 0;
-					
-					Map<String, IAtomContainer> candidateToStructure = new HashMap<String, IAtomContainer>();
-					
-					for (int c = 0; c < candidates.size(); c++) {
-						
-						//initialize spectrum
-						//XYSeries xyNotFound = new XYSeries("Not Found");
-						//XYSeries xyFound = new XYSeries("Found");
-						//XYSeries xyNotUsed = new XYSeries("Not Used");
-						ResultPeaks peaksFound = new ResultPeaks();
-						ResultPeaks peaksNotFound = new ResultPeaks();
-						ResultPeaks peaksNotUsed = new ResultPeaks();
-						Vector<Peak> listOfPeaks = new Vector<Peak>();
-						
-						
-						if(stop)
-							break;
-						
-						//stores the path to the pics from the explained peaks
-						List<ResultPic> fragsPics = new ArrayList<ResultPic>();
-						
-				        //get mol file from kegg....remove "cpd:"
-						String candidateID = getCandidateID(database, candidates.get(c));
-						IAtomContainer molecule = getMolecule(database, candidateID);
-						
-						if(molecule == null)
-							continue;
-						
-						
-						//skip if molecule is not connected
-						boolean isConnected = ConnectivityChecker.isConnected(molecule);
-						if(!isConnected)
-							continue;
-				        						
-				        try
-				        {
-					        //add hydrogens
-					        CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(molecule.getBuilder());
-			
-					        for (IAtom atom : molecule.atoms()) {
-					          IAtomType type = matcher.findMatchingAtomType(molecule, atom);
-					          AtomTypeManipulator.configure(atom, type);
-					        }
-					        CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
-					        hAdder.addImplicitHydrogens(molecule);
-					        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule);
-				        }
-				        //there is a bug in cdk?? error happens when there is a S or Ti in the molecule
-				        catch(IllegalArgumentException e)
-			            {
-				        	count[0] = count[0] + 1;
-			            	continue;
-			            }
-				        
-				        //fill map with structures
-				        candidateToStructure.put(candidateID, molecule);
-									        
-						String currentFolder = webRoot + sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep;
-						new File(currentFolder).mkdirs();
-				        
-				        //render original compound....thats the first picture in the list
-						int countTemp = 0;
-						//DisplayStructure dsOrig = new DisplayStructure(false, 200, 200, 0.9, true, "png", currentFolder, candidateID + "_" + countTemp);
-						//dsOrig.drawStructure(molecule, countTemp);
-						
-			//			CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
-			//	        adder.addImplicitHydrogens(molecule);
-			//	        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule); 
-						
-						StructureToFile dsvOrig = new StructureToFile(200,200, currentFolder, false, true);
-//						DisplayStructureVector dsvOrig = new DisplayStructureVector(200,200, currentFolder, false, true);
-						dsvOrig.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + ".png");
-						StructureToFile dsvOrigLarge = new StructureToFile(350,350, currentFolder, false, true);
-//						DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(350,350, currentFolder, false, true);
-						dsvOrigLarge.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + "_Large.png");
-						
-						IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(molecule);
-						Double massDoubleOrig = MolecularFormulaTools.getMonoisotopicMass(molFormula);
-						massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
-						String massOrig = massDoubleOrig.toString();
-						fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, massOrig + "(Original Compound)", MolecularFormulaManipulator.getHTML(molFormula)));
-						countTemp++;
-						        
-				        Fragmenter fragmenter = new Fragmenter((Vector<Peak>)spectrum.getPeakList().clone(), mzabsThread, mzppmThread, Integer.parseInt(mode), true, molFormulaRedundancyCheck, false, false);     
-				        List<IAtomContainer> l = null;
-				        List<File> vec = new ArrayList<File>();
-				        try
-				        {
-				        	//TODO!
-				        	vec = fragmenter.generateFragmentsEfficient(molecule, true, Integer.parseInt(treeDepth), candidateID);
-				        	l = Molfile.ReadfolderTemp(vec);
-				        	//l = fragmenter.generateFragments(molecule, true, 2);
-				        }
-				        catch(OutOfMemoryError e)
-				        {
-				        	System.out.println("OUT OF MEMORY ERROR! " + candidateID);
-				        	continue;
-				        }
-			        
-				        List<IAtomContainer> fragments = l; 
-						
-						//get the original peak list again
-						Vector<Peak> peakListParsed = spectrum.getPeakList();
-						
-						
-						//clean up peak list
-						CleanUpPeakList cList = new CleanUpPeakList((Vector<Peak>) peakListParsed.clone());
-						Vector<Peak> cleanedPeakList = cList.getCleanedPeakList(spectrum.getExactMass());
-						
-						
-						//now find corresponding fragments to the mass
-						AssignFragmentPeak afp = new AssignFragmentPeak();
-						afp.setHydrogenTest(true);
-						afp.assignFragmentPeak(fragments, cleanedPeakList, mzabsThread, mzppmThread, spectrum.getMode(), true);
-						Vector<PeakMolPair> hits = afp.getHits();
-						
-						
-						//render all fragments which explain a peak
-						Vector<PeakMolPair> allHits = afp.getAllHits();
-						allHits = sortBackwards(allHits);
-						for (PeakMolPair peakMolPair : allHits) {
-							StructureToFile dsv = null;
-							StructureToFile dsvLarge = null;
-//							DisplayStructureVector dsv = null;
-//							DisplayStructureVector dsvLarge = null;
-							if(databaseID.equals(""))	
-								dsv = new StructureToFile(200,200, currentFolder, false, false);
-							else
-								dsv = new StructureToFile(200,200, currentFolder, false, false);
-								
-							dsvLarge = new StructureToFile(350,350, currentFolder, false, false);
-							
-							dsv.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + ".png");
-							dsvLarge.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + "_Large.png");
-							
-							IMolecularFormula fragFormula = MolecularFormulaManipulator.getMolecularFormula(peakMolPair.getFragment());
-							Double massDouble = MolecularFormulaTools.getMonoisotopicMass(fragFormula);
-							
-							massDouble = (double)Math.round(((Double.parseDouble(mode) * MolecularFormulaTools.getMonoisotopicMass("H1")) + massDouble)*10000)/10000;
-							
-							String modeString = "+";
-							if(mode.equals(-1))
-								modeString = "-";
-							
-							fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, peakMolPair.getMatchedMass() + " [" + peakMolPair.getMolecularFormula() + "] <br />(" + PPMTool.getPPMWeb(peakMolPair.getMatchedMass(), peakMolPair.getPeak().getMass()) + " ppm)", MolecularFormulaManipulator.getHTML(fragFormula)));
-							//ds.drawStructure(peakMolPair.getFragment(), countTemp);
-							countTemp++;
-						}
-						//end render hits
-						
-						
-						
-						
-						//now "real" scoring --> depends on intensities
-						Scoring score = new Scoring(spectrum.getPeakList(), candidateID);
-						double currentScore = 0.0;
-						if(bondEnergyScoring)
-							currentScore = score.computeScoringWithBondEnergies(hits);
-						else
-							currentScore = score.computeScoringPeakMolPair(hits);
-						
-						
-						
-						//now "real" scoring --> depends on intensities
-						//Scoring score = new Scoring(spectrum.getPeakList());
-						//scoring with bond energies
-						//double currentScore = score.computeScoringWithBondEnergies(afp.getHits());
-						//scoring without bond energies
-						//double currentScore = score.computeScoring(afp.getHitsMZ());
-						
-						//save score in hashmap...if there are several hits with the same score --> vector of strings
-						if(realScoreMap.containsKey(currentScore))
-				        {
-				        	Vector<String> tempList = realScoreMap.get(currentScore);
-				        	tempList.add(candidateID);
-				        	realScoreMap.put(currentScore, tempList);
-				        }
-				        else
-				        {
-				        	Vector<String> temp = new Vector<String>();
-				        	temp.add(candidateID);
-				        	realScoreMap.put(currentScore, temp);
-				        }
-						
-						
-						//save score in hashmap...if there are several hits with the same
-						//amount of identified peaks --> ArrayList
-						if(scoreMap.containsKey(hits.size()))
-				        {
-				        	ArrayList<String> tempList = scoreMap.get(hits.size());
-				        	tempList.add(candidateID);
-				        	scoreMap.put(hits.size(), tempList);
-				        }
-				        else
-				        {
-				        	ArrayList<String> temp = new ArrayList<String>();
-				        	temp.add(candidateID);
-				        	scoreMap.put(hits.size(), temp);
-				        }
-						
-						Vector<Double> peaks = new Vector<Double>();
-						Vector<Double> intensities = new Vector<Double>();
-						
-						//get all the identified peaks
-						for (int i = 0; i < hits.size(); i++) {
-							listOfPeaks.add(hits.get(i).getPeak());
-							peaks.add(hits.get(i).getPeak().getMass());
-							intensities.add(hits.get(i).getPeak().getRelIntensity());
-							//all found peaks are later on marked in the spectrum
-							//xyFound.add(hits.get(i).getPeak().getMass(), hits.get(i).getPeak().getRelIntensity());
-						}
-						peaksFound.setIntensities(intensities);
-						peaksFound.setPeaks(peaks);
-						
-						
-						Vector<Double> peaks1 = new Vector<Double>();
-						Vector<Double> intensities1 = new Vector<Double>();
-						Vector<Double> peaks2 = new Vector<Double>();
-						Vector<Double> intensities2 = new Vector<Double>();
-						
-						//write all peaks which are not explained in the other list
-						for(int i = 0; i < peakListParsed.size(); i++)
-						{
-							if(!listOfPeaks.contains(peakListParsed.get(i)) && cleanedPeakList.contains(peakListParsed.get(i)))
-							{
-								peaks1.add(peakListParsed.get(i).getMass());
-								intensities1.add(peakListParsed.get(i).getRelIntensity());
-								//xyNotFound.add(peakListParsed.get(i).getMass(), peakListParsed.get(i).getRelIntensity());
-								
-							}
-							else if(!listOfPeaks.contains(peakListParsed.get(i)))
-							{
-								peaks2.add(peakListParsed.get(i).getMass());
-								intensities2.add(peakListParsed.get(i).getRelIntensity());
-								//xyNotUsed.add(peakListParsed.get(i).getMass(), peakListParsed.get(i).getRelIntensity());
-							}
-						}			
-						peaksNotFound.setIntensities(intensities1);
-						peaksNotFound.setPeaks(peaks1);
-						peaksNotUsed.setIntensities(intensities2);
-						peaksNotUsed.setPeaks(peaks2);
-						
-						List<IAtomContainer> hitsList = new ArrayList<IAtomContainer>();
-						for (int i = 0; i < hits.size(); i++) {
-							hitsList.add(AtomContainerManipulator.removeHydrogens(hits.get(i).getFragment()));
-							//Render.Highlight(AtomContainerManipulator.removeHydrogens(molecule), hitsList , Double.toString(hits.get(i).getPeak()));
-						}
-						
-						
-						// initiate the list
-				        if (resultRowGroupedBeans != null) {
-				            resultRowGroupedBeans.clear();
-				        } else {
-				            resultRowGroupedBeans = new ArrayList(10);
-				        }
-				        
-				        //now generate the names and links according to the used database
-				        String namesString = "";
-				        String databaseLink = "";
-				        
-				        //local database
-				        if(database.equals("sdf"))
-				        {
-				        	namesString = candidateID;
-							databaseLink = "";
-				        }
-						//real result vector
-						if(database.equals("kegg"))
-						{
-							String[] names = KeggWebservice.KEGGgetNameByCpdLocally(candidateID, "/vol/mirrors/kegg/compound");
-							namesString = "<ul>";
-							for (int i = 0; i < names.length; i++) {
-								namesString += "<li>" + names[i] + "</li>";
-							}
-							namesString += "</ul>";
-							databaseLink = "http://www.genome.jp/dbget-bin/www_bget?cpd:" + candidateID;
-							
-						}
-						if(database.equals("chemspider"))
-						{
-							namesString = candidateID;
-							databaseLink = "http://www.chemspider.com/Chemical-Structure." + candidateID + ".html";
-						}
-						if(database.equals("pubchem"))
-						{
-							List<String> names = pubchemLocal.getNames(candidateID);
-							namesString += "<ul>";
-							for (int i = 0; i < names.size(); i++) {
-								namesString += "<li>" + names.get(i) + "</li>";
-								if(i == 5)
-									break;
-							}
-							namesString += "</ul>";
-							databaseLink = "http://pubchem.ncbi.nlm.nih.gov/summary/summary.cgi?cid=" + candidateID;
-						}
-						if(database.equals("beilstein"))
-						{
-							List<String> names = beilstein.getNames(candidateID);
-							namesString = "<ul>";
-							for (int i = 0; i < names.size(); i++) {
-								namesString += "<li>" + names.get(i) + "</li>";
-							}
-							namesString += "</ul>";
-						}
-						
 
-						//now add the candidate to the results
-						if(!bondEnergyScoring)
-							candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
-								peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
-//							resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, massOrig, databaseLink, 
-//								peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
-						else
-							candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getFragmentBondEnergy(), score.getPenalty(), fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
-									peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
-//							resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getFragmentBondEnergy(), score.getPenalty(), fragsPics, massOrig, databaseLink, 
-//									peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
-
-						
-						
-						keys.add(currentRow);
-
-						
-						count[0] = count[0] + 1;
-						float test = (count[0] / (float)candidates.size()) * (float)100;
-						percentDone = Math.round(test);
-						
-						state.render();
-						
-						//break is enough compounds were processed
-						if(count[0] == Integer.parseInt(limit))
-							break;
-					}
-					
-					Application application = fc.getApplication();
-			        StyleBean styleBean = ((StyleBean) application.createValueBinding("#{styleBean}").getValue(fc));
-			        Similarity sim = new Similarity(candidateToStructure, 0.95f, true);
-			        
-					if(!bondEnergyScoring)
-						normalize();
-					else
-						normalizeWithBondEnergy(realScoreMap);
-			        
-			        
-			        for (Double score : realScoreMap.keySet()) {
-						List<String> candidates = realScoreMap.get(score);
-						List<SimilarityGroup> simGroups = sim.getTanimotoDistanceList(candidates);
-						for (SimilarityGroup similarityGroup : simGroups) {
-							if(similarityGroup.getSimilarCompounds().size() == 0)
-							{
-								ResultRowGroupedBean filesRecordGroup = new ResultRowGroupedBean("",
-										"",
-				                        styleBean,
-				                        SPACER_IMAGE, SPACER_IMAGE,
-				                        resultRowGroupedBeans, false);
-								String candidate = similarityGroup.getSimilarCandidatesWithBase().get(0);
-								addToResultsList(candidate, filesRecordGroup);								
-							}
-							else
-							{
-								ResultRowGroupedBean filesRecordGroup = new ResultRowGroupedBean(GROUP_INDENT_STYLE_CLASS,
-				                        GROUP_ROW_STYLE_CLASS,
-				                        styleBean,
-				                        EXPAND_IMAGE, CONTRACT_IMAGE,
-				                        resultRowGroupedBeans, false);
-								String baseCand = similarityGroup.getCandidateTocompare();
-								addToResultsList(baseCand, filesRecordGroup);
-								System.out.print("Group of " + similarityGroup.getSimilarCompounds().size() + " " + similarityGroup.getCandidateTocompare() +  ": ");
-								for (int i = 0; i < similarityGroup.getSimilarCompounds().size(); i++) {
-									ResultRowGroupedBean childFilesGroup = new ResultRowGroupedBean(CHILD_INDENT_STYLE_CLASS, CHILD_ROW_STYLE_CLASS);
-									addToResultsList(similarityGroup.getSimilarCompounds().get(i), childFilesGroup);
-							        filesRecordGroup.addChildFilesGroupRecord(childFilesGroup);
-								}
-							}
-						}
-					}
-
-					resultRowGroupedBeans = getResults();
-					
-					setDisplayResults(true);
-
-					//dont show progress bar and stop button anymore
-					enabled = false;
-					
-					state.executeAndRender();
-					
-        		}
-        		catch(Exception e)
-        		{
-        			System.err.println("Error in MetFrag!" +  e.getMessage());
-        			e.printStackTrace();
-        		}
-        		
-        	}
-        });
-        
-        progressThread.start();
-        
-	}
-	
-	
 	/**
 	 * Sort backwards.
 	 * 
@@ -2541,6 +2034,12 @@ public class MetFragBean extends SortableList{
 	}
 	public String getDatabaseMessage() {
 		return databaseMessage;
+	}
+	public void setThreads(int threads) {
+		this.threads = threads;
+	}
+	public int getThreads() {
+		return threads;
 	}
 
 
