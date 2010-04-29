@@ -32,7 +32,7 @@
 		<div id="header">
 			<a href="http://msbi.ipb-halle.de/MetFrag/" title="MetFrag"><ice:graphicImage alt="MetFrag" value="images/MetLogoCube_Green.png" style="float: left; border: 0px;"></ice:graphicImage></a>
 			<div id="title">
-				<h1><ice:outputLink title="MetFrag" value="http://msbi.ipb-halle.de/MetFrag/">MetFrag - Match Predicted Fragments with Mass Spectra</ice:outputLink><br /> IPB edition - parallel execution</h1>
+				<h1><ice:outputLink title="MetFrag" value="http://msbi.ipb-halle.de/MetFrag/">MetFrag</ice:outputLink></h1><br /><h2>In silico fragmentation for computer assisted identification of metabolite mass spectra</h2>
 			</div>
 			<div class="connectionStatus">
 			<ice:outputConnectionStatus id="connectStat"
@@ -71,13 +71,21 @@
 														</f:facet>
 													</ice:panelTooltip>	
 												</div>
-												
+												<!-- IPB access -->
 												<ice:selectOneRadio value="#{metFragBean.database}" partialSubmit="true"
-	                                                       valueChangeListener="#{metFragBean.checkForLocalDatabase}">
+	                                                       valueChangeListener="#{metFragBean.checkForLocalDatabase}" rendered="#{metFragBean.ipbAccess}">
 														<f:selectItem itemLabel="KEGG" itemValue="kegg" />
 														<f:selectItem itemLabel="PubChem" itemValue="pubchem" />
 														<f:selectItem itemLabel="ChemSpider" itemValue="chemspider" />
 														<f:selectItem itemLabel="Beilstein" itemValue="beilstein" />
+														<f:selectItem itemLabel="Local SDF" itemValue="sdf" />
+												</ice:selectOneRadio>
+												<!-- External access -->
+												<ice:selectOneRadio value="#{metFragBean.database}" partialSubmit="true"
+	                                                       valueChangeListener="#{metFragBean.checkForLocalDatabase}" rendered="#{not metFragBean.ipbAccess}">
+														<f:selectItem itemLabel="KEGG" itemValue="kegg" />
+														<f:selectItem itemLabel="PubChem" itemValue="pubchem" />
+														<f:selectItem itemLabel="ChemSpider" itemValue="chemspider" />
 														<f:selectItem itemLabel="Local SDF" itemValue="sdf" />
 												</ice:selectOneRadio>
 												<ice:panelGroup rendered="#{metFragBean.SDFSelected}">
@@ -201,17 +209,19 @@
 										<div id="metFragOptions">
 											<span class="subheading">MetFrag Settings</span>
 											<h:panelGrid columns="2" columnClasses="input" id="inputData2">
-												<div>
-												<ice:panelGroup panelTooltip="tdTooltip" >
-													<ice:outputText value="TreeDepth: " />
+												
+												<ice:panelGroup rendered="#{metFragBean.ipbAccess}">
+													<ice:panelGroup panelTooltip="tdTooltip" >
+														<ice:outputText value="TreeDepth: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="Carsten will das." escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
 												</ice:panelGroup>
-												<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
-													<f:facet name="body">
-															<h:outputText value="Carsten will das." escape="false"/>
-													</f:facet>
-												</ice:panelTooltip>
-												</div>
-												<h:inputText value="#{metFragBean.treeDepth}"></h:inputText>										
+												<h:inputText value="#{metFragBean.treeDepth}" rendered="#{metFragBean.ipbAccess}"/>
+																						
 												
 												<div>
 												<ice:panelGroup panelTooltip="modeTooltip" >
@@ -546,7 +556,7 @@
 			        	
 			        				        	
 			        	<br />
-			        	<ice:commandLink id="MetFragFeedbackAdmin" action="#{metFragBean.openPopup4}">
+			        	<ice:commandLink id="MetFragFeedbackAdmin" action="#{metFragBean.openPopup4}" rendered="#{metFragBean.ipbAccess}">
 							<h:outputText value="FeedbackAdmin" style="color:#afafaf; text-align:right; font-size: 10px; float: right;"></h:outputText>
 						</ice:commandLink>
 			        	
@@ -606,19 +616,7 @@
 				
 				    </ice:panelTabSet>
 				</ice:panelGroup>
-				<!--  
-				<div style="float:left;">
-		        <ice:commandLink id="linkMetFragRev" action="#{popupBean.openPopup1}">
-					<h:outputText value="MetFrag Revision: #{metFragBean.revision} build: #{metFragBean.buildDate}" style="color:grey; text-align:right;"></h:outputText>
-				</ice:commandLink>
-				</div>
-				<div style="float: right;">
-				<ice:commandLink  id="linkMetFragWebRev" action="#{popupBean.openPopup}">
-					<h:outputText value="MetFragWeb Revision: #{metFragBean.revisionWeb} build: #{metFragBean.buildDateWeb}" style="color:grey; text-align:right;"></h:outputText>
-				</ice:commandLink>
-				</div>
-				-->
-	            
+					            
 	            <ice:panelPopup draggable="true" visible="#{popupBean.visible}" modal="true" style="z-index: 1000; top: 30%; left: 10%; position: absolute;">
 	                <f:facet name="header">
 	                    <ice:panelGrid width="100%" cellpadding="0" cellspacing="0" columns="2" style="text-align: center;">

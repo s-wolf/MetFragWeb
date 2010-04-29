@@ -24,31 +24,20 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
-import javax.faces.application.Application;
 import javax.faces.component.UICommand;
 import javax.faces.component.UIForm;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.formula.MolecularFormula;
 import org.openscience.cdk.graph.ConnectivityChecker;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IMolecularFormula;
-import org.openscience.cdk.tools.CDKHydrogenAdder;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
@@ -58,28 +47,22 @@ import com.icesoft.faces.webapp.xmlhttp.PersistentFacesState;
 
 import de.ipbhalle.metfrag.buildinfo.BuildInfo;
 import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
-import de.ipbhalle.metfrag.fragmenter.Fragmenter;
 import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
-import de.ipbhalle.metfrag.spectrum.AssignFragmentPeak;
 import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
 import de.ipbhalle.metfrag.molDatabase.PubChemLocal;
 import de.ipbhalle.metfrag.pubchem.PubChemWebService;
-import de.ipbhalle.metfrag.read.Molfile;
 import de.ipbhalle.metfrag.read.SDFFile;
 import de.ipbhalle.metfrag.scoring.Scoring;
 import de.ipbhalle.metfrag.similarity.Similarity;
 import de.ipbhalle.metfrag.similarity.SimilarityGroup;
-import de.ipbhalle.metfrag.spectrum.CleanUpPeakList;
 import de.ipbhalle.metfrag.spectrum.WrapperSpectrum;
-import de.ipbhalle.metfrag.tools.renderer.*;
 import de.ipbhalle.metfrag.tools.MolecularFormulaTools;
 import de.ipbhalle.metfrag.tools.PPMTool;
 import de.ipbhalle.metfrag.web.buildinfo.BuildInfoWeb;
 import de.ipbhalle.metfrag.web.model.FeedbackRow;
 import de.ipbhalle.metfrag.web.model.MetFragObject;
-import de.ipbhalle.metfrag.web.model.ResultPeaks;
 import de.ipbhalle.metfrag.web.model.ResultPic;
 import de.ipbhalle.metfrag.web.model.ResultRow;
 import de.ipbhalle.metfrag.web.model.SortableList;
@@ -231,6 +214,7 @@ public class MetFragBean extends SortableList{
 	//workaround for async synchronization
 	// Remeber the viewID so we can use it later to restore the view.
 	private PersistentFacesState persistentFacesState = null;
+	private boolean isIpbAccess = false;
 
 	   
 	
@@ -250,6 +234,7 @@ public class MetFragBean extends SortableList{
 	public void externalAccess()
 	{
 		setThreads(1);
+		setIpbAccess(false);
 	}
 	
 	/**
@@ -258,6 +243,7 @@ public class MetFragBean extends SortableList{
 	public void ipbAccess()
 	{
 		setThreads(2);
+		setIpbAccess(true);
 	}
 	
 	private void getConfig()
@@ -2053,6 +2039,12 @@ public class MetFragBean extends SortableList{
 	}
 	public int getThreads() {
 		return threads;
+	}
+	public void setIpbAccess(boolean isIpbAccess) {
+		this.isIpbAccess = isIpbAccess;
+	}
+	public boolean isIpbAccess() {
+		return isIpbAccess;
 	}
 
 
