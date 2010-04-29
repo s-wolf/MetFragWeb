@@ -244,6 +244,21 @@ public class MetFragBean extends SortableList{
 		getConfig();
 	}
 	
+	/**
+	 * External access. This method is called when file MetFragICE.iface is requested
+	 */
+	public void externalAccess()
+	{
+		setThreads(1);
+	}
+	
+	/**
+	 * Ipb access. This method is called when file MetFragIPB.iface is requested
+	 */
+	public void ipbAccess()
+	{
+		setThreads(2);
+	}
 	
 	private void getConfig()
 	{
@@ -1030,8 +1045,6 @@ public class MetFragBean extends SortableList{
         		{
         			
         			//now fill executor!!!
-    				//number of threads depending on the available processors
-    			    int threads = Runtime.getRuntime().availableProcessors();
     			    
     			    //thread executor
     			    ExecutorService threadExecutor = null;
