@@ -33,6 +33,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.EventObject;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,11 +47,23 @@ import java.util.concurrent.Executors;
 
 import javax.faces.component.UICommand;
 import javax.faces.component.UIForm;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
+
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.write.Label;
+import jxl.write.WritableCell;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
+import jxl.write.WritableImage;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -62,8 +75,11 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
 import com.icesoft.faces.component.inputfile.InputFile;
+import com.icesoft.faces.component.outputresource.OutputResource;
+import com.icesoft.faces.context.Resource;
 import com.icesoft.faces.context.effects.JavascriptContext;
 import com.icesoft.faces.webapp.xmlhttp.PersistentFacesState;
+import com.icesoft.faces.webapp.xmlhttp.RenderingException;
 
 import de.ipbhalle.metfrag.buildinfo.BuildInfo;
 import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
@@ -228,6 +244,7 @@ public class MetFragBean extends SortableList{
 	private int fileProgress;
 	private List<IAtomContainer> uploadedSDFCompounds;
 	private int threads = 1;
+	private ExecutorService threadExecutor = null;
 	
 	private String parsedPeaksDebug = "";
 	
@@ -235,6 +252,9 @@ public class MetFragBean extends SortableList{
 	// Remeber the viewID so we can use it later to restore the view.
 	private PersistentFacesState persistentFacesState = null;
 	private boolean isIpbAccess = false;
+	
+	private Resource outputResource = null;
+	private String resourceName;
 
 	   
 	
@@ -622,17 +642,9 @@ public class MetFragBean extends SortableList{
 	 */
 	public String stop()
 	{
-		setStop(true);
-		// Interrupt the thread so the user gets an immediate response
-        if (progressThread != null) {
-            progressThread.interrupt();
-        }
-        
-        
-//        percentDone = 0;
-//		count[0] = 0;
-//		this.hitsDatabase = 0;
-		
+		setStop(true);	
+		this.threadExecutor.shutdownNow();
+		this.enabled = false;
 		return "";
 	}
 	
@@ -1053,7 +1065,6 @@ public class MetFragBean extends SortableList{
         			//now fill executor!!!
     			    
     			    //thread executor
-    			    ExecutorService threadExecutor = null;
     			    System.out.println("Used Threads: " + threads);
     			    threadExecutor = Executors.newFixedThreadPool(threads);
 
@@ -1114,6 +1125,13 @@ public class MetFragBean extends SortableList{
 						metFragData.setStop(stop);
 						metFragData.setTreeDepth(getTreeDepth());
 						
+						if(threadExecutor.isShutdown() || threadExecutor.isTerminated())
+							break;
+							
+						
+						if(stop)
+							break;
+							
 						threadExecutor.execute(new ParallelFragmentation(metFragData, pubchemLocal, beilstein, candidateToResult, realScoreMap, sessionString, webRoot, count));
 		
 						float test = (count[0] / (float)candidates.size()) * (float)100;
@@ -1132,9 +1150,9 @@ public class MetFragBean extends SortableList{
 					threadExecutor.shutdown();
 					//wait until all threads are finished
 					while(!threadExecutor.isTerminated())
-					{
+					{						
 						try {
-							Thread.currentThread().sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -1142,7 +1160,6 @@ public class MetFragBean extends SortableList{
 						
 						float test = (count[0] / (float)candidates.size()) * (float)100;
 						percentDone = Math.round(test);
-						
 						state.executeAndRender();
 					}
 					
@@ -1294,6 +1311,10 @@ public class MetFragBean extends SortableList{
              oldSort = sortColumnName;
              oldAscending = ascending;
         }
+        
+        //generate xls output
+        generateOutputResource();
+        
         return resultRowGroupedBeans;
     }
 	
@@ -1525,6 +1546,111 @@ public class MetFragBean extends SortableList{
 		
 	}
 	
+	
+	
+	
+	/** generates an output resource for the current workflow results, everything is stored inside a single Excel xls file
+	 *  where each workflow output ports is stored as a separate sheet  
+	 *  
+	 *  
+	 *  based on method from
+	 *  @author Michael Gerlich 
+	 *  */
+	private void generateOutputResource() {
+		
+		ExternalContext ec = fc.getExternalContext();
+		HttpSession session = (HttpSession) ec.getSession(false);
+		String sessionString = session.getId();	
+		long time = new Date().getTime();
+		
+		String currentFolder = webRoot + "FragmentPics" + sep + sessionString + sep;
+		String relPath = "./FragmentPics" + sep + sessionString + sep;
+		new File(currentFolder).mkdirs();
+		
+		File dir = new File(currentFolder);
+		if(!dir.exists())
+			dir.mkdirs();
+		
+		// skip creation of output resource if file access is denied
+		if(!dir.canWrite())
+			return;
+		resourceName = "MetFragResults_" + time +  ".xls";
+		File f = new File(dir, resourceName);
+		try {
+			f.createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		// create new Excel file
+		WritableSheet sheet = null;
+		WritableWorkbook workbook = null;
+		WorkbookSettings settings = new WorkbookSettings();
+//		settings.setLocale(fc.getViewRoot().getLocale());
+		try {
+			workbook = Workbook.createWorkbook(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// set sheet name (output port) and position
+		sheet = workbook.createSheet("MetFrag", 0);
+		// set header for sheet, name it after output port name 
+		try {
+			WritableFont arial10font = new WritableFont(WritableFont.ARIAL, 10);
+			WritableCellFormat arial10format = new WritableCellFormat(arial10font);
+			arial10font.setBoldStyle(WritableFont.BOLD);
+			Label label = new Label(0, 0, "MetFrag Results Table", arial10format);
+			sheet.addCell(label);
+		} catch (WriteException we) {
+			we.printStackTrace();
+		}
+		
+		
+		// for each workflow output port, create new sheet inside Excel file and store results
+		int i = 0;
+		for (ResultRowGroupedBean row : resultRowGroupedBeans) {
+			WritableCell cell = null;
+			WritableImage wi = null;
+			// output is image
+			String imgPath = row.getImage();
+			File image = new File(imgPath);
+			// write each image into the second column, leave one row space between them and 
+			// resize the image to 1 column width and 2 rows height
+			wi = new WritableImage(1, (i*3) + 1, 1, 2, image);
+			sheet.addImage(wi);
+			
+			// output is text
+			cell = new Label(1, i*3, row.getDatabaseLink());
+			try
+			{
+				sheet.addCell(cell);
+			} catch (WriteException e) {
+				System.out.println("Could not write excel cell");
+				e.printStackTrace();
+			}
+			
+			i++;
+		}
+		
+		// write the Excel file
+		try {
+			workbook.write();
+			workbook.close();
+		} catch (WriteException ioe) {
+			ioe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		// store the current Excel file as output resource for the current workflow
+        MyResource xlsResource = new MyResource(ec, resourceName, relPath);
+		outputResource = xlsResource;
+
+	}
+
+	
 	/**
 	 * Delete the current Feedback
 	 * 
@@ -1693,16 +1819,6 @@ public class MetFragBean extends SortableList{
 	public UIForm getTableForm() {
 		return tableForm;
 	}
-
-
-//	public void setListFragSearch(List<Result> listFragSearch) {
-//		this.listFragSearch = listFragSearch;
-//	}
-//
-//
-//	public List<Result> getListFragSearch() {
-//		return listFragSearch;
-//	}
 	
 	
 	public void setCount(int count) {
@@ -2065,6 +2181,18 @@ public class MetFragBean extends SortableList{
 	}
 	public boolean isIpbAccess() {
 		return isIpbAccess;
+	}
+	public void setOutputResource(Resource outputResource) {
+		this.outputResource = outputResource;
+	}
+	public Resource getOutputResource() {
+		return outputResource;
+	}
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+	public String getResourceName() {
+		return resourceName;
 	}
 
 

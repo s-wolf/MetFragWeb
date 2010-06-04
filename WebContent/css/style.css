@@ -4,6 +4,10 @@ body{
 	padding: 0px;
 }
 
+img{
+	border: 0px;	
+}
+
 h1{
 	margin: 5px 0px 5px 300px; 
 	padding: 20px 0px 0px;
