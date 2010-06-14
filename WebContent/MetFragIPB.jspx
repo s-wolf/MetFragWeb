@@ -531,8 +531,7 @@
 		        			</ice:dataPaginator>
 			        				
 			        				
-			        	<ice:commandLink id="MetFragFeedback" action="#{metFragBean.openPopup3}" style="color:red; text-align:right; float:right;">
-							<ice:outputText value="Feedback" nospan="true"/>
+			        	<ice:commandLink id="MetFragFeedback" styleClass="MetFragFeedbackLink" action="#{metFragBean.openPopup3}" style="color:red; text-align:right; float:right;">
 						</ice:commandLink>
 			        	<!-- Feedback panel -->		
 			        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible3}" modal="true">

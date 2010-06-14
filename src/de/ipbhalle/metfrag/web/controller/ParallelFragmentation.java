@@ -50,6 +50,7 @@ import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
 import de.ipbhalle.metfrag.spectrum.AssignFragmentPeak;
 import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 
+import de.ipbhalle.metfrag.main.DeleteTempFiles;
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
 import de.ipbhalle.metfrag.molDatabase.PubChemLocal;
@@ -192,6 +193,8 @@ public class ParallelFragmentation implements Runnable {
 	        	//TODO!
 	        	vec = fragmenter.generateFragmentsEfficient(molecule, true, Integer.parseInt(this.metFragData.getTreeDepth()), candidateID);
 	        	l = Molfile.ReadfolderTemp(vec);
+	        	//delete the temporary files
+	        	new Thread(new DeleteTempFiles(vec)).start();
 	        	//l = fragmenter.generateFragments(molecule, true, 2);
 	        }
 	        catch(OutOfMemoryError e)

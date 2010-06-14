@@ -207,9 +207,14 @@ a:hover {
 	background: orange;	
 }
 
-.childRowStyle {
-}
-
-.headerFragment{
-	
+.MetFragFeedbackLink {
+     position: fixed;
+     right: 0;
+     top: 400px;
+     display: block;
+     width: 32px;
+     height: 125px;
+     text-indent: -10000px;
+     background-image: url(../images/Feedback.png);
+     overflow: hidden;
 }

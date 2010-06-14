@@ -20,6 +20,8 @@
 */
 package de.ipbhalle.metfrag.web.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,6 +53,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
@@ -256,6 +259,9 @@ public class MetFragBean extends SortableList{
 	private Resource outputResource = null;
 	private String resourceName;
 
+	
+	private boolean showSDFLink = false;
+	
 	   
 	
 	/**
@@ -999,10 +1005,10 @@ public class MetFragBean extends SortableList{
     
     public void analyzePeaks()
     {
-    	double exactMassThread = 0.0;
+    	double exactMassThread = 1000.0;
 		if(exactMass != null && exactMass != "")
 			exactMassThread = Double.parseDouble(exactMass);
-		else
+		else if(molFormula != "")
 		{
 			IMolecularFormula formula = new MolecularFormula();
 			formula = MolecularFormulaManipulator.getMolecularFormula(molFormula.trim(), formula);
@@ -1070,10 +1076,10 @@ public class MetFragBean extends SortableList{
 
     			    
         			
-					double exactMassThread = 0.0;
+					double exactMassThread = 1000.0;
 					if(exactMass != "")
 						exactMassThread = Double.parseDouble(exactMass);
-					else
+					else if(molFormula != "")
 					{
 						IMolecularFormula formula = new MolecularFormula();
 						formula = MolecularFormulaManipulator.getMolecularFormula(molFormula, formula);
@@ -1548,7 +1554,6 @@ public class MetFragBean extends SortableList{
 	
 	
 	
-	
 	/** generates an output resource for the current workflow results, everything is stored inside a single Excel xls file
 	 *  where each workflow output ports is stored as a separate sheet  
 	 *  
@@ -1596,10 +1601,12 @@ public class MetFragBean extends SortableList{
 		
 		// set sheet name (output port) and position
 		sheet = workbook.createSheet("MetFrag", 0);
+		WritableFont arial10font = null;
+		WritableCellFormat arial10format = null;
 		// set header for sheet, name it after output port name 
 		try {
-			WritableFont arial10font = new WritableFont(WritableFont.ARIAL, 10);
-			WritableCellFormat arial10format = new WritableCellFormat(arial10font);
+			arial10font = new WritableFont(WritableFont.ARIAL, 10);
+			arial10format = new WritableCellFormat(arial10font);
 			arial10font.setBoldStyle(WritableFont.BOLD);
 			Label label = new Label(0, 0, "MetFrag Results Table", arial10format);
 			sheet.addCell(label);
@@ -1610,22 +1617,52 @@ public class MetFragBean extends SortableList{
 		
 		// for each workflow output port, create new sheet inside Excel file and store results
 		int i = 0;
+		WritableCell header0 = new Label(0, 0, "Score", arial10format);
+		WritableCell header1 = new Label(1, 0, "Peaks Explained", arial10format);
+		WritableCell header2 = new Label(2, 0, "Exact Mass", arial10format);
+		WritableCell header3 = new Label(3, 0, "Molecular Formula", arial10format);
+		WritableCell header5 = new Label(4, 0, "Database ID", arial10format);
+		WritableCell header4 = new Label(5, 0, "Image", arial10format);
+		
+		try
+		{
+			sheet.addCell(header0);
+			sheet.addCell(header1);
+			sheet.addCell(header2);
+			sheet.addCell(header3);
+			sheet.addCell(header4);
+			sheet.addCell(header5);
+		} catch (WriteException e) {
+			System.out.println("Could not write excel cell");
+			e.printStackTrace();
+		}
+		
 		for (ResultRowGroupedBean row : resultRowGroupedBeans) {
-			WritableCell cell = null;
+			int currentRow = i*4 + 1;
+			
 			WritableImage wi = null;
 			// output is image
-			String imgPath = row.getImage();
+			String imgPath = webRoot + row.getImage() + ".png";
 			File image = new File(imgPath);
 			// write each image into the second column, leave one row space between them and 
 			// resize the image to 1 column width and 2 rows height
-			wi = new WritableImage(1, (i*3) + 1, 1, 2, image);
+			wi = new WritableImage(5, currentRow, 1, 3, image);
 			sheet.addImage(wi);
 			
 			// output is text
-			cell = new Label(1, i*3, row.getDatabaseLink());
+			WritableCell cellScore = new Label(0, currentRow, row.getScore().toString());
+			WritableCell cellExplainedPeaks = new Label(1, currentRow, row.getExplainedPeaks() + "");
+			WritableCell cellMolecularFormula = new Label(2, currentRow, row.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
+			WritableCell cellMass = new Label(3, currentRow, row.getMass());
+			WritableCell cellLink = new Label(4, currentRow, row.getID());
+			
 			try
 			{
-				sheet.addCell(cell);
+				sheet.addCell(cellLink);
+				sheet.addCell(cellScore);
+				sheet.addCell(cellMolecularFormula);
+				sheet.addCell(cellMass);
+				sheet.addCell(cellExplainedPeaks);
 			} catch (WriteException e) {
 				System.out.println("Could not write excel cell");
 				e.printStackTrace();
