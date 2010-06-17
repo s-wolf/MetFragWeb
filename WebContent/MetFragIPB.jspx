@@ -101,7 +101,7 @@
 												</ice:panelGroup>
 												<ice:panelGroup rendered="#{metFragBean.SDFSelected}">
 													<ice:inputFile id="inputFileComponent" fileNamePattern=".+\.sdf"
-										                           uniqueFolder="true"
+										                           uniqueFolder="true" 
 										                           actionListener="#{metFragBean.checkFileLocation}" 
 										                           progressListener="#{metFragBean.progressListener}" />
 								        			<ice:message for="inputFileComponent" />

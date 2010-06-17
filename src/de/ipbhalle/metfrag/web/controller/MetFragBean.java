@@ -506,7 +506,7 @@ public class MetFragBean extends SortableList{
 			double upperBound = exactMass + PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM));
 			
 			if(this.molFormula != "")
-				candidates = pubchem.getHitsbySumFormula(molFormula);
+				candidates = pubchem.getHitsbySumFormula(molFormula, false);
 			else
 				candidates = pubchemLocal.getHitsVector(lowerBound, upperBound);
 		}
@@ -1319,7 +1319,7 @@ public class MetFragBean extends SortableList{
         }
         
         //generate xls output
-        generateOutputResource();
+        generateXLSResource();
         
         return resultRowGroupedBeans;
     }
@@ -1561,7 +1561,7 @@ public class MetFragBean extends SortableList{
 	 *  based on method from
 	 *  @author Michael Gerlich 
 	 *  */
-	private void generateOutputResource() {
+	private void generateXLSResource() {
 		
 		ExternalContext ec = fc.getExternalContext();
 		HttpSession session = (HttpSession) ec.getSession(false);
@@ -1619,8 +1619,8 @@ public class MetFragBean extends SortableList{
 		int i = 0;
 		WritableCell header0 = new Label(0, 0, "Score", arial10format);
 		WritableCell header1 = new Label(1, 0, "Peaks Explained", arial10format);
-		WritableCell header2 = new Label(2, 0, "Exact Mass", arial10format);
-		WritableCell header3 = new Label(3, 0, "Molecular Formula", arial10format);
+		WritableCell header2 = new Label(2, 0, "Molecular Formula", arial10format);
+		WritableCell header3 = new Label(3, 0, "Exact Mass", arial10format);
 		WritableCell header5 = new Label(4, 0, "Database ID", arial10format);
 		WritableCell header4 = new Label(5, 0, "Image", arial10format);
 		
@@ -1685,6 +1685,25 @@ public class MetFragBean extends SortableList{
         MyResource xlsResource = new MyResource(ec, resourceName, relPath);
 		outputResource = xlsResource;
 
+	}
+	
+	
+	
+	/**
+	 * Set the fixed attribute of this row to true 
+	 * 
+	 * @param event the event
+	 */
+	public void listenSDFDownloadFragments(ActionEvent event) {
+		//gets the current row from the data table
+		ResultRow row = (ResultRow) event.getComponent().getAttributes().get("currentRow");
+		
+		//now set the the data accordingly
+		String id = row.getID();
+		
+        
+       
+		
 	}
 
 	

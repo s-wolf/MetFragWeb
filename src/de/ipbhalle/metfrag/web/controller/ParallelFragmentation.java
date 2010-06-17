@@ -192,6 +192,7 @@ public class ParallelFragmentation implements Runnable {
 	        {
 	        	//TODO!
 	        	vec = fragmenter.generateFragmentsEfficient(molecule, true, Integer.parseInt(this.metFragData.getTreeDepth()), candidateID);
+//	        	l = fragmenter.generateFragmentsInMemory(molecule, true, Integer.parseInt(this.metFragData.getTreeDepth()));
 	        	l = Molfile.ReadfolderTemp(vec);
 	        	//delete the temporary files
 	        	new Thread(new DeleteTempFiles(vec)).start();
@@ -258,7 +259,7 @@ public class ParallelFragmentation implements Runnable {
 			
 			
 			//now "real" scoring --> depends on intensities
-			Scoring score = new Scoring(spectrum.getPeakList(), candidateID);
+			Scoring score = new Scoring(spectrum, candidateID);
 			double currentScore = 0.0;
 			if(bondEnergyScoring)
 				currentScore = score.computeScoringWithBondEnergies(hits);
@@ -410,7 +411,7 @@ public class ParallelFragmentation implements Runnable {
 	//				resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, massOrig, databaseLink, 
 	//					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
 			else
-				candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getFragmentBondEnergy(), score.getPenalty(), fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
+				candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getBDE(), score.getPenalty(), fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
 						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
 	//				resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getFragmentBondEnergy(), score.getPenalty(), fragsPics, massOrig, databaseLink, 
 	//						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
