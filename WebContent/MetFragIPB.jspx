@@ -319,6 +319,22 @@
 							            </div>
 					                </f:facet>
 					            </ice:panelPopup>
+					            
+					            <!-- Fragment download panel -->		
+					        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible6}" modal="true">
+					                <f:facet name="header">
+					                	<div>
+					                        <ice:outputText style="color: #000;" value="Fragment download"/>
+					                        <div style="float:right; padding: 2px;">
+					                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup6}" title="Close this popup"/>
+					                        </div>
+					                    </div>
+					                </f:facet>
+					                <f:facet name="body">
+					                		<ice:outputResource  label="Save fragments as SDF file." resource="#{metFragBean.outputResourceSDF}" 
+				           										 fileName="#{metFragBean.resourceNameSDF}"  />
+					                </f:facet>
+					            </ice:panelPopup>
 
 			                <br/>
 			                
@@ -461,6 +477,10 @@
 					                </f:facet>
 					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
 					                	<ice:commandLink id="editlink" value="Show Frags" action="#{popupBean.openPopup2}" actionListener="#{metFragBean.listenRowAction}">
+						                	<f:attribute name="currentRow" value="#{row}"/>
+						                </ice:commandLink>
+						                <br />
+						                <ice:commandLink id="calcFrags" action="#{metFragBean.openPopup6}" value="Calculate Fragments" actionListener="#{metFragBean.listenSDFDownloadFragments}">
 						                	<f:attribute name="currentRow" value="#{row}"/>
 						                </ice:commandLink>
              						</ice:panelGroup>

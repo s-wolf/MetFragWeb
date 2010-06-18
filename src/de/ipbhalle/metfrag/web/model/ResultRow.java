@@ -47,6 +47,7 @@ public class ResultRow implements Serializable{
 	private Double bondEnergy;
 	private Double hydrogenPenalty;
 	private String molecularFormula;
+	private String smiles;
 	
 	
 	/**
@@ -67,7 +68,7 @@ public class ResultRow implements Serializable{
 	 * @param peaksNotFoundInt the peaks not found int
 	 * @param peaksNotUsedInt the peaks not used int
 	 */
-	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt)
+	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles)
 	{
 		this.setID(keggID);
 		this.setMolName(molName);
@@ -84,6 +85,7 @@ public class ResultRow implements Serializable{
 		this.setPeaksNotFoundInt(peaksNotFoundInt);
 		this.setPeaksNotUsedInt(peaksNotUsedInt);
 		this.setMolecularFormula(molecularFormula);
+		this.setSmiles(smiles);
 	}
 	
 	
@@ -107,7 +109,7 @@ public class ResultRow implements Serializable{
 	 * @param peaksNotFoundInt the peaks not found int
 	 * @param peaksNotUsedInt the peaks not used int
 	 */
-	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, Double bondEnergy, Double hydrogenPenalty, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt)
+	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, Double bondEnergy, Double hydrogenPenalty, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles)
 	{
 		this.setID(keggID);
 		this.setMolName(molName);
@@ -126,6 +128,7 @@ public class ResultRow implements Serializable{
 		this.setBondEnergy(bondEnergy);
 		this.setHydrogenPenalty(hydrogenPenalty);
 		this.setMolecularFormula(molecularFormula);
+		this.setSmiles(smiles);
 	}
 	
 	public ResultRow(){}
@@ -356,6 +359,16 @@ public class ResultRow implements Serializable{
 
 	public String getMolecularFormula() {
 		return molecularFormula;
+	}
+
+
+	public void setSmiles(String smiles) {
+		this.smiles = smiles;
+	}
+
+
+	public String getSmiles() {
+		return smiles;
 	}
 	
 	

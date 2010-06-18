@@ -45,9 +45,9 @@ public class TableBean extends SortableList {
     }
 	
 	
-	public void addRow(String keggID, String molName, String image, int explainedPeaks, double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt)
+	public void addRow(String keggID, String molName, String image, int explainedPeaks, double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles)
 	{
-		resultsList.add(new ResultRow(keggID, molName, image, explainedPeaks, score, frags, molecularFormula, mass, databaseLink, peaksFound, peaksNotFound, peaksNotUsed, peaksFoundInt, peaksNotFoundInt, peaksNotUsedInt));
+		resultsList.add(new ResultRow(keggID, molName, image, explainedPeaks, score, frags, molecularFormula, mass, databaseLink, peaksFound, peaksNotFound, peaksNotUsed, peaksFoundInt, peaksNotFoundInt, peaksNotUsedInt, smiles));
 	}
 	
 	/**

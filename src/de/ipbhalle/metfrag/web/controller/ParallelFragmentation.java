@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import org.openscience.cdk.Molecule;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -39,6 +40,10 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
+import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
@@ -123,6 +128,9 @@ public class ParallelFragmentation implements Runnable {
 		boolean bondEnergyScoring = this.metFragData.isBondEnergyScoring();
 		Integer mode = this.metFragData.getMode();
 		
+		SmilesGenerator sg = new SmilesGenerator();
+		IMolecule mol = new Molecule(molecule);
+		String smiles = sg.createSMILES(mol);
 		
 		try
 		{
@@ -407,12 +415,12 @@ public class ParallelFragmentation implements Runnable {
 			//now add the candidate to the results
 			if(!bondEnergyScoring)
 				candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
-					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
+					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString(), smiles));
 	//				resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, massOrig, databaseLink, 
 	//					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
 			else
 				candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getBDE(), score.getPenalty(), fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
-						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
+						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString(), smiles));
 	//				resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getFragmentBondEnergy(), score.getPenalty(), fragsPics, massOrig, databaseLink, 
 	//						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
 	

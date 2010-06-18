@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -68,12 +69,19 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
+import org.openscience.cdk.Molecule;
+import org.openscience.cdk.MoleculeSet;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.formula.MolecularFormula;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.interfaces.IBond.Stereo;
+import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
@@ -88,6 +96,8 @@ import de.ipbhalle.metfrag.buildinfo.BuildInfo;
 import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
 import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
 import de.ipbhalle.metfrag.spectrum.PeakMolPair;
+import de.ipbhalle.metfrag.main.MetFrag;
+import de.ipbhalle.metfrag.main.MetFragResult;
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
 import de.ipbhalle.metfrag.molDatabase.PubChemLocal;
@@ -169,6 +179,7 @@ public class MetFragBean extends SortableList{
 	private boolean bioCompound = true;
 	private boolean bondEnergyScoring = true;
 	private String treeDepth = "2";
+	private WrapperSpectrum spectrum = null;
 	
 	//JDBC connection
 	private String user = "";
@@ -205,6 +216,13 @@ public class MetFragBean extends SortableList{
 	public void setVisible5(boolean visible5) { this.visible5 = visible5; }
 	public void closePopup5() {visible5 = false;}
     public void openPopup5() { analyzePeaks(); visible5 = true;}
+    
+    //download fragments
+    private boolean visible6 = false;
+    public boolean isVisible6() { return visible6; }
+	public void setVisible6(boolean visible6) { this.visible6 = visible6; }
+	public void closePopup6() {visible6 = false;}
+    public void openPopup6() { visible6 = true;}
     
     private List<FeedbackRow> feedbackList = null; 
     private FeedbackRow currentFeedback = null;
@@ -258,6 +276,9 @@ public class MetFragBean extends SortableList{
 	
 	private Resource outputResource = null;
 	private String resourceName;
+	
+	private Resource outputResourceSDF = null;
+	private String resourceNameSDF;
 
 	
 	private boolean showSDFLink = false;
@@ -1087,7 +1108,7 @@ public class MetFragBean extends SortableList{
 					}
 					double mzabsThread = Double.parseDouble(mzabs);
 					double mzppmThread = Double.parseDouble(mzppm);
-					WrapperSpectrum spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
+					spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
 					
 					hitsDatabase = candidates.size();
 					percentDone = 0;
@@ -1289,6 +1310,7 @@ public class MetFragBean extends SortableList{
 		filesRecordGroup.setPeaksNotUsedInt(resultRow.getPeaksNotUsedInt());
 		filesRecordGroup.setScore(resultRow.getScore());
 		filesRecordGroup.setMolecularFormula(resultRow.getMolecularFormula());
+		filesRecordGroup.setSmiles(resultRow.getSmiles());
 	}
 	
 	
@@ -1698,11 +1720,61 @@ public class MetFragBean extends SortableList{
 		//gets the current row from the data table
 		ResultRow row = (ResultRow) event.getComponent().getAttributes().get("currentRow");
 		
+		
+		
 		//now set the the data accordingly
 		String id = row.getID();
+		resourceNameSDF = id + "_" + "fragments.sdf";
+		try {
+			Vector<PeakMolPair> fragments = MetFrag.startConvenienceWeb(this.peaks, row.getSmiles(), Integer.parseInt(this.mode), molFormulaRedundancyCheck, Double.parseDouble(mzabs), Double.parseDouble(mzppm), Integer.parseInt(this.treeDepth));
+			MoleculeSet setOfFragments = new MoleculeSet();
+			
+			ExternalContext ec = fc.getExternalContext();
+			HttpSession session = (HttpSession) ec.getSession(false);
+			String sessionString = session.getId();	
+			
+			String currentFolder = webRoot + "FragmentPics" + sep + sessionString + sep;
+			String relPath = "./FragmentPics" + sep + sessionString + sep;
+			new File(currentFolder).mkdirs();
+			
+			for (PeakMolPair frag : fragments) {
+				
+				//fix for bug in mdl reader setting where it happens that bond.stereo is null when the bond was read in as UP/DOWN (4)
+				for (IBond bond : frag.getFragment().bonds()) {
+					if(bond.getStereo() == null)
+						bond.setStereo(Stereo.UP_OR_DOWN);		
+				} 
+				IMolecule mol = new Molecule(AtomContainerManipulator.removeHydrogens(frag.getFragment()));
+				setOfFragments.addAtomContainer(mol);
+			}
+			
+			//write results file
+			try {
+				SDFWriter writer = new SDFWriter(new FileWriter(new File(currentFolder + resourceNameSDF)));
+				writer.write(setOfFragments);
+				writer.close();
+			} catch (CDKException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// store the current Excel file as output resource for the current workflow
+	        MyResource sdfResource = new MyResource(ec, resourceNameSDF, relPath);
+			outputResourceSDF = sdfResource;
 		
-        
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}       
        
+		
+		
 		
 	}
 
@@ -2249,6 +2321,18 @@ public class MetFragBean extends SortableList{
 	}
 	public String getResourceName() {
 		return resourceName;
+	}
+	public void setOutputResourceSDF(Resource outputResourceSDF) {
+		this.outputResourceSDF = outputResourceSDF;
+	}
+	public Resource getOutputResourceSDF() {
+		return outputResourceSDF;
+	}
+	public void setResourceNameSDF(String resourceNameSDF) {
+		this.resourceNameSDF = resourceNameSDF;
+	}
+	public String getResourceNameSDF() {
+		return resourceNameSDF;
 	}
 
 
