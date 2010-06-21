@@ -492,7 +492,7 @@
 						                	<f:attribute name="currentRow" value="#{row}"/>
 						                </ice:commandLink>
 						                <br />
-						                <ice:commandLink id="calcFrags" action="#{metFragBean.openPopup6}" value="Calculate Fragments" actionListener="#{metFragBean.listenSDFDownloadFragments}">
+						                <ice:commandLink id="calcFrags" action="#{metFragBean.openPopup6}" value="Download fragments" actionListener="#{metFragBean.listenSDFDownloadFragments}">
 						                	<f:attribute name="currentRow" value="#{row}"/>
 						                </ice:commandLink>
              						</ice:panelGroup>
