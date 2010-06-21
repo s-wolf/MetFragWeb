@@ -331,8 +331,20 @@
 					                    </div>
 					                </f:facet>
 					                <f:facet name="body">
-					                		<ice:outputResource  label="Save fragments as SDF file." resource="#{metFragBean.outputResourceSDF}" 
-				           										 fileName="#{metFragBean.resourceNameSDF}"  />
+					                	<ice:panelGrid columns="2" width="100%" cellpadding="2" style="text-align: center;">
+					                		<div>
+					                			<ice:outputResource label="Save fragments as SDF file." resource="#{metFragBean.outputResourceSDF}" 
+				           										 fileName="#{metFragBean.resourceNameSDF}" image="./images/text-x-generic.png"/>
+				           						<br />
+				           						SDF file
+					                		</div>
+					                		<div>
+	       										 <ice:outputResource label="Save fragments as XLS file." resource="#{metFragBean.outputResourceFrags}" 
+	       										 fileName="#{metFragBean.resourceNameFrags}"  image="./images/xls.png"/>
+	       										 <br />
+				           						XLS file
+					                		</div>
+   										 </ice:panelGrid>
 					                </f:facet>
 					            </ice:panelPopup>
 

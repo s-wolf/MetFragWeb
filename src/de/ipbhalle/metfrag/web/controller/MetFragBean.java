@@ -69,6 +69,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.MoleculeSet;
 import org.openscience.cdk.exception.CDKException;
@@ -81,6 +82,7 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.interfaces.IBond.Stereo;
 import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
@@ -276,7 +278,8 @@ public class MetFragBean extends SortableList{
 	
 	private Resource outputResource = null;
 	private String resourceName;
-	
+	private Resource outputResourceFrags = null;
+	private String resourceNameFrags;
 	private Resource outputResourceSDF = null;
 	private String resourceNameSDF;
 
@@ -1710,6 +1713,130 @@ public class MetFragBean extends SortableList{
 	}
 	
 	
+	/** generates an output resource for the current workflow results, everything is stored inside a single Excel xls file
+	 *  where each workflow output ports is stored as a separate sheet  
+	 *  
+	 *  
+	 *  based on method from
+	 *  @author Michael Gerlich 
+	 *  */
+	private void generateXLSResourceFragments(String candidate, List<ResultPic> fragPics) {
+		
+		ExternalContext ec = fc.getExternalContext();
+		HttpSession session = (HttpSession) ec.getSession(false);
+		String sessionString = session.getId();	
+		long time = new Date().getTime();
+		
+		String currentFolder = webRoot + "FragmentPics" + sep + sessionString + sep;
+		String relPath = "./FragmentPics" + sep + sessionString + sep;
+		new File(currentFolder).mkdirs();
+		
+		File dir = new File(currentFolder);
+		if(!dir.exists())
+			dir.mkdirs();
+		
+		// skip creation of output resource if file access is denied
+		if(!dir.canWrite())
+			return;
+		resourceNameFrags = candidate + "Fragments_" + time +  ".xls";
+		File f = new File(dir, resourceNameFrags);
+		try {
+			f.createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		// create new Excel file
+		WritableSheet sheet = null;
+		WritableWorkbook workbook = null;
+		WorkbookSettings settings = new WorkbookSettings();
+//		settings.setLocale(fc.getViewRoot().getLocale());
+		try {
+			workbook = Workbook.createWorkbook(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// set sheet name (output port) and position
+		sheet = workbook.createSheet("MetFrag fragments", 0);
+		WritableFont arial10font = null;
+		WritableCellFormat arial10format = null;
+		// set header for sheet, name it after output port name 
+		try {
+			arial10font = new WritableFont(WritableFont.ARIAL, 10);
+			arial10format = new WritableCellFormat(arial10font);
+			arial10font.setBoldStyle(WritableFont.BOLD);
+			Label label = new Label(0, 0, "MetFrag Fragments Results Table", arial10format);
+			sheet.addCell(label);
+		} catch (WriteException we) {
+			we.printStackTrace();
+		}
+		
+		
+		// for each workflow output port, create new sheet inside Excel file and store results
+		int i = 0;
+		WritableCell header0 = new Label(0, 0, "Fragment", arial10format);
+		WritableCell header1 = new Label(3, 0, "Mass", arial10format);
+		WritableCell header2 = new Label(4, 0, "Formula", arial10format);
+		
+		try
+		{
+			sheet.addCell(header0);
+			sheet.addCell(header1);
+			sheet.addCell(header2);
+
+		} catch (WriteException e) {
+			System.out.println("Could not write excel cell");
+			e.printStackTrace();
+		}
+		
+		for (ResultPic frag : fragPics) {
+			int currentRow = i*7 + 1;
+			
+			WritableImage wi = null;
+			// output is image
+			String imgPath = webRoot + frag.getPath() + ".png";
+			File image = new File(imgPath);
+			// write each image into the second column, leave one row space between them and 
+			// resize the image to 1 column width and 2 rows height
+			wi = new WritableImage(0, currentRow, 3, 7, image);
+			sheet.addImage(wi);
+			
+			// output is text
+			WritableCell cellExplainedMass = new Label(3, currentRow, frag.getMass().replaceAll("\\<.*?\\>", ""));
+			WritableCell cellMolecularFormula = new Label(4, currentRow, frag.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
+			
+			
+			try
+			{
+				sheet.addCell(cellMolecularFormula);
+				sheet.addCell(cellExplainedMass);
+			} catch (WriteException e) {
+				System.out.println("Could not write excel cell");
+				e.printStackTrace();
+			}
+			
+			i++;
+		}
+		
+		// write the Excel file
+		try {
+			workbook.write();
+			workbook.close();
+		} catch (WriteException ioe) {
+			ioe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		
+		// store the current Excel file as output resource for the current workflow
+        MyResource xlsResource = new MyResource(ec, resourceNameFrags, relPath);
+		setOutputResourceFrags(xlsResource);
+
+	}
+	
+	
 	
 	/**
 	 * Set the fixed attribute of this row to true 
@@ -1720,12 +1847,11 @@ public class MetFragBean extends SortableList{
 		//gets the current row from the data table
 		ResultRow row = (ResultRow) event.getComponent().getAttributes().get("currentRow");
 		
-		
-		
 		//now set the the data accordingly
 		String id = row.getID();
 		resourceNameSDF = id + "_" + "fragments.sdf";
 		try {
+
 			Vector<PeakMolPair> fragments = MetFrag.startConvenienceWeb(this.peaks, row.getSmiles(), Integer.parseInt(this.mode), molFormulaRedundancyCheck, Double.parseDouble(mzabs), Double.parseDouble(mzppm), Integer.parseInt(this.treeDepth));
 			MoleculeSet setOfFragments = new MoleculeSet();
 			
@@ -1737,6 +1863,15 @@ public class MetFragBean extends SortableList{
 			String relPath = "./FragmentPics" + sep + sessionString + sep;
 			new File(currentFolder).mkdirs();
 			
+			SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+			IAtomContainer molecule = sp.parseSmiles(row.getSmiles());
+			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
+			IMolecule molOrig = new Molecule(AtomContainerManipulator.removeHydrogens(molecule));
+			molOrig.setProperty("Mass", row.getFrags().get(0).getMass().replaceAll("\\<.*?\\>", ""));
+			molOrig.setProperty("Formula", row.getFrags().get(0).getMolecularFormula().replaceAll("\\<.*?\\>", ""));
+			setOfFragments.addAtomContainer(molOrig);
+			
+			int count = 1;
 			for (PeakMolPair frag : fragments) {
 				
 				//fix for bug in mdl reader setting where it happens that bond.stereo is null when the bond was read in as UP/DOWN (4)
@@ -1745,7 +1880,10 @@ public class MetFragBean extends SortableList{
 						bond.setStereo(Stereo.UP_OR_DOWN);		
 				} 
 				IMolecule mol = new Molecule(AtomContainerManipulator.removeHydrogens(frag.getFragment()));
+				mol.setProperty("Mass", row.getFrags().get(count).getMass().replaceAll("\\<.*?\\>", ""));
+				mol.setProperty("Formula", row.getFrags().get(count).getMolecularFormula().replaceAll("\\<.*?\\>", ""));
 				setOfFragments.addAtomContainer(mol);
+				count++;
 			}
 			
 			//write results file
@@ -1761,6 +1899,9 @@ public class MetFragBean extends SortableList{
 				e.printStackTrace();
 			}
 			
+			//generate xls file as well
+			generateXLSResourceFragments(id, row.getFrags());
+			
 			// store the current Excel file as output resource for the current workflow
 	        MyResource sdfResource = new MyResource(ec, resourceNameSDF, relPath);
 			outputResourceSDF = sdfResource;
@@ -1772,10 +1913,7 @@ public class MetFragBean extends SortableList{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}       
-       
-		
-		
-		
+
 	}
 
 	
@@ -2333,6 +2471,18 @@ public class MetFragBean extends SortableList{
 	}
 	public String getResourceNameSDF() {
 		return resourceNameSDF;
+	}
+	public void setOutputResourceFrags(Resource outputResourceFrags) {
+		this.outputResourceFrags = outputResourceFrags;
+	}
+	public Resource getOutputResourceFrags() {
+		return outputResourceFrags;
+	}
+	public String getResourceNameFrags() {
+		return resourceNameFrags;
+	}
+	public void setResourceNameFrags(String resourceNameFrags) {
+		this.resourceNameFrags = resourceNameFrags;
 	}
 
 
