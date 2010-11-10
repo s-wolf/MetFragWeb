@@ -1,4 +1,4 @@
-jQuery("a.tooltip").live('mouseover', function(e){
+jQuery("a.tooltipTable").live('mouseover', function(e){
 /* CONFIG */
 var xOffset = 0;
 var yOffset = 380;
@@ -20,7 +20,7 @@ jQuery("#tooltip")
 .css("left",(e.pageX + xOffset) + "px")
 });
 });
-jQuery("a.tooltip").live('mouseout', function(e) {
+jQuery("a.tooltipTable").live('mouseout', function(e) {
 this.title = this.t;
 jQuery(this).die("mousemove", "mouseout");
 jQuery("#tooltip").remove();

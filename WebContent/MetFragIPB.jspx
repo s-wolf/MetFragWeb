@@ -59,8 +59,9 @@
 									 		<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData3">
 									 		
 										 		<div>
-													<ice:panelGroup panelTooltip="databaseTooltip" >
-														<ice:outputText value="Database: " />
+													<ice:outputText value="Database: " />
+													<ice:panelGroup styleClass="help" panelTooltip="databaseTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
 													<ice:panelTooltip id="databaseTooltip" styleClass="tooltip">
 														<f:facet name="body">
@@ -89,9 +90,10 @@
 														<f:selectItem itemLabel="Local SDF" itemValue="sdf" />
 												</ice:selectOneRadio>
 												<ice:panelGroup rendered="#{metFragBean.SDFSelected}">
-													<ice:panelGroup panelTooltip="fileUploadTooltip" >
-														<ice:outputText value="Upload SDF: " />
+													<ice:panelGroup styleClass="help" panelTooltip="fileUploadTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
+													<ice:outputText value="Upload SDF: " />
 													<ice:panelTooltip id="fileUploadTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="Upload your own SDF file
@@ -113,9 +115,10 @@
 									 		
 									 		<ice:panelGrid columns="4" id="inputData" style="width: 100%;" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputText, input, inputSearch" >
 												<div>
-												<ice:panelGroup panelTooltip="massTooltip" >
-													<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
+												<ice:panelGroup styleClass="help" panelTooltip="massTooltip" >
+													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 												</ice:panelGroup>
+												<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
 												<ice:panelTooltip id="massTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="The calculated mass. This value is used for the database search if no molecular formula is given." escape="false"/>
@@ -124,24 +127,26 @@
 												</div>
 												<h:inputText style="width: 100px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
 												<div>
-												<ice:panelGroup panelTooltip="searchPPMTooltip" >
-													<ice:outputText value="Search PPM: " />
+												<ice:panelGroup styleClass="help" panelTooltip="searchPPMTooltip" >
+													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 												</ice:panelGroup>
+												<ice:outputText value="Search PPM: " />
 												<ice:panelTooltip id="searchPPMTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="This is the allowed variation if the exact mass is used for the database search. E.g.: 10" escape="false"/>
 													</f:facet>
 												</ice:panelTooltip>
 												</div>
-												<h:inputText style="width: 80px" id="searchPPM" value="#{metFragBean.searchPPM}"></h:inputText>		
+												<h:inputText style="width: 72px" id="searchPPM" value="#{metFragBean.searchPPM}"></h:inputText>		
 											</ice:panelGrid>
 											
 											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData4">
 											
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup panelTooltip="molFormulaTooltip" >
-														<ice:outputText value="Molecular formula (optional alternative): " />
+													<ice:panelGroup styleClass="help" panelTooltip="molFormulaTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
+													<ice:outputText value="Molecular formula: " />
 													<ice:panelTooltip id="molFormulaTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="This value is used for the database search if a molecular formula is given." escape="false"/>
@@ -153,9 +158,11 @@
 												</ice:panelGroup>
 												
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup panelTooltip="filterBioTooltip" >
-														<ice:outputText value="Only biological compounds: " />
+													
+													<ice:panelGroup styleClass="help" panelTooltip="filterBioTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
+													<ice:outputText value="Only biological compounds:" />
 													<ice:panelTooltip id="filterBioTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="Only use compounds which only consist of C,H,O,N,P and S
@@ -167,9 +174,10 @@
 													<h:selectBooleanCheckbox value="#{metFragBean.bioCompound}" />
 												</ice:panelGroup>
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup panelTooltip="limitTooltip" >
-														<ice:outputText value="Limit # of structures: " />
+													<ice:panelGroup styleClass="help" panelTooltip="limitTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
+													<ice:outputText value="Limit # of structures: " />
 													<ice:panelTooltip id="limitTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="The processing stops when the given number of structures is reached." escape="false"/>
@@ -180,9 +188,10 @@
 													<h:inputText style="width: 300px" id="limit" value="#{metFragBean.limit}"></h:inputText>
 												</ice:panelGroup>
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup panelTooltip="databaseIDTooltip" >
-														<ice:outputText value="Database ID's: " />
+													<ice:panelGroup styleClass="help" panelTooltip="databaseIDTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
+													<ice:outputText value="Database ID's: " />
 													<ice:panelTooltip id="databaseIDTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="If this ID is given only those particular compounds are tested! E.g. 
@@ -208,12 +217,13 @@
 										
 										<div id="metFragOptions">
 											<span class="subheading">MetFrag Settings</span>
-											<h:panelGrid columns="2" columnClasses="input" id="inputData2">
+											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData2">
 												
 												<ice:panelGroup rendered="#{metFragBean.ipbAccess}">
-													<ice:panelGroup panelTooltip="tdTooltip" >
-														<ice:outputText value="TreeDepth: " />
+													<ice:panelGroup styleClass="help" panelTooltip="tdTooltip" >
+														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 													</ice:panelGroup>
+													<ice:outputText value="TreeDepth: " />
 													<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="Carsten will das." escape="false"/>
@@ -224,23 +234,25 @@
 																						
 												
 												<div>
-												<ice:panelGroup panelTooltip="modeTooltip" >
-													<ice:outputText value="Mode: " />
+												<ice:panelGroup styleClass="help" panelTooltip="modeTooltip" >
+													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 												</ice:panelGroup>
+												<ice:outputText value="Mode: " />
 												<ice:panelTooltip id="modeTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="Positive or negative mode are implemented." escape="false"/>
 													</f:facet>
 												</ice:panelTooltip>
 												</div>
-												<h:selectOneRadio value="#{metFragBean.mode}">
+												<ice:selectOneRadio value="#{metFragBean.mode}">
 														<f:selectItem itemLabel="#{msg.posMode}" itemValue="1" />
 														<f:selectItem itemLabel="#{msg.negMode}" itemValue="-1" />
-												</h:selectOneRadio>
+												</ice:selectOneRadio>
 												<div>
-												<ice:panelGroup panelTooltip="mzabsTooltip" >
-													<ice:outputText value="Mzabs (e.g. 0.01): " />
+												<ice:panelGroup styleClass="help" panelTooltip="mzabsTooltip" >
+													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 												</ice:panelGroup>
+												<ice:outputText value="Mzabs (e.g. 0.01): " />
 												<ice:panelTooltip id="mzabsTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="This is the allowed variation for the fragments
@@ -250,9 +262,10 @@
 												</div>
 												<h:inputText style="width: 300px" id="mzabs" value="#{metFragBean.mzabs}"></h:inputText>
 												<div>
-												<ice:panelGroup panelTooltip="mzppmTooltip" >
-													<ice:outputText value="Mzppm (e.g. 10): " />
+												<ice:panelGroup styleClass="help" panelTooltip="mzppmTooltip" >
+													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 												</ice:panelGroup>
+												<ice:outputText value="Mzppm (e.g. 10): " />
 												<ice:panelTooltip id="mzppmTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="This is the allowed variation for the fragments
@@ -281,10 +294,11 @@
 				            		        	
 								<div id="peaks">
 									<h:panelGrid columns="2" columnClasses="inputData" style="height: 100%">
-										<div>
-											<ice:panelGroup panelTooltip="peakTooltip" >
-												<ice:outputText value="Peaks: " />
+										<div style="width:100px;">
+											<ice:panelGroup styleClass="help" panelTooltip="peakTooltip" >
+												<ice:graphicImage alt="Help" value="./images/help-browser.png" />
 											</ice:panelGroup>
+											<ice:outputText value="Peaks: " />
 											<ice:panelTooltip id="peakTooltip" styleClass="tooltip">
 												<f:facet name="body">
 														<h:outputText value="Each peak and its intensity (separated by space/tab) one line: 
@@ -483,7 +497,7 @@
 					                </f:facet>
 					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
 					                	<h:graphicImage url="#{row.image}.png"></h:graphicImage>
-										<a href=".#{row.image}_Large.png" class="tooltip" onclick="return false;"><h:graphicImage url="images/magnifier.jpg" alt="gallery thumbnail" style="border:0;"></h:graphicImage></a>
+										<a href=".#{row.image}_Large.png" class="tooltipTable" onclick="return false;"><h:graphicImage url="images/magnifier.jpg" alt="gallery thumbnail" style="border:0;"></h:graphicImage></a>
              						</ice:panelGroup>
 					            </ice:column>
 					
@@ -536,7 +550,7 @@
 														<h:outputText value="Mass: #{currentCpd.mass}" escape="false" style="padding: 3px 0px; font-size: 0.9em;"></h:outputText>
 													</div>
 													<h:graphicImage url="#{currentCpd.path}.png"></h:graphicImage>
-													<a href=".#{currentCpd.path}_Large.png" class="tooltip" onclick="return false;"><h:graphicImage url="images/magnifier.jpg" alt="gallery thumbnail" style="border:0; float: right; margin-top: -10px; position: relative;"></h:graphicImage></a>
+													<a href=".#{currentCpd.path}_Large.png" class="tooltipTable" onclick="return false;"><h:graphicImage url="images/magnifier.jpg" alt="gallery thumbnail" style="border:0; float: right; margin-top: -10px; position: relative;"></h:graphicImage></a>
 												</ice:panelGroup>
 											</ice:panelSeries>
 										</div>		
@@ -663,6 +677,44 @@
 									<strong>Fragments:</strong><br />
 									<h:outputText value="#{mzAnnotateBean.mzAnnoResultFragments}" escape="false"></h:outputText>
 							</div>
+							</ice:panelGroup>
+				        </ice:panelTab>
+				        
+				        
+				        <!-- Panel Tab 2 defined with some basic content -->
+				        <ice:panelTab label="About / News" title="About / News">
+							<ice:panelGroup>
+								<ul style="line-height: 1.9em;">
+									<li><span style="font-weight: bold;">Introduction</span>
+										<ul>
+											<li>
+												Mass spectrometry plays an important role in identifying metabolites. 
+												New instruments with more fragmentation steps and higher precision generate 
+												large amounts of data which has to be analyzed. The interpretation is a time 
+												consuming, non-trivial task where computer assistance is very helpful.
+											</li>											
+										</ul>
+									</li>
+									
+									
+									<li><span style="font-weight: bold;">Method</span>
+										<ul>
+											<li>
+												MetFrag is an open-source combinatorial fragmenter for identifying product ions 
+												from small organic compounds. It is able to process hundreds of candidate structures 
+												for a measured spectrum within a few minutes. The tool uses the peak list and the 
+												calculated mass of the compound as input and searches chemical structure databases 
+												such as [KEGG] or [PubChem] for matching molecules. For each candidate every 
+												possible fragment is created using several heuristics.
+											</li>											
+										</ul>
+									</li>
+								</ul>
+								For a detailed description:
+								<ul>
+									<li><a href="http://www.biomedcentral.com/1471-2105/11/148">Paper</a></li>
+									<li><a href="http://www.metware.org/">Metware</a></li>
+								</ul>
 							</ice:panelGroup>
 				        </ice:panelTab>
 				

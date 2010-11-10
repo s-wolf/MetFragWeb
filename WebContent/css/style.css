@@ -13,6 +13,15 @@ h1{
 	padding: 20px 0px 0px;
 }
 
+fieldset{
+	padding: 0px;
+}
+
+.help{
+	float:left;
+	padding:0 5px 0 0;
+}
+
 h1 a{
 	font-size: 25px;	
 }
@@ -80,13 +89,13 @@ h2{
 .inputText{
 	vertical-align: middle;
 	padding: 3px;
-	width: 170px;
+	width: 200px;
 }
 
 .inputSearch{
 	vertical-align: middle;
 	padding: 3px;
-	width: 90px;
+	width: 100px;
 }
 
 .inputData{
@@ -103,6 +112,9 @@ h2{
 }
 
 .tooltip{
+	border:3px solid #ccc;
+	line-height: 1.5em;
+	background-color: #FFF;
 	width: 200px; 
 	height: 200px;
 }
@@ -217,4 +229,10 @@ a:hover {
      text-indent: -10000px;
      background-image: url(../images/Feedback.png);
      overflow: hidden;
+}
+
+input[type="text"], textarea
+{
+    padding: 1px;
+    border: solid 1px #999;
 }

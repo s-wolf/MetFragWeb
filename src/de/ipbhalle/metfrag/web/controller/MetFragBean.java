@@ -1666,12 +1666,9 @@ public class MetFragBean extends SortableList{
 	
 	
 	
-	/** generates an output resource for the current workflow results, everything is stored inside a single Excel xls file
-	 *  where each workflow output ports is stored as a separate sheet  
-	 *  
-	 *  
-	 *  based on method from
-	 *  @author Michael Gerlich 
+	/**  
+	 * Write out the complete results table
+	 *  based on method from Michael Gerlich 
 	 *  */
 	private void generateXLSResource() {
 		
@@ -1798,14 +1795,12 @@ public class MetFragBean extends SortableList{
 		outputResource = xlsResource;
 
 	}
+
 	
-	
-	/** generates an output resource for the current workflow results, everything is stored inside a single Excel xls file
-	 *  where each workflow output ports is stored as a separate sheet  
+	/** Write out the fragments of one compound 
 	 *  
 	 *  
-	 *  based on method from
-	 *  @author Michael Gerlich 
+	 *  based on method from Michael Gerlich 
 	 *  */
 	private void generateXLSResourceFragments(String candidate, List<ResultPic> fragPics) {
 		
@@ -1926,7 +1921,7 @@ public class MetFragBean extends SortableList{
 	
 	
 	/**
-	 * Set the fixed attribute of this row to true 
+	 * Writes out the fragments from one compound to SDF file
 	 * 
 	 * @param event the event
 	 */

@@ -190,7 +190,7 @@ public class ParallelFragmentation implements Runnable {
 			Double massDoubleOrig = MolecularFormulaTools.getMonoisotopicMass(molFormula);
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
 			String massOrig = massDoubleOrig.toString();
-			fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, massOrig + "(Original Compound)", MolecularFormulaManipulator.getHTML(molFormula)));
+			fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, massOrig + " [" + MolecularFormulaManipulator.getHTML(molFormula) + "]" + "<br />(Original Compound)", MolecularFormulaManipulator.getHTML(molFormula)));
 			countTemp++;
 			        
 	        Fragmenter fragmenter = new Fragmenter((Vector<Peak>)spectrum.getPeakList().clone(), mzabs, mzppm, mode, true, this.metFragData.isMolFormulaRedundancyCheck(), false, false);     
