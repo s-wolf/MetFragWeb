@@ -59,9 +59,8 @@
 									 		<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData3">
 									 		
 										 		<div>
-													<ice:outputText value="Database: " />
-													<ice:panelGroup styleClass="help" panelTooltip="databaseTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="databaseTooltip" >
+														<ice:outputText value="Database: " />
 													</ice:panelGroup>
 													<ice:panelTooltip id="databaseTooltip" styleClass="tooltip">
 														<f:facet name="body">
@@ -90,10 +89,9 @@
 														<f:selectItem itemLabel="Local SDF" itemValue="sdf" />
 												</ice:selectOneRadio>
 												<ice:panelGroup rendered="#{metFragBean.SDFSelected}">
-													<ice:panelGroup styleClass="help" panelTooltip="fileUploadTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="fileUploadTooltip" >
+														<ice:outputText value="Upload SDF: " />
 													</ice:panelGroup>
-													<ice:outputText value="Upload SDF: " />
 													<ice:panelTooltip id="fileUploadTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="Upload your own SDF file
@@ -115,22 +113,20 @@
 									 		
 									 		<ice:panelGrid columns="4" id="inputData" style="width: 100%;" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputText, input, inputSearch" >
 												<div>
-												<ice:panelGroup styleClass="help" panelTooltip="massTooltip" >
-													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+												<ice:panelGroup panelTooltip="massTooltip" >
+													<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
 												</ice:panelGroup>
-												<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
 												<ice:panelTooltip id="massTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="The calculated mass. This value is used for the database search if no molecular formula is given." escape="false"/>
 													</f:facet>
 												</ice:panelTooltip>
 												</div>
-												<h:inputText style="width: 100px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
+												<h:inputText style="width:100px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
 												<div>
-												<ice:panelGroup styleClass="help" panelTooltip="searchPPMTooltip" >
-													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+												<ice:panelGroup panelTooltip="searchPPMTooltip" >
+													<ice:outputText value="Search PPM: " />
 												</ice:panelGroup>
-												<ice:outputText value="Search PPM: " />
 												<ice:panelTooltip id="searchPPMTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="This is the allowed variation if the exact mass is used for the database search. E.g.: 10" escape="false"/>
@@ -143,10 +139,9 @@
 											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData4">
 											
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup styleClass="help" panelTooltip="molFormulaTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="molFormulaTooltip" >
+														<ice:outputText value="Molecular formula: " />
 													</ice:panelGroup>
-													<ice:outputText value="Molecular formula: " />
 													<ice:panelTooltip id="molFormulaTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="This value is used for the database search if a molecular formula is given." escape="false"/>
@@ -158,11 +153,9 @@
 												</ice:panelGroup>
 												
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													
-													<ice:panelGroup styleClass="help" panelTooltip="filterBioTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="filterBioTooltip" >
+														<ice:outputText value="Only biological compounds: " />
 													</ice:panelGroup>
-													<ice:outputText value="Only biological compounds:" />
 													<ice:panelTooltip id="filterBioTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="Only use compounds which only consist of C,H,O,N,P and S
@@ -174,10 +167,9 @@
 													<h:selectBooleanCheckbox value="#{metFragBean.bioCompound}" />
 												</ice:panelGroup>
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup styleClass="help" panelTooltip="limitTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="limitTooltip" >
+														<ice:outputText value="Limit # of structures: " />
 													</ice:panelGroup>
-													<ice:outputText value="Limit # of structures: " />
 													<ice:panelTooltip id="limitTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="The processing stops when the given number of structures is reached." escape="false"/>
@@ -188,10 +180,9 @@
 													<h:inputText style="width: 300px" id="limit" value="#{metFragBean.limit}"></h:inputText>
 												</ice:panelGroup>
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<ice:panelGroup styleClass="help" panelTooltip="databaseIDTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="databaseIDTooltip" >
+														<ice:outputText value="Database ID's: " />
 													</ice:panelGroup>
-													<ice:outputText value="Database ID's: " />
 													<ice:panelTooltip id="databaseIDTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="If this ID is given only those particular compounds are tested! E.g. 
@@ -220,10 +211,9 @@
 											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData2">
 												
 												<ice:panelGroup rendered="#{metFragBean.ipbAccess}">
-													<ice:panelGroup styleClass="help" panelTooltip="tdTooltip" >
-														<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+													<ice:panelGroup panelTooltip="tdTooltip" >
+														<ice:outputText value="TreeDepth: " />
 													</ice:panelGroup>
-													<ice:outputText value="TreeDepth: " />
 													<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
 														<f:facet name="body">
 																<h:outputText value="Carsten will das." escape="false"/>
@@ -234,10 +224,9 @@
 																						
 												
 												<div>
-												<ice:panelGroup styleClass="help" panelTooltip="modeTooltip" >
-													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+												<ice:panelGroup panelTooltip="modeTooltip" >
+													<ice:outputText value="Mode: " />
 												</ice:panelGroup>
-												<ice:outputText value="Mode: " />
 												<ice:panelTooltip id="modeTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="Positive or negative mode are implemented." escape="false"/>
@@ -249,10 +238,9 @@
 														<f:selectItem itemLabel="#{msg.negMode}" itemValue="-1" />
 												</ice:selectOneRadio>
 												<div>
-												<ice:panelGroup styleClass="help" panelTooltip="mzabsTooltip" >
-													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+												<ice:panelGroup panelTooltip="mzabsTooltip" >
+													<ice:outputText value="Mzabs (e.g. 0.01): " />
 												</ice:panelGroup>
-												<ice:outputText value="Mzabs (e.g. 0.01): " />
 												<ice:panelTooltip id="mzabsTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="This is the allowed variation for the fragments
@@ -262,10 +250,9 @@
 												</div>
 												<h:inputText style="width: 300px" id="mzabs" value="#{metFragBean.mzabs}"></h:inputText>
 												<div>
-												<ice:panelGroup styleClass="help" panelTooltip="mzppmTooltip" >
-													<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+												<ice:panelGroup panelTooltip="mzppmTooltip" >
+													<ice:outputText value="Mzppm (e.g. 10): " />
 												</ice:panelGroup>
-												<ice:outputText value="Mzppm (e.g. 10): " />
 												<ice:panelTooltip id="mzppmTooltip" styleClass="tooltip">
 													<f:facet name="body">
 															<h:outputText value="This is the allowed variation for the fragments
@@ -294,11 +281,10 @@
 				            		        	
 								<div id="peaks">
 									<h:panelGrid columns="2" columnClasses="inputData" style="height: 100%">
-										<div style="width:100px;">
-											<ice:panelGroup styleClass="help" panelTooltip="peakTooltip" >
-												<ice:graphicImage alt="Help" value="./images/help-browser.png" />
+										<div style="width:50px;">
+											<ice:panelGroup panelTooltip="peakTooltip" >
+												<ice:outputText value="Peaks: " />
 											</ice:panelGroup>
-											<ice:outputText value="Peaks: " />
 											<ice:panelTooltip id="peakTooltip" styleClass="tooltip">
 												<f:facet name="body">
 														<h:outputText value="Each peak and its intensity (separated by space/tab) one line: 
@@ -307,7 +293,7 @@
 												</f:facet>
 											</ice:panelTooltip>
 										</div>
-										<h:inputTextarea id="peaks"	value="#{metFragBean.peaks}" style="height:350px; width:200px;" />
+										<h:inputTextarea id="peaks"	value="#{metFragBean.peaks}" style="height:350px; width:250px;" />
 									</h:panelGrid>
 									<ice:commandLink id="peaksDebug" action="#{metFragBean.openPopup5}" style="color:red; text-align:right; float:right;">
 										<ice:outputText value="Analyse peaks" nospan="true"/>
