@@ -55,10 +55,6 @@ public class LandingBean {
         FacesContext facesContext = persistentFacesState.getFacesContext();
         Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
         sessionMap.put("landingBean", this);
-        
-//        if(!forward)
-//        	JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),"");
-////        	JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), "var form=formOf(this);form['landingForm:_idcl'].value='landingForm:j_id22';iceSubmit(form,this,event);");
 	}
 	
 	
