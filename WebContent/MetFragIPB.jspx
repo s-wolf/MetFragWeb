@@ -701,6 +701,14 @@
 									<li><a href="http://www.biomedcentral.com/1471-2105/11/148">Paper</a></li>
 									<li><a href="http://www.metware.org/">Metware</a></li>
 								</ul>
+								
+								<hr />
+								<span style="font-weight: bold;">Changelog</span>
+									<ul>
+										<li>
+											<a href="https://github.com/s-wolf">GitHub source</a>
+										</li>											
+									</ul>
 							</ice:panelGroup>
 				        </ice:panelTab>
 				
