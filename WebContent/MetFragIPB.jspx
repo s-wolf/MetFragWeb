@@ -268,7 +268,7 @@
 											            id="progress"
 											            label="#{metFragBean.count} of #{metFragBean.hitsDatabase} compounds processed"
 											            labelComplete="Process Done"
-											            value="#{metFragBean.percentDone}"/>
+											            value="#{metFragBean.percentDone}" rendered="#{metFragBean.enabled}"/>
 													<ice:commandButton id="start_button" action="#{metFragBean.startMetFrag}" 
 														value="Process all #{metFragBean.hitsDatabase} compounds! START"
 														rendered="#{metFragBean.enabled}" style="margin: 9px 0px 5px;" onclick="this.disabled=true;"/>
@@ -349,13 +349,31 @@
 					            </ice:panelPopup>
 
 			                <br/>
-			                
+
 				            </ice:panelGrid>
 				           
-				           <!--  Data Exporter   -->
-				           <ice:outputResource image="./images/xls.png" style="float:right;" label="Save the complete results table in Excel file." resource="#{metFragBean.outputResource}" rendered="#{metFragBean.displayResults}"  
-				           		mimeType="application/vnd.ms-excel" fileName="#{metFragBean.resourceName}"  />			           
+				           <ice:panelCollapsible id="textPanel" expanded="false" style="width: 98%; margin: -10px 9px 10px;" rendered="#{metFragBean.displayResults}" >
+				                <f:facet name="header">
+				                    <ice:panelGroup>
+				                        <ice:outputText id="textHeader" value="Log"/>
+				                    </ice:panelGroup>
+				                </f:facet>
+				                <ice:panelGroup >
+				                        <ice:outputText id="textDesc"
+				                            escape="false"
+				                            value="#{metFragBean.log}"/>
+				                </ice:panelGroup>
+				           </ice:panelCollapsible>
 				           
+				           <!--  Data Exporter   -->
+				           <div style="float:right;">
+				           		<ice:panelGrid columns="2" rendered="#{metFragBean.displayResults}">
+				           			<ice:outputText value="Download complete table:" />
+				           			<ice:outputResource image="./images/xls.png" label="Save the complete results table in Excel file." resource="#{metFragBean.outputResource}"   
+						           		mimeType="application/vnd.ms-excel" fileName="#{metFragBean.resourceName}"  />
+				           		</ice:panelGrid>           
+				           </div>
+
 							<!--
 					            Specify sort columns with ice:commandSortHeader and whether to display
 					            an arrow that shows the sort direction.
@@ -488,11 +506,11 @@
 					                    <ice:outputText value="Actions"/>
 					                </f:facet>
 					                <ice:panelGroup styleClass="#{row.rowStyleClass}">
-					                	<ice:commandLink id="editlink" value="Show Frags" action="#{popupBean.openPopup2}" actionListener="#{metFragBean.listenRowAction}">
+					                	<ice:commandLink id="editlink" value="Fragments" action="#{popupBean.openPopup2}" actionListener="#{metFragBean.listenRowAction}">
 						                	<f:attribute name="currentRow" value="#{row}"/>
 						                </ice:commandLink>
 						                <br />
-						                <ice:commandLink id="calcFrags" action="#{metFragBean.openPopup6}" value="Download fragments" actionListener="#{metFragBean.listenSDFDownloadFragments}">
+						                <ice:commandLink id="calcFrags" action="#{metFragBean.openPopup6}" value="Download" actionListener="#{metFragBean.listenSDFDownloadFragments}">
 						                	<f:attribute name="currentRow" value="#{row}"/>
 						                </ice:commandLink>
              						</ice:panelGroup>

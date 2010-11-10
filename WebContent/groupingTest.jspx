@@ -26,7 +26,7 @@
 <body>
 	<ice:form>
     <ice:panelGroup styleClass="exampleBox expandableTableContainer">
-
+		
         <!-- Basic table -->
         <ice:dataTable id="dataTable"
                          value="#{resultRowManager.filesGroupRecordBeans}"

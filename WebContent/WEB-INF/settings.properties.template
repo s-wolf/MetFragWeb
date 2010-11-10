@@ -6,3 +6,4 @@ adminpass = pass
 mailserver = mail.smtp.de
 mailfrom = feedback@metfrag.bla
 mailto = support@metfrag.bla
+chemspiderToken = tokenFromChemSpider

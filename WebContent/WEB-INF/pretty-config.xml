@@ -1,21 +1,26 @@
-<pretty-config
-	xmlns="http://ocpsoft.com/prettyfaces-xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://ocpsoft.com/prettyfaces-xsd 
-	http://ocpsoft.com/xml/ns/prettyfaces/pretty-1.0.xsd">
+<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.1.0" 
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+               xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.1.0
+                                   http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.1.0.xsd">
+
 	<url-mapping id="externalStandard">
-		<pattern> / </pattern>
+		<pattern value="/" />
 		<view-id> /MetFragIPB.jspx </view-id>
 		<action>#{metFragBean.externalAccess}</action>
 	</url-mapping>	
 	<url-mapping id="external">
-		<pattern> /MetFragICE.iface </pattern>
+		<pattern value="/MetFragICE.iface" />
 		<view-id> /MetFragIPB.jspx </view-id>
 		<action>#{metFragBean.externalAccess}</action>
 	</url-mapping>	
 	<url-mapping id="intranet">
-		<pattern> /MetFragIPB.iface </pattern>
+		<pattern value="/MetFragIPB.iface" />
 		<view-id> /MetFragIPB.jspx </view-id>
 		<action>#{metFragBean.ipbAccess}</action>
 	</url-mapping>	
+	<url-mapping id="test"> 
+   		<pattern value="/" /> 
+   		<query-param name="language"> #{testBean.language} </query-param>
+   		<view-id> /test.jspx </view-id>
+	</url-mapping>
 </pretty-config>

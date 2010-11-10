@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pageflow:Pageflow xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf12384218919500" configfile="/MetFragWeb/WebContent/WEB-INF/faces-config.xml"/>
+<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf12384218919500" configfile="/MetFragWeb/WebContent/WEB-INF/faces-config.xml">
+  <nodes xsi:type="pageflow:PFPage" name="LandingPage" x="204" y="240" id="pf12892953570610" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf12892953570611 pf12893163418060" path="/LandingPage.jspx"/>
+  <nodes xsi:type="pageflow:PFPage" name="MetFragIPB" x="420" y="252" id="pf12892953570612" referenceLink="//@navigationRule.0/@navigationCase.0/@toViewId|" inlinks="pf12892953570611" path="/MetFragIPB.jspx"/>
+  <nodes xsi:type="pageflow:PFPage" name="LandingPageError" x="360" y="384" id="pf12893163418061" inlinks="pf12893163418060" path="/LandingPageError.jspx"/>
+  <links id="pf12892953570611" target="pf12892953570612" source="pf12892953570610" outcome="success" redirect="true"/>
+  <links id="pf12893163418060" target="pf12893163418061" source="pf12892953570610" outcome="failed" redirect="true"/>
+</pageflow:Pageflow>

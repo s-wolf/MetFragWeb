@@ -35,4 +35,27 @@
 		<managed-bean-class>de.ipbhalle.metfrag.web.controller.StyleBean</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>landingBean</managed-bean-name>
+		<managed-bean-class>de.ipbhalle.metfrag.web.controller.LandingBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	<navigation-rule>
+		<display-name>LandingPage</display-name>
+		<from-view-id>/LandingPage.jspx</from-view-id>
+		<navigation-case>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/MetFragIPB.jspx</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+	<navigation-rule>
+		<display-name>LandingPage</display-name>
+		<from-view-id>/LandingPage.jspx</from-view-id>
+		<navigation-case>
+			<from-outcome>failed</from-outcome>
+			<to-view-id>/LandingPageError.jspx</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
 </faces-config>

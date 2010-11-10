@@ -72,18 +72,23 @@ import jxl.write.WriteException;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.MoleculeSet;
+import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.formula.MolecularFormula;
 import org.openscience.cdk.graph.ConnectivityChecker;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.interfaces.IBond.Stereo;
 import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
@@ -122,8 +127,12 @@ import de.ipbhalle.metfrag.web.model.SortableList;
 
 
 /**
- * The Class FragSearchController.
+ * 
+ * @Named("metFragBean")
+ * @RequestScoped
+ * 
  */
+
 public class MetFragBean extends SortableList{
 	
 	private boolean molFormulaRedundancyCheck = true;
@@ -165,7 +174,7 @@ public class MetFragBean extends SortableList{
 	   "179.036 141.192\n" +
 	   "189.058 176.358\n" +
 	   "273.076 10000.000\n" +
-	   "274.083 318.003\n";	
+	   "274.083 318.003\n";
 	private PubChemLocal pubchemLocal;
 	private PubChemWebService pubchem;
 	private BeilsteinLocal beilstein;
@@ -285,6 +294,7 @@ public class MetFragBean extends SortableList{
 
 	
 	private boolean showSDFLink = false;
+	private String log = "";
 	
 	   
 	
@@ -296,7 +306,41 @@ public class MetFragBean extends SortableList{
 		persistentFacesState = PersistentFacesState.getInstance();
 		new StyleBean();
 		getConfig();
+		//set the parameters set in the landing page
+		getParameters();
 	}
+	
+	
+	/**
+	 * Landing action.
+	 *
+	 * @param ae the ae
+	 */
+	public void landingAction(ActionEvent ae)
+	{
+		getParameters();
+	}
+	
+	/**
+	 * Gets the parameters as set in the landing page.
+	 *
+	 * @return the parameters
+	 */
+	private void getParameters()
+	{
+		FacesContext facesContext = persistentFacesState.getFacesContext();
+		Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
+		if(sessionMap.containsKey("landingBean"))
+		{
+			LandingBean landingBean = (LandingBean) sessionMap.get("landingBean");
+			landingBean.setForward(true);
+			this.peaks = landingBean.getParsedPeaks();
+			this.molFormula = landingBean.getMolecularFormula();
+			this.exactMass = landingBean.getMass();
+			landingBean.setForward(false);
+		}
+	}
+	
 	
 	/**
 	 * External access. This method is called when file MetFragICE.iface is requested
@@ -563,8 +607,17 @@ public class MetFragBean extends SortableList{
 		}
 		else
 		{	
-			databaseMessage += candidates.size() + " hits!";
-			this.hitsDatabase = candidates.size();
+			if(Integer.parseInt(limit) < candidates.size())
+			{
+				hitsDatabase = Integer.parseInt(limit);
+				databaseMessage += candidates.size() + " hits!";
+			}
+			else
+			{
+				hitsDatabase = candidates.size();
+				databaseMessage += candidates.size() + " hits!";
+			}
+
 		}
 		
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), "document.getElementById(\"searchUpstream\").firstChild.disabled = false;");
@@ -649,6 +702,7 @@ public class MetFragBean extends SortableList{
 		setDisplayResults(false);
 		//reset old sort to none....so the sorting is working more than once
 		oldSort = "";
+		this.log = "";
 
 		
 		HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
@@ -959,6 +1013,27 @@ public class MetFragBean extends SortableList{
     		else if(database.equals("kegg") && databaseID.equals(""))
 			{
 				molecule = KeggWebservice.getMol(candidate, "/vol/data/pathways/kegg/mol/", !isBioCompound());
+				//fix for kegg returning also formulas with a substring of the input formula
+				if(this.molFormula != "" && molecule != null)
+				{
+					molecule = AtomContainerManipulator.removeHydrogens(molecule);
+					CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(molecule.getBuilder());
+			        for (IAtom atom : molecule.atoms()) {
+			          IAtomType type = matcher.findMatchingAtomType(molecule, atom);
+			          AtomTypeManipulator.configure(atom, type);
+			        }
+			        CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
+			        hAdder.addImplicitHydrogens(molecule);
+			        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule);
+			        
+					IMolecularFormula formula = MolecularFormulaManipulator.getMolecularFormula(molecule);
+					String formulaString = MolecularFormulaManipulator.getString(formula);
+					if(!this.molFormula.equals(formulaString))
+					{
+						this.log += "KEGG compound: " + candidate + " (" + formulaString + ") does not match given formula!<br />"; 
+						return null;
+					}
+				}
 			}
 			else if(database.equals("kegg") && !databaseID.equals(""))
 			{
@@ -1113,7 +1188,14 @@ public class MetFragBean extends SortableList{
 					double mzppmThread = Double.parseDouble(mzppm);
 					spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
 					
-					hitsDatabase = candidates.size();
+					if(Integer.parseInt(limit) < candidates.size())
+					{
+						log += "Limiting the hits (" + candidates.size() + ") to the given maximum number of " + limit + "<br />";
+						hitsDatabase = Integer.parseInt(limit);
+					}
+					else
+						hitsDatabase = candidates.size();
+						
 					percentDone = 0;
 					count[0] = 0;
 					Map<Double, Vector<String>> realScoreMap = new HashMap<Double, Vector<String>>();
@@ -1127,8 +1209,13 @@ public class MetFragBean extends SortableList{
 						String candidateID = getCandidateID(database, candidates.get(c));
 						IAtomContainer molecule = getMolecule(database, candidateID);
 						
+						
+						//there was an error retrieving this molecule or it was no biological compound
 						if(molecule == null)
+						{
+							log += "Compound: " + candidateID +  " is no biological compound or could not be retrieved!<br />"; 
 							continue;
+						}
 						
 						
 						//skip if molecule is not connected
@@ -2483,6 +2570,12 @@ public class MetFragBean extends SortableList{
 	}
 	public void setResourceNameFrags(String resourceNameFrags) {
 		this.resourceNameFrags = resourceNameFrags;
+	}
+	public void setLog(String log) {
+		this.log = log;
+	}
+	public String getLog() {
+		return log;
 	}
 
 

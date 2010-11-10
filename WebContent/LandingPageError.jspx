@@ -1,0 +1,35 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:ice="http://www.icesoft.com/icefaces/component">
+
+<ice:outputDeclaration doctypeRoot="HTML"
+                       doctypePublic="-//W3C//DTD XHTML 1.0 Transitional//EN"
+                       doctypeSystem="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+
+<html>
+<head>
+	<ice:outputStyle id="rime" href="css/rime/rime.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
+    <meta name="keywords" lang="en" content="MetFrag, MzAnnotate, Fragmenter, Chemistry, Compound" />
+	<meta name="description" content="MetFrag web interface and MzAnnotate viewer" />
+    <title>MetFrag Landing Page</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/metfrag_favicon.ico" />
+	<link href="css/style.css" rel="stylesheet" type="text/css" />	
+</head>
+
+<body>	
+		<h1>An error occured! Please check your GET parameters.</h1>
+		<ice:form id="landingForm">	
+			<br />
+			<ice:outputText value="Mass (required): #{landingBean.mass}"></ice:outputText>
+			<br />
+			<ice:outputText value="Molecular formula (optional): #{landingBean.molecularFormula}"></ice:outputText>
+			<br />
+			Peaks (required):
+			<pre>
+				<ice:outputText escape="false" value="#{landingBean.peaksHTML}"></ice:outputText>
+			</pre>
+		</ice:form>
+</body>
+</html>
+</f:view>

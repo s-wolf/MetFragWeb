@@ -270,7 +270,8 @@ public class ParallelFragmentation implements Runnable {
 			Scoring score = new Scoring(spectrum, candidateID);
 			double currentScore = 0.0;
 			if(bondEnergyScoring)
-				currentScore = score.computeScoringWithBondEnergies(hits);
+//				currentScore = score.computeScoringWithBondEnergies(hits);
+				currentScore = score.computeScoringOptimized(hits, massDoubleOrig);
 			else
 				currentScore = score.computeScoringPeakMolPair(hits);
 			
