@@ -1380,27 +1380,27 @@ public class MetFragBean extends SortableList{
 	 * 
 	 * @param resultRow the result row
 	 */
-	private void addToResultsList(String candidate, ResultRowGroupedBean filesRecordGroup)
+	private void addToResultsList(String candidate, ResultRowGroupedBean resultRowGroup)
 	{
 		ResultRow resultRow = candidateToResult.get(candidate);
-		filesRecordGroup.setBondEnergy(resultRow.getBondEnergy());
-		filesRecordGroup.setDatabaseLink(resultRow.getDatabaseLink());
-		filesRecordGroup.setExplainedPeaks(resultRow.getExplainedPeaks());
-		filesRecordGroup.setFrags(resultRow.getFrags());
-		filesRecordGroup.setHydrogenPenalty(resultRow.getHydrogenPenalty());
-		filesRecordGroup.setID(candidate);
-		filesRecordGroup.setImage(resultRow.getImage());
-		filesRecordGroup.setMass(resultRow.getMass());
-		filesRecordGroup.setMolName(resultRow.getMolName());
-		filesRecordGroup.setPeaksFound(resultRow.getPeaksFound());
-		filesRecordGroup.setPeaksFoundInt(resultRow.getPeaksFoundInt());
-		filesRecordGroup.setPeaksNotFound(resultRow.getPeaksNotFound());
-		filesRecordGroup.setPeaksNotFoundInt(resultRow.getPeaksNotFoundInt());
-		filesRecordGroup.setPeaksNotUsed(resultRow.getPeaksNotUsed());
-		filesRecordGroup.setPeaksNotUsedInt(resultRow.getPeaksNotUsedInt());
-		filesRecordGroup.setScore(resultRow.getScore());
-		filesRecordGroup.setMolecularFormula(resultRow.getMolecularFormula());
-		filesRecordGroup.setSmiles(resultRow.getSmiles());
+		resultRowGroup.setBondEnergy(resultRow.getBondEnergy());
+		resultRowGroup.setDatabaseLink(resultRow.getDatabaseLink());
+		resultRowGroup.setExplainedPeaks(resultRow.getExplainedPeaks());
+		resultRowGroup.setFrags(resultRow.getFrags());
+		resultRowGroup.setHydrogenPenalty(resultRow.getHydrogenPenalty());
+		resultRowGroup.setID(candidate);
+		resultRowGroup.setImage(resultRow.getImage());
+		resultRowGroup.setMass(resultRow.getMass());
+		resultRowGroup.setMolName(resultRow.getMolName());
+		resultRowGroup.setPeaksFound(resultRow.getPeaksFound());
+		resultRowGroup.setPeaksFoundInt(resultRow.getPeaksFoundInt());
+		resultRowGroup.setPeaksNotFound(resultRow.getPeaksNotFound());
+		resultRowGroup.setPeaksNotFoundInt(resultRow.getPeaksNotFoundInt());
+		resultRowGroup.setPeaksNotUsed(resultRow.getPeaksNotUsed());
+		resultRowGroup.setPeaksNotUsedInt(resultRow.getPeaksNotUsedInt());
+		resultRowGroup.setScore(resultRow.getScore());
+		resultRowGroup.setMolecularFormula(resultRow.getMolecularFormula());
+		resultRowGroup.setSmiles(resultRow.getSmiles());
 	}
 	
 	
