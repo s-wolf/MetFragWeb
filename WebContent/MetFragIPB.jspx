@@ -41,7 +41,7 @@
        		 </div>
 		</div>
 		<br />
-			<ice:form>			
+			<ice:form partialSubmit="true">			
 				<ice:panelGroup id="tabSetTabs">
 				    <ice:panelTabSet id="icePnlTbSet"
 				            summary="MetFrag fragmentation web interface and MzAnnotate viewer">
@@ -293,8 +293,11 @@
 												</f:facet>
 											</ice:panelTooltip>
 										</div>
-										<h:inputTextarea id="peaks"	value="#{metFragBean.peaks}" style="height:350px; width:250px;" />
+										<ice:inputTextarea id="peaks" value="#{metFragBean.peaks}" style="height:350px; width:250px;" >
+											<f:validator validatorId="spectrumValidator"/>
+										</ice:inputTextarea>
 									</h:panelGrid>
+									<ice:message id="peakListError" for="peaks"/>
 									<ice:commandLink id="peaksDebug" action="#{metFragBean.openPopup5}" style="color:red; text-align:right; float:right;">
 										<ice:outputText value="Analyse peaks" nospan="true"/>
 									</ice:commandLink>

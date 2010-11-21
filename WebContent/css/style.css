@@ -236,3 +236,6 @@ input[type="text"], textarea
     padding: 1px;
     border: solid 1px #999;
 }
+
+.iceMsgError {
+	color: red;
