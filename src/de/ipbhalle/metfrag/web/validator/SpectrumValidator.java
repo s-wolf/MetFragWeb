@@ -9,6 +9,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
+import com.icesoft.faces.context.effects.JavascriptContext;
+
 
 public class SpectrumValidator implements Validator {
 	private static final String PEAKLIST_PATTERN = "([0-9]*[\\.,]?[0-9]+\\s*){2,3}"; 
@@ -28,11 +30,12 @@ public class SpectrumValidator implements Validator {
 			if(!matcher.matches())
 			{
 				FacesMessage msg = new FacesMessage("Spectrum validation failed.", "Invalid Spectrum format. Error in line " + (i+1));
+				JavascriptContext.addJavascriptCall(context, "document.getElementById(\"searchUpstream\").firstChild.disabled = true;");
 				msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-				throw new ValidatorException(msg);
+				throw new ValidatorException(msg);	
 			}
-			
 		}
+		JavascriptContext.addJavascriptCall(context, "document.getElementById(\"searchUpstream\").firstChild.removeAttribute(\"disabled\");");
 		System.out.println("Spectrum is valid");
 	}
 }

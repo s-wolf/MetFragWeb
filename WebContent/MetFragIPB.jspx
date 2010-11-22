@@ -197,7 +197,7 @@
 												<!-- Progress bar and command button -->
 										        <div id="searchUpstream">
 												        <ice:commandButton action="#{metFragBean.start}" id="startButton"
-															value="Search upstream DB"
+															value="Search upstream DB" 
 															style="margin: 9px 0px 5px;" onclick="this.disabled=true;" />
 												</div>
 												<div>
