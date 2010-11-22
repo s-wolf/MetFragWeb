@@ -62,6 +62,6 @@
 		<description>Validates the entered m/z intensities values</description>
 		<display-name>spectrumValidator</display-name>
 		<validator-id>spectrumValidator</validator-id>
-		<validator-class>de.ipbhalle.demetfrag.web.validator.SpectrumValidator</validator-class>	
+		<validator-class>de.ipbhalle.metfrag.web.validator.SpectrumValidator</validator-class>	
 	</validator>
 </faces-config>

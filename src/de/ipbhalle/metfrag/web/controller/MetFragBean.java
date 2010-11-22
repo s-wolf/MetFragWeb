@@ -20,8 +20,6 @@
 */
 package de.ipbhalle.metfrag.web.controller;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -54,7 +52,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
-import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
@@ -93,18 +90,15 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import com.icesoft.faces.component.inputfile.FileInfo;
 import com.icesoft.faces.component.inputfile.InputFile;
-import com.icesoft.faces.component.outputresource.OutputResource;
 import com.icesoft.faces.context.Resource;
 import com.icesoft.faces.context.effects.JavascriptContext;
 import com.icesoft.faces.webapp.xmlhttp.PersistentFacesState;
-import com.icesoft.faces.webapp.xmlhttp.RenderingException;
 
 import de.ipbhalle.metfrag.buildinfo.BuildInfo;
 import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
 import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
 import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 import de.ipbhalle.metfrag.main.MetFrag;
-import de.ipbhalle.metfrag.main.MetFragResult;
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
 import de.ipbhalle.metfrag.molDatabase.PubChemLocal;
