@@ -41,6 +41,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IMolecule;
+import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
@@ -151,12 +152,16 @@ public class ParallelFragmentation implements Runnable {
 	        try
 	        {
 		        //add hydrogens
-		        CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(molecule.getBuilder());
-	
-		        for (IAtom atom : molecule.atoms()) {
-		          IAtomType type = matcher.findMatchingAtomType(molecule, atom);
-		          AtomTypeManipulator.configure(atom, type);
-		        }
+		        synchronized (molecule) {
+	        		CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(molecule.getBuilder());
+		            for (IAtom atom : molecule.atoms()) {
+		                if (!(atom instanceof IPseudoAtom)) {
+		                    IAtomType matched = matcher.findMatchingAtomType(molecule, atom);
+		                    if (matched != null) AtomTypeManipulator.configure(atom, matched);
+		                }
+		            }
+				}
+		        
 		        CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
 		        hAdder.addImplicitHydrogens(molecule);
 		        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule);
