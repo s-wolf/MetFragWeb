@@ -231,7 +231,7 @@ public class ParallelFragmentation implements Runnable {
 			//now find corresponding fragments to the mass
 			AssignFragmentPeak afp = new AssignFragmentPeak();
 			afp.setHydrogenTest(true);
-			afp.assignFragmentPeak(fragments, cleanedPeakList, mzabs, mzppm, spectrum.getMode(), true);
+			afp.assignFragmentPeak(fragments, cleanedPeakList, mzabs, mzppm, spectrum.getMode(), true, spectrum.isPositive());
 			Vector<PeakMolPair> hits = afp.getHits();
 			
 			

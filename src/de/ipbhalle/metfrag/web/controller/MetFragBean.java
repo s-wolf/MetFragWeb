@@ -107,6 +107,7 @@ import de.ipbhalle.metfrag.read.SDFFile;
 import de.ipbhalle.metfrag.scoring.Scoring;
 import de.ipbhalle.metfrag.similarity.Similarity;
 import de.ipbhalle.metfrag.similarity.SimilarityGroup;
+import de.ipbhalle.metfrag.similarity.TanimotoClusterer;
 import de.ipbhalle.metfrag.spectrum.WrapperSpectrum;
 import de.ipbhalle.metfrag.tools.MolecularFormulaTools;
 import de.ipbhalle.metfrag.tools.PPMTool;
@@ -135,6 +136,7 @@ public class MetFragBean extends SortableList{
 	private String limit = "100";
 	private String peakListString;
 	private String mode = "1";
+	private String charge = "+";
 	private String exactMass = "272.06847";
 	private int currentRow;
 	private ResultRow currentItem;
@@ -473,6 +475,7 @@ public class MetFragBean extends SortableList{
     	if(newValue.equals("sdf"))
     	{
     		sdfSelect = true;
+    		this.exactMass = "2000";
     	}
     	else
     	{
@@ -1107,7 +1110,14 @@ public class MetFragBean extends SortableList{
 			formula = MolecularFormulaManipulator.getMolecularFormula(molFormula.trim(), formula);
 			exactMassThread = MolecularFormulaTools.getMonoisotopicMass(formula);
 		}
-    	WrapperSpectrum spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
+		
+		//get charge
+		boolean isPositive = true;
+		if(charge.contains("-"))
+			isPositive = false;
+			
+		
+    	WrapperSpectrum spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread, isPositive);
     	Vector<Peak> peakListParsed = spectrum.getPeakList();
     	parsedPeaksDebug = "<table border='0' cellspacing='4' cellpadding='6'>" +
     			"<tr>" +
@@ -1180,7 +1190,13 @@ public class MetFragBean extends SortableList{
 					}
 					double mzabsThread = Double.parseDouble(mzabs);
 					double mzppmThread = Double.parseDouble(mzppm);
-					spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread);
+					
+					//get charge
+					boolean isPositive = true;
+					if(charge.contains("-"))
+						isPositive = false;
+					
+					spectrum = new WrapperSpectrum(peaks, Integer.parseInt(mode), exactMassThread, isPositive);
 					
 					if(Integer.parseInt(limit) < candidates.size())
 					{
@@ -1287,31 +1303,24 @@ public class MetFragBean extends SortableList{
 			        FacesContext facesContext = persistentFacesState.getFacesContext();
 			        Map<String, Object> sessionMap = facesContext.getExternalContext().getSessionMap();
 			        StyleBean styleBean = (StyleBean) sessionMap.get("styleBean");
-			        
-			       
-			        Similarity sim = new Similarity(candidateToStructure, 0.95f, true);
-			        
+
 					if(!bondEnergyScoring)
 						normalize();
 					else
 						normalizeWithBondEnergy(realScoreMap);
-			        
-			        
+			        		
+					Similarity sim = new Similarity(candidateToStructure, true, false);
 			        for (Double score : realScoreMap.keySet()) {
 						List<String> candidates = realScoreMap.get(score);
-						List<SimilarityGroup> simGroups = sim.getTanimotoDistanceList(candidates);
-						for (SimilarityGroup similarityGroup : simGroups) {
-							if(similarityGroup.getSimilarCompounds().size() == 0)
-							{
-								ResultRowGroupedBean filesRecordGroup = new ResultRowGroupedBean("",
-										"",
-				                        styleBean,
-				                        SPACER_IMAGE, SPACER_IMAGE,
-				                        resultRowGroupedBeans, false);
-								String candidate = similarityGroup.getSimilarCandidatesWithBase().get(0);
-								addToResultsList(candidate, filesRecordGroup);								
-							}
-							else
+						
+						
+						TanimotoClusterer tanimoto = new TanimotoClusterer(sim.getSimilarityMatrix(), sim.getCandidateToPosition());
+						List<SimilarityGroup> clusteredCpds = tanimoto.clusterCandididates(candidates, 0.95f);
+						List<SimilarityGroup> clusteredCpdsCleaned = tanimoto.getCleanedClusters(clusteredCpds);
+
+						for (SimilarityGroup similarityGroup : clusteredCpdsCleaned) {
+							//cluster
+							if(similarityGroup.getSimilarCompounds().size() > 1)
 							{
 								ResultRowGroupedBean filesRecordGroup = new ResultRowGroupedBean(GROUP_INDENT_STYLE_CLASS,
 				                        GROUP_ROW_STYLE_CLASS,
@@ -1323,9 +1332,21 @@ public class MetFragBean extends SortableList{
 								System.out.print("Group of " + similarityGroup.getSimilarCompounds().size() + " " + similarityGroup.getCandidateTocompare() +  ": ");
 								for (int i = 0; i < similarityGroup.getSimilarCompounds().size(); i++) {
 									ResultRowGroupedBean childFilesGroup = new ResultRowGroupedBean(CHILD_INDENT_STYLE_CLASS, CHILD_ROW_STYLE_CLASS);
-									addToResultsList(similarityGroup.getSimilarCompounds().get(i), childFilesGroup);
+									addToResultsList(similarityGroup.getSimilarCompounds().get(i).getCompoundID(), childFilesGroup);
 							        filesRecordGroup.addChildFilesGroupRecord(childFilesGroup);
 								}
+							}
+							//single
+							else
+							{
+								ResultRowGroupedBean filesRecordGroup = new ResultRowGroupedBean("",
+										"",
+				                        styleBean,
+				                        SPACER_IMAGE, SPACER_IMAGE,
+				                        resultRowGroupedBeans, false);
+								String candidate = similarityGroup.getSimilarCompounds().get(0).getCompoundID();
+								addToResultsList(candidate, filesRecordGroup);		
+								
 							}
 						}
 					}
@@ -1927,8 +1948,12 @@ public class MetFragBean extends SortableList{
 		String id = row.getID();
 		resourceNameSDF = id + "_" + "fragments.sdf";
 		try {
-
-			Vector<PeakMolPair> fragments = MetFrag.startConvenienceWeb(this.peaks, row.getSmiles(), Integer.parseInt(this.mode), molFormulaRedundancyCheck, Double.parseDouble(mzabs), Double.parseDouble(mzppm), Integer.parseInt(this.treeDepth));
+			
+			//get charge
+			boolean isPositive = true;
+			if(charge.contains("-"))
+				isPositive = false;
+			Vector<PeakMolPair> fragments = MetFrag.startConvenienceWeb(this.peaks, row.getSmiles(), Integer.parseInt(this.mode), molFormulaRedundancyCheck, Double.parseDouble(mzabs), Double.parseDouble(mzppm), Integer.parseInt(this.treeDepth), isPositive);
 			MoleculeSet setOfFragments = new MoleculeSet();
 			
 			ExternalContext ec = fc.getExternalContext();
@@ -2565,6 +2590,12 @@ public class MetFragBean extends SortableList{
 	}
 	public String getLog() {
 		return log;
+	}
+	public void setCharge(String charge) {
+		this.charge = charge;
+	}
+	public String getCharge() {
+		return charge;
 	}
 
 

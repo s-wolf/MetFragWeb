@@ -236,7 +236,27 @@
 												<ice:selectOneRadio value="#{metFragBean.mode}">
 														<f:selectItem itemLabel="#{msg.posMode}" itemValue="1" />
 														<f:selectItem itemLabel="#{msg.negMode}" itemValue="-1" />
+														<f:selectItem itemLabel="#{msg.zeroMode}" itemValue="0" />
 												</ice:selectOneRadio>
+												
+												
+												<div>
+												<ice:panelGroup panelTooltip="chargeTooltip" >
+													<ice:outputText value="Charge: " />
+												</ice:panelGroup>
+												<ice:panelTooltip id="chargeTooltip" styleClass="tooltip">
+													<f:facet name="body">
+															<h:outputText value="Positive or negative can be used with the 3 different modes:
+															e.g. you measured a [M+H]+ spectrum then you choose '[M+H]' and charge '+'." escape="false"/>
+													</f:facet>
+												</ice:panelTooltip>
+												</div>
+												<ice:selectOneRadio value="#{metFragBean.charge}">
+														<f:selectItem itemLabel="#{msg.chargePos}" itemValue="+" />
+														<f:selectItem itemLabel="#{msg.chargeNeg}" itemValue="-" />
+												</ice:selectOneRadio>
+												
+												
 												<div>
 												<ice:panelGroup panelTooltip="mzabsTooltip" >
 													<ice:outputText value="Mzabs (e.g. 0.01): " />
