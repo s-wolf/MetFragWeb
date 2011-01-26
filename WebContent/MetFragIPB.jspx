@@ -111,7 +111,7 @@
 									 		
 									 		</h:panelGrid>
 									 		
-									 		<ice:panelGrid columns="4" id="inputData" style="width: 100%;" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputText, input, inputSearch" >
+									 		<ice:panelGrid columns="4" id="inputData" style="width: 525px;" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputText, input, inputSearch, inputSearch" >
 												<div>
 												<ice:panelGroup panelTooltip="massTooltip" >
 													<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
@@ -122,7 +122,15 @@
 													</f:facet>
 												</ice:panelTooltip>
 												</div>
-												<h:inputText style="width:100px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
+												<div>
+													<div>
+														<h:inputText style="width:100px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
+													
+													<div style="margin-top:2px; float:right;">
+														<ice:commandLink id="MassCalc" action="#{metFragBean.openPopup7}" style="color:red;"><img src="./images/accessories-calculator.png" alt="Calculate"/></ice:commandLink>
+													</div>
+													</div>
+												</div>
 												<div>
 												<ice:panelGroup panelTooltip="searchPPMTooltip" >
 													<ice:outputText value="Search PPM: " />
@@ -135,6 +143,34 @@
 												</div>
 												<h:inputText style="width: 72px" id="searchPPM" value="#{metFragBean.searchPPM}"></h:inputText>		
 											</ice:panelGrid>
+											
+											<!-- Mass calculation panel -->		
+								        	<ice:panelPopup draggable="false" resizable="false" autoCentre="true" visible="#{metFragBean.visible7}" modal="true">
+								                <f:facet name="header">
+								                	<div>
+								                        <ice:outputText style="color: #000;" value="Feedback"/>
+								                        <div style="float:right; padding: 2px;">
+								                        	<ice:commandButton image="images/modal/close.png" action="#{metFragBean.closePopup7}" title="Close this popup"/>
+								                        </div>
+								                    </div>
+								                </f:facet>
+								                <f:facet name="body">
+										            <h:panelGrid columns="2" columnClasses="feedbackCol">
+														<ice:outputText value="Parent ion"/>
+														<ice:selectOneMenu value="#{metFragBean.massAdduct}">
+															<f:selectItem itemLabel="[M+H]+" itemValue="1.007825035"/>
+															<f:selectItem itemLabel="[M+Na]+" itemValue="22.9897677"/>
+															<f:selectItem itemLabel="[M+K]+" itemValue="38.9637074"/>
+														</ice:selectOneMenu>
+														<ice:outputText value="Measured mass"/>
+														<ice:inputText value="#{metFragBean.massInput}"></ice:inputText>
+														<ice:outputText value="Neutral exact mass" />
+														<ice:inputText disabled="true" value="#{metFragBean.massOutput}" />
+														<ice:commandButton action="#{metFragBean.massCalculation}" value="Calculate"></ice:commandButton>
+														<ice:commandButton action="#{metFragBean.setCalculatedMass}" value="Use Value"></ice:commandButton>
+										            </h:panelGrid>  
+								                </f:facet>
+								            </ice:panelPopup>
 											
 											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData4">
 											

@@ -109,6 +109,7 @@ import de.ipbhalle.metfrag.similarity.Similarity;
 import de.ipbhalle.metfrag.similarity.SimilarityGroup;
 import de.ipbhalle.metfrag.similarity.TanimotoClusterer;
 import de.ipbhalle.metfrag.spectrum.WrapperSpectrum;
+import de.ipbhalle.metfrag.tools.Constants;
 import de.ipbhalle.metfrag.tools.MolecularFormulaTools;
 import de.ipbhalle.metfrag.tools.PPMTool;
 import de.ipbhalle.metfrag.web.buildinfo.BuildInfoWeb;
@@ -230,6 +231,16 @@ public class MetFragBean extends SortableList{
 	public void setVisible6(boolean visible6) { this.visible6 = visible6; }
 	public void closePopup6() {visible6 = false;}
     public void openPopup6() { visible6 = true;}
+    
+    //mass calculator
+    private boolean visible7 = false;
+    public boolean isVisible7() { return visible7; }
+	public void setVisible7(boolean visible7) { this.visible7 = visible7; }
+	public void closePopup7() {visible7 = false;}
+    public void openPopup7() { visible7 = true;}
+    private String massInput;
+    private String massOutput;
+    private String massAdduct;
     
     private List<FeedbackRow> feedbackList = null; 
     private FeedbackRow currentFeedback = null;
@@ -407,6 +418,28 @@ public class MetFragBean extends SortableList{
 		adminUserInput = "";
 		adminPassInput = "";
 		setAdminError("");
+	}
+	
+	
+	/**
+	 * Mass calculation of the parent ion adduct to monoisotopic neutral mass.
+	 */
+	public void massCalculation()
+	{
+		double electronMass = Constants.ELECTRON_MASS;
+		double temp = Double.parseDouble(massInput) - Double.parseDouble(massAdduct);
+		this.massOutput = Double.toString(temp);
+	}
+	
+	/**
+	 * Mass calculation of the parent ion adduct to monoisotopic neutral mass.
+	 */
+	public void setCalculatedMass()
+	{
+		double electronMass = Constants.ELECTRON_MASS;
+		double temp = Double.parseDouble(massInput) - Double.parseDouble(massAdduct);
+		this.exactMass = Double.toString(temp);
+		closePopup7();
 	}
 	
 	
@@ -2596,6 +2629,24 @@ public class MetFragBean extends SortableList{
 	}
 	public String getCharge() {
 		return charge;
+	}
+	public void setMassInput(String massInput) {
+		this.massInput = massInput;
+	}
+	public String getMassInput() {
+		return massInput;
+	}
+	public void setMassOutput(String massOutput) {
+		this.massOutput = massOutput;
+	}
+	public String getMassOutput() {
+		return massOutput;
+	}
+	public void setMassAdduct(String massAdduct) {
+		this.massAdduct = massAdduct;
+	}
+	public String getMassAdduct() {
+		return massAdduct;
 	}
 
 
