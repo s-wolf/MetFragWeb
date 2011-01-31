@@ -110,7 +110,32 @@
 												</ice:panelGroup>
 									 		
 									 		</h:panelGrid>
-
+									 		
+									 		
+									 		<ice:panelGrid columns="4" id="inputData" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputText, input, input, input" >
+										 		<div>
+													<ice:panelGroup panelTooltip="massTooltip" >
+														<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
+													</ice:panelGroup>
+													<ice:panelTooltip id="massTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="The calculated mass. This value is used for the database search if no molecular formula is given." escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
+												</div>
+												<h:inputText style="width:130px" id="exactMass" value="#{metFragBean.exactMass}"></h:inputText>
+												<div>
+													<ice:panelGroup panelTooltip="searchPPMTooltip" >
+														<ice:outputText value="Search PPM: " />
+													</ice:panelGroup>
+													<ice:panelTooltip id="searchPPMTooltip" styleClass="tooltip">
+														<f:facet name="body">
+																<h:outputText value="This is the allowed variation if the exact mass is used for the database search. E.g.: 10" escape="false"/>
+														</f:facet>
+													</ice:panelTooltip>
+												</div>
+												<h:inputText style="width: 72px" id="searchPPM" value="#{metFragBean.searchPPM}"></h:inputText>	
+											</ice:panelGrid>
 											
 											<h:panelGrid columns="2" columnClasses="inputText, input" id="inputData4">
 											
@@ -277,19 +302,19 @@
 				            		        	
 								<div id="peaks">
 									
-									<ice:panelGrid columns="4" id="inputData" style="width: 400px;" rendered="#{not metFragBean.SDFSelected}" columnClasses="inputSearch, inputSearchRight, inputSearchRight, inputSearchRight" >
-										
+									<ice:panelGrid columns="4" id="inputParentIon"  columnClasses="inputSearchRight" >
 										<div>
-											<ice:panelGroup panelTooltip="adductTooltip" >
-												<ice:outputText value="Adduct: " />
+											<ice:panelGroup panelTooltip="massInputTooltip" >
+												<ice:outputText value="Parent ion: " style="width: 140px;"/>
 											</ice:panelGroup>
-											<ice:panelTooltip id="adductTooltip" styleClass="tooltip">
+											<ice:panelTooltip id="massInputTooltip" styleClass="tooltip">
 												<f:facet name="body">
-														<h:outputText value="Choose the type of parent ion you measured. This value is then converted to the neutral exact mass. If you already have the neutral mass then choose 'Neutral'" escape="false"/>
+														<h:outputText value="This can be used to calculate the neutral exact mass of the parent ion. Enter the mass of the parent ion and the adduct measured. By pressing calculate button the neutral exact mass on the left is updated with the corresponding value!" escape="false"/>
 												</f:facet>
 											</ice:panelTooltip>
 										</div>
-										<ice:selectOneMenu style="width: 72px" id="adduct" value="#{metFragBean.massAdduct}" onchange="calculateMass();" >
+										<ice:inputText style="width:72px" id="exactMassInput" value="#{metFragBean.massInput}"></ice:inputText>
+										<ice:selectOneMenu style="width: 72px" id="adduct" value="#{metFragBean.massAdduct}" >
 											<f:selectItem itemLabel="Neutral" itemValue="0"/>
 											<f:selectItem itemLabel="[M+]+" itemValue="0.00054858"/>
 											<f:selectItem itemLabel="[M+H]+" itemValue="-1.008373615"/>
@@ -300,42 +325,7 @@
 											<f:selectItem itemLabel="[M-Na]-" itemValue="22.98921912"/>
 											<f:selectItem itemLabel="[M-K]-" itemValue="38.96315882"/>
 										</ice:selectOneMenu>
-										<div>
-											<ice:panelGroup panelTooltip="massInputTooltip" >
-												<ice:outputText value="Parent ion: " style="width: 140px;"/>
-											</ice:panelGroup>
-											<ice:panelTooltip id="massInputTooltip" styleClass="tooltip">
-												<f:facet name="body">
-														<h:outputText value="The parent ion mass or the neutral exact mass." escape="false"/>
-												</f:facet>
-											</ice:panelTooltip>
-										</div>
-										<ice:inputText style="width:72px" id="exactMassInput" value="#{metFragBean.massInput}" onchange="calculateMass();"></ice:inputText>
-										
-										
-										<div>
-											<ice:panelGroup panelTooltip="massTooltip" >
-												<ice:outputText value="Neutral exact mass: " style="width: 170px;"/>
-											</ice:panelGroup>
-											<ice:panelTooltip id="massTooltip" styleClass="tooltip">
-												<f:facet name="body">
-														<h:outputText value="The calculated mass. This value is used for the database search if no molecular formula is given." escape="false"/>
-												</f:facet>
-											</ice:panelTooltip>
-										</div>
-										<ice:inputText style="width:72px" id="exactMass" value="#{metFragBean.exactMass}"></ice:inputText>
-										
-										<div>
-										<ice:panelGroup panelTooltip="searchPPMTooltip" >
-											<ice:outputText value="Search PPM: " />
-										</ice:panelGroup>
-										<ice:panelTooltip id="searchPPMTooltip" styleClass="tooltip">
-											<f:facet name="body">
-													<h:outputText value="This is the allowed variation if the exact mass is used for the database search. E.g.: 10" escape="false"/>
-											</f:facet>
-										</ice:panelTooltip>
-										</div>
-										<ice:inputText style="width: 72px" id="searchPPM" value="#{metFragBean.searchPPM}"></ice:inputText>		
+										<ice:commandButton onclick="calculateMass();" value="Calculate"></ice:commandButton>
 									</ice:panelGrid>
 								
 									<ice:panelGrid columns="2" style="height: 100%; vertical-align: top" columnClasses="inputPeak">
@@ -351,13 +341,13 @@
 												</f:facet>
 											</ice:panelTooltip>
 										</div>
-										<ice:inputTextarea id="peaks" value="#{metFragBean.peaks}" style="height:250px; width:250px;" partialSubmit="true">
+										<ice:inputTextarea id="peaks" value="#{metFragBean.peaks}" style="height:350px; width:240px;" partialSubmit="true">
 											<f:validator validatorId="spectrumValidator"/>
 										</ice:inputTextarea>
 									</ice:panelGrid>
 									<ice:message id="peakListError" for="peaks"/>
 									<ice:commandLink id="peaksDebug" action="#{metFragBean.openPopup5}" style="color:red; text-align:right; float:right;">
-										<ice:outputText value="Analyse peaks" nospan="true"/>
+										<ice:outputText value="View spectrum" nospan="true"/>
 									</ice:commandLink>
 							 	</div>
 								 		
