@@ -16,6 +16,8 @@ public class LandingBean {
 	private String peaksHTML;
 	private String mass;
 	private String molecularFormula;
+	private String database;
+	private String databaseID; 
 	private HttpServletRequest requestMap;
 	private boolean error;
 	private boolean forward;
@@ -50,6 +52,14 @@ public class LandingBean {
 		String[] formulaArray = (String[]) requestMap.getParameterMap().get("formula");
 		if(formulaArray != null)
 			molecularFormula = formulaArray[0];
+		
+		String[] databaseArray = (String[]) requestMap.getParameterMap().get("database");
+		if(databaseArray != null)
+			database = databaseArray[0];
+		
+		String[] databaseIDArray = (String[]) requestMap.getParameterMap().get("databaseID");
+		if(databaseIDArray != null)
+			databaseID = databaseIDArray[0];
 		
 		PersistentFacesState persistentFacesState = PersistentFacesState.getInstance();
         FacesContext facesContext = persistentFacesState.getFacesContext();
@@ -148,6 +158,22 @@ public class LandingBean {
 
 	public String getPeaksHTML() {
 		return peaksHTML;
+	}
+
+	public void setDatabaseID(String databaseID) {
+		this.databaseID = databaseID;
+	}
+
+	public String getDatabaseID() {
+		return databaseID;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
+	}
+
+	public String getDatabase() {
+		return database;
 	}
 	
 }

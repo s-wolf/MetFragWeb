@@ -28,3 +28,9 @@ function backToTop(first) {
         	window.setTimeout("backToTop(false)", 50);
     }
 }
+
+function calculateMass() {
+	var adduct = parseFloat(jQuery('#mainForm\\:icePnlTbSet\\:0\\:adduct').val());
+	var exactMass = parseFloat(jQuery('#mainForm\\:icePnlTbSet\\:0\\:exactMassInput').val());
+	jQuery('#mainForm\\:icePnlTbSet\\:0\\:exactMass').val(adduct + exactMass);
+}

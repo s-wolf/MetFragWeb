@@ -232,15 +232,9 @@ public class MetFragBean extends SortableList{
 	public void closePopup6() {visible6 = false;}
     public void openPopup6() { visible6 = true;}
     
-    //mass calculator
-    private boolean visible7 = false;
-    public boolean isVisible7() { return visible7; }
-	public void setVisible7(boolean visible7) { this.visible7 = visible7; }
-	public void closePopup7() {visible7 = false;}
-    public void openPopup7() { visible7 = true;}
-    private String massInput;
-    private String massOutput;
+    //masses
     private String massAdduct;
+    private String massInput;
     
     private List<FeedbackRow> feedbackList = null; 
     private FeedbackRow currentFeedback = null;
@@ -344,6 +338,8 @@ public class MetFragBean extends SortableList{
 			this.peaks = landingBean.getParsedPeaks();
 			this.molFormula = landingBean.getMolecularFormula();
 			this.exactMass = landingBean.getMass();
+			this.databaseID = landingBean.getDatabaseID();
+			this.database = landingBean.getDatabase();
 			landingBean.setForward(false);
 		}
 	}
@@ -418,28 +414,6 @@ public class MetFragBean extends SortableList{
 		adminUserInput = "";
 		adminPassInput = "";
 		setAdminError("");
-	}
-	
-	
-	/**
-	 * Mass calculation of the parent ion adduct to monoisotopic neutral mass.
-	 */
-	public void massCalculation()
-	{
-		double electronMass = Constants.ELECTRON_MASS;
-		double temp = Double.parseDouble(massInput) - Double.parseDouble(massAdduct);
-		this.massOutput = Double.toString(temp);
-	}
-	
-	/**
-	 * Mass calculation of the parent ion adduct to monoisotopic neutral mass.
-	 */
-	public void setCalculatedMass()
-	{
-		double electronMass = Constants.ELECTRON_MASS;
-		double temp = Double.parseDouble(massInput) - Double.parseDouble(massAdduct);
-		this.exactMass = Double.toString(temp);
-		closePopup7();
 	}
 	
 	
@@ -542,7 +516,7 @@ public class MetFragBean extends SortableList{
     public String getFileLocation() {
         return fileLocation;
     }
-	
+
 	
 	/**
 	 * Start computing
@@ -566,13 +540,15 @@ public class MetFragBean extends SortableList{
 		
 		//peakListString = peaks;
 		double exactMass = 0.0;
-		if(this.exactMass != "")
+		if(this.massInput != "")
+			exactMass = Double.parseDouble(this.massAdduct) + Double.parseDouble(this.massInput);
+		else
 			exactMass = Double.parseDouble(this.exactMass);
 		
 		//double mzabs = Double.parseDouble(this.mzabs);
 		//double mzppm = Double.parseDouble(this.mzppm);
 		
-		System.out.println("Search PPM: " + this.searchPPM);
+		System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 		List<String> notFound = null;
 		
 		if(isSDFFile)
@@ -599,14 +575,15 @@ public class MetFragBean extends SortableList{
 				candidates = ChemSpider.getChemspiderByMass(exactMass, (PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM))));
 		}
 		else if(this.database.equals("pubchem") && databaseID.equals(""))
-		{
-			double lowerBound = exactMass - PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM)); 
-			double upperBound = exactMass + PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM));
-			
+		{			
 			if(this.molFormula != "")
 				candidates = pubchem.getHitsbySumFormula(molFormula, false);
 			else
+			{
+				double lowerBound = exactMass - PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM)); 
+				double upperBound = exactMass + PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM));
 				candidates = pubchemLocal.getHitsVector(lowerBound, upperBound);
+			}
 		}
 		else if(this.database.equals("beilstein") && databaseID.equals(""))
 		{
@@ -2635,12 +2612,6 @@ public class MetFragBean extends SortableList{
 	}
 	public String getMassInput() {
 		return massInput;
-	}
-	public void setMassOutput(String massOutput) {
-		this.massOutput = massOutput;
-	}
-	public String getMassOutput() {
-		return massOutput;
 	}
 	public void setMassAdduct(String massAdduct) {
 		this.massAdduct = massAdduct;

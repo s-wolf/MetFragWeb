@@ -95,7 +95,18 @@ h2{
 .inputSearch{
 	vertical-align: middle;
 	padding: 3px;
+	width: 110px;
+}
+
+.inputSearchRight{
+	vertical-align: middle;
 	width: 80px;
+}
+
+.inputPeak {
+    padding: 3px;
+    vertical-align: top;
+    width: 115px;
 }
 
 .inputData{

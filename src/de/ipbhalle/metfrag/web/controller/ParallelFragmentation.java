@@ -195,6 +195,13 @@ public class ParallelFragmentation implements Runnable {
 			Double massDoubleOrig = MolecularFormulaTools.getMonoisotopicMass(molFormula);
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
 			String massOrig = massDoubleOrig.toString();
+			
+			String chargeString = "";
+			if(spectrum.isPositive())
+				chargeString = "+";
+			else
+				chargeString = "-";
+			
 			fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, massOrig + " [" + MolecularFormulaManipulator.getHTML(molFormula) + "]" + "<br />(Original Compound)", MolecularFormulaManipulator.getHTML(molFormula)));
 			countTemp++;
 			        
@@ -257,12 +264,8 @@ public class ParallelFragmentation implements Runnable {
 				Double massDouble = MolecularFormulaTools.getMonoisotopicMass(fragMolFormula);
 				
 				massDouble = (double)Math.round(((mode * MolecularFormulaTools.getMonoisotopicMass("H1")) + massDouble)*10000)/10000;
-				
-				String modeString = "+";
-				if(mode.equals(-1))
-					modeString = "-";
-				
-				fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, peakMolPair.getMatchedMass() + " [" + peakMolPair.getMolecularFormula() + "] <br />(" + PPMTool.getPPMWeb(peakMolPair.getMatchedMass(), peakMolPair.getPeak().getMass()) + " ppm)", MolecularFormulaManipulator.getHTML(fragMolFormula)));
+								
+				fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, peakMolPair.getMatchedMass() + " [" + peakMolPair.getMolecularFormula() + "]" + chargeString + "<br />(" + PPMTool.getPPMWeb(peakMolPair.getMatchedMass(), peakMolPair.getPeak().getMass()) + " ppm)", MolecularFormulaManipulator.getHTML(fragMolFormula)));
 				//ds.drawStructure(peakMolPair.getFragment(), countTemp);
 				countTemp++;
 			}
