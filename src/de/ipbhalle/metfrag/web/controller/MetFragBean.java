@@ -538,17 +538,7 @@ public class MetFragBean extends SortableList{
 		this.pubchem = new PubChemWebService();
 		
 		
-		//peakListString = peaks;
-		double exactMass = 0.0;
-		if(this.massInput != "")
-			exactMass = Double.parseDouble(this.massAdduct) + Double.parseDouble(this.massInput);
-		else
-			exactMass = Double.parseDouble(this.exactMass);
 		
-		//double mzabs = Double.parseDouble(this.mzabs);
-		//double mzppm = Double.parseDouble(this.mzppm);
-		
-		System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 		List<String> notFound = null;
 		
 		if(isSDFFile)
@@ -565,14 +555,40 @@ public class MetFragBean extends SortableList{
 			if(this.molFormula != "")
 				candidates = KeggWebservice.KEGGbySumFormula(this.molFormula);
 			else
+			{
+				//peakListString = peaks;
+				double exactMass = 0.0;
+				if(this.massInput != "")
+					exactMass = Double.parseDouble(this.massAdduct) + Double.parseDouble(this.massInput);
+				else
+					exactMass = Double.parseDouble(this.exactMass);
+				
+				//double mzabs = Double.parseDouble(this.mzabs);
+				//double mzppm = Double.parseDouble(this.mzppm);
+				
+				System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 				candidates = KeggWebservice.KEGGbyMass(exactMass, (PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM))));
+			}
 		}
 		else if(this.database.equals("chemspider") && databaseID.equals(""))
 		{
 			if(this.molFormula != "")
 				candidates = ChemSpider.getChemspiderBySumFormula(this.molFormula);
 			else
+			{
+				//peakListString = peaks;
+				double exactMass = 0.0;
+				if(this.massInput != "")
+					exactMass = Double.parseDouble(this.massAdduct) + Double.parseDouble(this.massInput);
+				else
+					exactMass = Double.parseDouble(this.exactMass);
+				
+				//double mzabs = Double.parseDouble(this.mzabs);
+				//double mzppm = Double.parseDouble(this.mzppm);
+				
+				System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 				candidates = ChemSpider.getChemspiderByMass(exactMass, (PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM))));
+			}
 		}
 		else if(this.database.equals("pubchem") && databaseID.equals(""))
 		{			
@@ -580,6 +596,17 @@ public class MetFragBean extends SortableList{
 				candidates = pubchem.getHitsbySumFormula(molFormula, false);
 			else
 			{
+				//peakListString = peaks;
+				double exactMass = 0.0;
+				if(this.massInput != "")
+					exactMass = Double.parseDouble(this.massAdduct) + Double.parseDouble(this.massInput);
+				else
+					exactMass = Double.parseDouble(this.exactMass);
+				
+				//double mzabs = Double.parseDouble(this.mzabs);
+				//double mzppm = Double.parseDouble(this.mzppm);
+				
+				System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 				double lowerBound = exactMass - PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM)); 
 				double upperBound = exactMass + PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM));
 				candidates = pubchemLocal.getHitsVector(lowerBound, upperBound);
@@ -588,6 +615,17 @@ public class MetFragBean extends SortableList{
 		else if(this.database.equals("beilstein") && databaseID.equals(""))
 		{
 			this.beilstein = new BeilsteinLocal(db, user, pass);
+			//peakListString = peaks;
+			double exactMass = 0.0;
+			if(this.massInput != "")
+				exactMass = Double.parseDouble(this.massAdduct) + Double.parseDouble(this.massInput);
+			else
+				exactMass = Double.parseDouble(this.exactMass);
+			
+			//double mzabs = Double.parseDouble(this.mzabs);
+			//double mzppm = Double.parseDouble(this.mzppm);
+			
+			System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 			double lowerBound = exactMass - PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM)); 
 			double upperBound = exactMass + PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM));
 
