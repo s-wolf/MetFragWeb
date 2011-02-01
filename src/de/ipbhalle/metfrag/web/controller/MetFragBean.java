@@ -636,10 +636,10 @@ public class MetFragBean extends SortableList{
 			candidates = new Vector<String>();
 			String[] idList = databaseID.split(",");
 			for (int i = 0; i < idList.length; i++) {
-				if(existingDBEntries(idList[i]))
-					candidates.add(idList[i]);
+				if(existingDBEntries(idList[i].trim()))
+					candidates.add(idList[i].trim());
 				else
-					databaseMessage += "Error retrieving: " + idList[i] + "\n";
+					databaseMessage += "Error retrieving: " + idList[i].trim() + "\n";
 			}
 		}
 		
@@ -686,7 +686,7 @@ public class MetFragBean extends SortableList{
 		{
 			if(this.database.equals("kegg"))
 			{
-				test = KeggWebservice.getMol(id, "/vol/mirrors/kegg/mol", true);
+				test = KeggWebservice.getMol(id, "/vol/mirrors/kegg/mol/", true);
 			}
 			else if(this.database.equals("chemspider"))
 			{
