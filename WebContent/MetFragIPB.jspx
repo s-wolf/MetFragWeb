@@ -316,11 +316,11 @@
 										<ice:inputText style="width:72px" id="exactMassInput" value="#{metFragBean.massInput}"></ice:inputText>
 										<ice:selectOneMenu style="width: 72px" id="adduct" value="#{metFragBean.massAdduct}" >
 											<f:selectItem itemLabel="Neutral" itemValue="0"/>
-											<f:selectItem itemLabel="[M+]+" itemValue="0.00054858"/>
-											<f:selectItem itemLabel="[M+H]+" itemValue="-1.008373615"/>
-											<f:selectItem itemLabel="[M+Na]+" itemValue="-22.99031628"/>
-											<f:selectItem itemLabel="[M+K]+" itemValue="-38.96425598"/>
-											<f:selectItem itemLabel="[M-]-" itemValue="-0.00054858"/>
+											<f:selectItem itemLabel="M+" itemValue="0.00054858"/>
+											<f:selectItem itemLabel="[M+H]+" itemValue="-1.007276455"/>
+											<f:selectItem itemLabel="[M+Na]+" itemValue="-22.98921912"/>
+											<f:selectItem itemLabel="[M+K]+" itemValue="-38.96315882"/>
+											<f:selectItem itemLabel="M-" itemValue="-0.00054858"/>
 											<f:selectItem itemLabel="[M-H]-" itemValue="1.007276455"/>
 											<f:selectItem itemLabel="[M-Na]-" itemValue="22.98921912"/>
 											<f:selectItem itemLabel="[M-K]-" itemValue="38.96315882"/>
