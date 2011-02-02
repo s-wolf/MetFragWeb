@@ -1801,6 +1801,7 @@ public class MetFragBean extends SortableList{
 		WritableCell header3 = new Label(3, 0, "Exact Mass", arial10format);
 		WritableCell header5 = new Label(4, 0, "Database ID", arial10format);
 		WritableCell header4 = new Label(5, 0, "Image", arial10format);
+		WritableCell header6 = new Label(6, 0, "Smiles", arial10format);
 		
 		try
 		{
@@ -1810,6 +1811,7 @@ public class MetFragBean extends SortableList{
 			sheet.addCell(header3);
 			sheet.addCell(header4);
 			sheet.addCell(header5);
+			sheet.addCell(header6);
 		} catch (WriteException e) {
 			System.out.println("Could not write excel cell");
 			e.printStackTrace();
@@ -1833,6 +1835,7 @@ public class MetFragBean extends SortableList{
 			WritableCell cellMolecularFormula = new Label(2, currentRow, row.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
 			WritableCell cellMass = new Label(3, currentRow, row.getMass());
 			WritableCell cellLink = new Label(4, currentRow, row.getID());
+			WritableCell cellSmiles = new Label(6, currentRow, row.getSmiles());
 			
 			try
 			{
@@ -1841,6 +1844,7 @@ public class MetFragBean extends SortableList{
 				sheet.addCell(cellMolecularFormula);
 				sheet.addCell(cellMass);
 				sheet.addCell(cellExplainedPeaks);
+				sheet.addCell(cellSmiles);
 			} catch (WriteException e) {
 				System.out.println("Could not write excel cell");
 				e.printStackTrace();
