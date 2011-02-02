@@ -815,7 +815,13 @@ public class MetFragBean extends SortableList{
 	            	tempExactMass = exactMass;
 	            
 	            pst.setDouble(2, Double.parseDouble(tempExactMass));
-	            pst.setInt(3, Integer.parseInt(searchPPM));
+	            int searchPPM = 0;
+	            if(this.searchPPM == null || this.searchPPM.equals(""))
+	            	searchPPM = 0;
+	            else
+	            	searchPPM = Integer.parseInt(this.searchPPM);
+	            
+	            pst.setInt(3, searchPPM);
 	            pst.setString(4, molFormula);
 	            pst.setString(5, database);
 	            
