@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import de.ipbhalle.metfrag.web.model.ResultPic;
 import de.ipbhalle.metfrag.web.model.ResultRow;
@@ -45,9 +46,9 @@ public class TableBean extends SortableList {
     }
 	
 	
-	public void addRow(String keggID, String molName, String image, int explainedPeaks, double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles)
+	public void addRow(String keggID, String molName, String image, int explainedPeaks, double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles, Map<String, Object> moleculeDescriptor)
 	{
-		resultsList.add(new ResultRow(keggID, molName, image, explainedPeaks, score, frags, molecularFormula, mass, databaseLink, peaksFound, peaksNotFound, peaksNotUsed, peaksFoundInt, peaksNotFoundInt, peaksNotUsedInt, smiles));
+		resultsList.add(new ResultRow(keggID, molName, image, explainedPeaks, score, frags, molecularFormula, mass, databaseLink, peaksFound, peaksNotFound, peaksNotUsed, peaksFoundInt, peaksNotFoundInt, peaksNotUsedInt, smiles, moleculeDescriptor));
 	}
 	
 	/**

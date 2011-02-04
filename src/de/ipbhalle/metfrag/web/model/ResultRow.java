@@ -22,6 +22,7 @@ package de.ipbhalle.metfrag.web.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 // TODO: Auto-generated Javadoc
@@ -48,6 +49,7 @@ public class ResultRow implements Serializable{
 	private Double hydrogenPenalty;
 	private String molecularFormula;
 	private String smiles;
+	private Map<String, Object> moleculeDescriptors;
 	
 	
 	/**
@@ -68,7 +70,7 @@ public class ResultRow implements Serializable{
 	 * @param peaksNotFoundInt the peaks not found int
 	 * @param peaksNotUsedInt the peaks not used int
 	 */
-	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles)
+	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles, Map<String, Object> moleculeDescriptors)
 	{
 		this.setID(keggID);
 		this.setMolName(molName);
@@ -86,6 +88,7 @@ public class ResultRow implements Serializable{
 		this.setPeaksNotUsedInt(peaksNotUsedInt);
 		this.setMolecularFormula(molecularFormula);
 		this.setSmiles(smiles);
+		this.setMoleculeDescriptors(moleculeDescriptors);
 	}
 	
 	
@@ -109,7 +112,7 @@ public class ResultRow implements Serializable{
 	 * @param peaksNotFoundInt the peaks not found int
 	 * @param peaksNotUsedInt the peaks not used int
 	 */
-	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, Double bondEnergy, Double hydrogenPenalty, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles)
+	public ResultRow(String keggID, String molName, String image, int explainedPeaks, Double score, Double bondEnergy, Double hydrogenPenalty, List<ResultPic> frags, String molecularFormula, String mass, String databaseLink, String peaksFound, String peaksNotFound, String peaksNotUsed, String peaksFoundInt, String peaksNotFoundInt, String peaksNotUsedInt, String smiles, Map<String, Object> moleculeDescriptors)
 	{
 		this.setID(keggID);
 		this.setMolName(molName);
@@ -129,6 +132,7 @@ public class ResultRow implements Serializable{
 		this.setHydrogenPenalty(hydrogenPenalty);
 		this.setMolecularFormula(molecularFormula);
 		this.setSmiles(smiles);
+		this.setMoleculeDescriptors(moleculeDescriptors);
 	}
 	
 	public ResultRow(){}
@@ -369,6 +373,22 @@ public class ResultRow implements Serializable{
 
 	public String getSmiles() {
 		return smiles;
+	}
+
+
+	public void setMoleculeDescriptors(Map<String, Object> moleculeDescriptors) {
+		this.moleculeDescriptors = moleculeDescriptors;
+	}
+
+
+	/**
+	 * Gets the molecule descriptors.
+	 * Implemented are 3 different logP values: XlogP, AlogP and MannholdLogP
+	 *
+	 * @return the molecule descriptors
+	 */
+	public Map<String, Object> getMoleculeDescriptors() {
+		return moleculeDescriptors;
 	}
 	
 	

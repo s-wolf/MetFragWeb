@@ -82,6 +82,7 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.interfaces.IBond.Stereo;
 import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
@@ -1470,6 +1471,7 @@ public class MetFragBean extends SortableList{
 		resultRowGroup.setScore(resultRow.getScore());
 		resultRowGroup.setMolecularFormula(resultRow.getMolecularFormula());
 		resultRowGroup.setSmiles(resultRow.getSmiles());
+		resultRowGroup.setMoleculeDescriptors(resultRow.getMoleculeDescriptors());
 	}
 	
 	
@@ -1799,9 +1801,12 @@ public class MetFragBean extends SortableList{
 		WritableCell header1 = new Label(1, 0, "Peaks Explained", arial10format);
 		WritableCell header2 = new Label(2, 0, "Molecular Formula", arial10format);
 		WritableCell header3 = new Label(3, 0, "Exact Mass", arial10format);
-		WritableCell header5 = new Label(4, 0, "Database ID", arial10format);
-		WritableCell header4 = new Label(5, 0, "Image", arial10format);
-		WritableCell header6 = new Label(6, 0, "Smiles", arial10format);
+		WritableCell header4 = new Label(4, 0, "Database ID", arial10format);
+		WritableCell header5 = new Label(5, 0, "XlogP", arial10format);
+		WritableCell header6 = new Label(6, 0, "AlogP", arial10format);
+		WritableCell header7 = new Label(7, 0, "Mannhold LogP", arial10format);
+		WritableCell header8 = new Label(8, 0, "Image", arial10format);
+		WritableCell header9 = new Label(9, 0, "Smiles", arial10format);
 		
 		try
 		{
@@ -1812,6 +1817,9 @@ public class MetFragBean extends SortableList{
 			sheet.addCell(header4);
 			sheet.addCell(header5);
 			sheet.addCell(header6);
+			sheet.addCell(header7);
+			sheet.addCell(header8);
+			sheet.addCell(header9);
 		} catch (WriteException e) {
 			System.out.println("Could not write excel cell");
 			e.printStackTrace();
@@ -1826,7 +1834,7 @@ public class MetFragBean extends SortableList{
 			File image = new File(imgPath);
 			// write each image into the second column, leave one row space between them and 
 			// resize the image to 1 column width and 2 rows height
-			wi = new WritableImage(5, currentRow, 1, 3, image);
+			wi = new WritableImage(8, currentRow, 1, 3, image);
 			sheet.addImage(wi);
 			
 			// output is text
@@ -1835,7 +1843,13 @@ public class MetFragBean extends SortableList{
 			WritableCell cellMolecularFormula = new Label(2, currentRow, row.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
 			WritableCell cellMass = new Label(3, currentRow, row.getMass());
 			WritableCell cellLink = new Label(4, currentRow, row.getID());
-			WritableCell cellSmiles = new Label(6, currentRow, row.getSmiles());
+			DescriptorValue xLogP = (DescriptorValue)row.getMoleculeDescriptors().get("XlogP");
+			WritableCell cellxLogP = new Label(5, currentRow, xLogP.getValue().toString());
+			DescriptorValue aLogP = (DescriptorValue)row.getMoleculeDescriptors().get("AlogP");
+			WritableCell cellaLogP = new Label(6, currentRow, aLogP.getValue().toString());
+			DescriptorValue mLogP = (DescriptorValue)row.getMoleculeDescriptors().get("MannholdLogP");
+			WritableCell cellmLogP = new Label(7, currentRow, mLogP.getValue().toString());
+			WritableCell cellSmiles = new Label(9, currentRow, row.getSmiles());
 			
 			try
 			{
@@ -1844,6 +1858,9 @@ public class MetFragBean extends SortableList{
 				sheet.addCell(cellMolecularFormula);
 				sheet.addCell(cellMass);
 				sheet.addCell(cellExplainedPeaks);
+				sheet.addCell(cellxLogP);
+				sheet.addCell(cellaLogP);
+				sheet.addCell(cellmLogP);
 				sheet.addCell(cellSmiles);
 			} catch (WriteException e) {
 				System.out.println("Could not write excel cell");

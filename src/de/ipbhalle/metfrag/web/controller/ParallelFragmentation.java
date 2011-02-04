@@ -208,10 +208,13 @@ public class ParallelFragmentation implements Runnable {
 	        Fragmenter fragmenter = new Fragmenter((Vector<Peak>)spectrum.getPeakList().clone(), mzabs, mzppm, mode, true, this.metFragData.isMolFormulaRedundancyCheck(), false, false);     
 	        List<IAtomContainer> l = null;
 	        List<File> vec = new ArrayList<File>();
+	        Map<String, Object> moleculeDescriptors = null;
 	        try
 	        {
 	        	//TODO!
 	        	vec = fragmenter.generateFragmentsEfficient(molecule, true, Integer.parseInt(this.metFragData.getTreeDepth()), candidateID);
+	        	//get descriptors
+	        	moleculeDescriptors = fragmenter.getMoleculeDescriptors();
 //	        	l = fragmenter.generateFragmentsInMemory(molecule, true, Integer.parseInt(this.metFragData.getTreeDepth()));
 	        	l = Molfile.ReadfolderTemp(vec);
 	        	//delete the temporary files
@@ -424,12 +427,12 @@ public class ParallelFragmentation implements Runnable {
 			//now add the candidate to the results
 			if(!bondEnergyScoring)
 				candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
-					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString(), smiles));
+					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString(), smiles, moleculeDescriptors));
 	//				resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, fragsPics, massOrig, databaseLink, 
 	//					peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
 			else
 				candidateToResult.put(candidateID, new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getBDE(), score.getPenalty(), fragsPics, MolecularFormulaManipulator.getHTML(molFormula), massOrig, databaseLink, 
-						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString(), smiles));
+						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString(), smiles, moleculeDescriptors));
 	//				resultRows.add(new ResultRow(candidateID, namesString, fragsPics.get(0).getPath(), afp.getHits().size(), currentScore, score.getFragmentBondEnergy(), score.getPenalty(), fragsPics, massOrig, databaseLink, 
 	//						peaksFound.getPeaksString(), peaksNotFound.getPeaksString(), peaksNotUsed.getPeaksString(), peaksFound.getIntensitiesString(), peaksNotFound.getIntensitiesString(), peaksNotUsed.getIntensitiesString()));
 	
