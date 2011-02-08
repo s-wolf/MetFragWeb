@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -94,6 +96,10 @@ import com.icesoft.faces.component.inputfile.InputFile;
 import com.icesoft.faces.context.Resource;
 import com.icesoft.faces.context.effects.JavascriptContext;
 import com.icesoft.faces.webapp.xmlhttp.PersistentFacesState;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 
 import de.ipbhalle.metfrag.buildinfo.BuildInfo;
 import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
@@ -298,6 +304,8 @@ public class MetFragBean extends SortableList{
 	private boolean showSDFLink = false;
 	private String log = "";
 	
+	private String changelog;
+	
 	   
 	
 	/**
@@ -310,6 +318,7 @@ public class MetFragBean extends SortableList{
 		getConfig();
 		//set the parameters set in the landing page
 		getParameters();
+		changelogParser();
 	}
 	
 	
@@ -384,6 +393,43 @@ public class MetFragBean extends SortableList{
 		}
 
 	}
+	
+	
+	/**
+	 * Changelog parser parses the github rss feed
+	 */
+	private void changelogParser()
+	{
+		try {
+            URL feedUrl = new URL("https://github.com/s-wolf/MetFragWeb/commits/develop.atom");
+
+            SyndFeedInput input = new SyndFeedInput();
+            SyndFeed feed = input.build(new XmlReader(feedUrl));
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append("<ul>");
+            
+            for (Object obj : feed.getEntries()) {
+            	SyndEntryImpl item = (SyndEntryImpl)obj;
+            	
+
+            	String DATE_FORMAT = "dd/MM/yy";
+            	SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+            	
+            	sb.append("<li>" + "<em>" + sdf.format(item.getUpdatedDate()) + "</em> " + item.getTitle() + "</li>");
+			}
+            
+            sb.append("</ul>");
+            
+            this.changelog = sb.toString();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("ERROR: "+ex.getMessage());
+        }
+
+	}
+	
 	
 	
 	/**
@@ -2687,6 +2733,12 @@ public class MetFragBean extends SortableList{
 	}
 	public String getMassAdduct() {
 		return massAdduct;
+	}
+	public void setChangelog(String changelog) {
+		this.changelog = changelog;
+	}
+	public String getChangelog() {
+		return changelog;
 	}
 
 

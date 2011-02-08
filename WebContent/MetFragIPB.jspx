@@ -755,11 +755,11 @@
 								
 								<hr />
 								<span style="font-weight: bold;">Changelog</span>
-									<ul>
-										<li>
-											<a href="https://github.com/s-wolf">GitHub source</a>
-										</li>											
-									</ul>
+								<br />
+								<a href="https://github.com/s-wolf">GitHub source</a>
+								<br />
+								<ice:outputText escape="false" value="#{metFragBean.changelog}"></ice:outputText>								
+									
 							</ice:panelGroup>
 				        </ice:panelTab>
 				
