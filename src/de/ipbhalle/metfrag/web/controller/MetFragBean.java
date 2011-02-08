@@ -538,7 +538,8 @@ public class MetFragBean extends SortableList{
 		this.pubchemLocal = new PubChemLocal(db, user, pass);
 		this.pubchem = new PubChemWebService();
 		
-		
+		//fix for added space
+		this.molFormula = this.molFormula.trim();
 		
 		List<String> notFound = null;
 		
@@ -1322,7 +1323,7 @@ public class MetFragBean extends SortableList{
 						state.executeAndRender();
 						
 						
-						if(tempCount == Integer.parseInt(limit))
+						if(tempCount == Integer.parseInt(limit) && isSDFFile == false)
 						{
 							break;
 						}
@@ -1843,11 +1844,14 @@ public class MetFragBean extends SortableList{
 			WritableCell cellMolecularFormula = new Label(2, currentRow, row.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
 			WritableCell cellMass = new Label(3, currentRow, row.getMass());
 			WritableCell cellLink = new Label(4, currentRow, row.getID());
-			DescriptorValue xLogP = (DescriptorValue)row.getMoleculeDescriptors().get("XlogP");
+			
+			Map<String, Object> descriptors = row.getMoleculeDescriptors();
+			
+			DescriptorValue xLogP = (DescriptorValue)descriptors.get("XLogP");
 			WritableCell cellxLogP = new Label(5, currentRow, xLogP.getValue().toString());
-			DescriptorValue aLogP = (DescriptorValue)row.getMoleculeDescriptors().get("AlogP");
+			DescriptorValue aLogP = (DescriptorValue)descriptors.get("ALogP");
 			WritableCell cellaLogP = new Label(6, currentRow, aLogP.getValue().toString());
-			DescriptorValue mLogP = (DescriptorValue)row.getMoleculeDescriptors().get("MannholdLogP");
+			DescriptorValue mLogP = (DescriptorValue)descriptors.get("MannholdLogP");
 			WritableCell cellmLogP = new Label(7, currentRow, mLogP.getValue().toString());
 			WritableCell cellSmiles = new Label(9, currentRow, row.getSmiles());
 			
