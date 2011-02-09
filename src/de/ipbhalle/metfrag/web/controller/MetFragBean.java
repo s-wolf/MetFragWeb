@@ -84,6 +84,7 @@ import org.openscience.cdk.interfaces.IMolecularFormula;
 import org.openscience.cdk.interfaces.IMolecule;
 import org.openscience.cdk.interfaces.IBond.Stereo;
 import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.nonotify.NoNotificationChemObjectBuilder;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
@@ -584,8 +585,8 @@ public class MetFragBean extends SortableList{
 		this.pubchemLocal = new PubChemLocal(db, user, pass);
 		this.pubchem = new PubChemWebService();
 		
-		//fix for added space
-		this.molFormula = this.molFormula.trim();
+		//fix for added space and numbers
+		this.molFormula = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(this.molFormula.trim(), NoNotificationChemObjectBuilder.getInstance()));
 		
 		List<String> notFound = null;
 		
