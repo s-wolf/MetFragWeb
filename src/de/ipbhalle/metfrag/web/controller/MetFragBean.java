@@ -586,7 +586,9 @@ public class MetFragBean extends SortableList{
 		this.pubchem = new PubChemWebService();
 		
 		//fix for added space and numbers
-		this.molFormula = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(this.molFormula.trim(), NoNotificationChemObjectBuilder.getInstance()));
+		if(this.molFormula != null && !this.molFormula.equals(""))
+			this.molFormula = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(this.molFormula.trim(), NoNotificationChemObjectBuilder.getInstance()));
+			
 		
 		List<String> notFound = null;
 		
