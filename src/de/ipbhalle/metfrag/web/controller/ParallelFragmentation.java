@@ -130,6 +130,7 @@ public class ParallelFragmentation implements Runnable {
 		Integer mode = this.metFragData.getMode();
 		
 		SmilesGenerator sg = new SmilesGenerator();
+		sg.setUseAromaticityFlag(true);
 		IMolecule mol = new Molecule(molecule);
 		String smiles = sg.createSMILES(mol);
 		
