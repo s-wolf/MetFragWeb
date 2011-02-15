@@ -18,9 +18,4 @@
 		<view-id> /MetFragIPB.jspx </view-id>
 		<action>#{metFragBean.ipbAccess}</action>
 	</url-mapping>	
-	<url-mapping id="test"> 
-   		<pattern value="/" /> 
-   		<query-param name="language"> #{testBean.language} </query-param>
-   		<view-id> /test.jspx </view-id>
-	</url-mapping>
 </pretty-config>

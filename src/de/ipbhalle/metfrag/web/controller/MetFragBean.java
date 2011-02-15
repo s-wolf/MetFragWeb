@@ -1435,7 +1435,10 @@ public class MetFragBean extends SortableList{
 								String baseCand = similarityGroup.getCandidateTocompare();
 								addToResultsList(baseCand, filesRecordGroup);
 								System.out.print("Group of " + similarityGroup.getSimilarCompounds().size() + " " + similarityGroup.getCandidateTocompare() +  ": ");
+								
 								for (int i = 0; i < similarityGroup.getSimilarCompounds().size(); i++) {
+									if(similarityGroup.getSimilarCompounds().get(i).getCompoundID().equals(baseCand))
+										continue;									
 									ResultRowGroupedBean childFilesGroup = new ResultRowGroupedBean(CHILD_INDENT_STYLE_CLASS, CHILD_ROW_STYLE_CLASS);
 									addToResultsList(similarityGroup.getSimilarCompounds().get(i).getCompoundID(), childFilesGroup);
 							        filesRecordGroup.addChildFilesGroupRecord(childFilesGroup);
