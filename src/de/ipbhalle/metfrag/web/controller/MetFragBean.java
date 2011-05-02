@@ -1850,19 +1850,21 @@ public class MetFragBean extends SortableList{
 		
 		// for each workflow output port, create new sheet inside Excel file and store results
 		int i = 0;
-		WritableCell header0 = new Label(0, 0, "Score", arial10format);
-		WritableCell header1 = new Label(1, 0, "Peaks Explained", arial10format);
-		WritableCell header2 = new Label(2, 0, "Molecular Formula", arial10format);
-		WritableCell header3 = new Label(3, 0, "Exact Mass", arial10format);
-		WritableCell header4 = new Label(4, 0, "Database ID", arial10format);
-		WritableCell header5 = new Label(5, 0, "XlogP", arial10format);
-		WritableCell header6 = new Label(6, 0, "AlogP", arial10format);
-		WritableCell header7 = new Label(7, 0, "Mannhold LogP", arial10format);
-		WritableCell header8 = new Label(8, 0, "Image", arial10format);
-		WritableCell header9 = new Label(9, 0, "Smiles", arial10format);
+		WritableCell header00 = new Label(0, 0, "Rank", arial10format);
+		WritableCell header0 = new Label(1, 0, "Score", arial10format);
+		WritableCell header1 = new Label(2, 0, "# of Peaks Explained", arial10format);
+		WritableCell header2 = new Label(3, 0, "Molecular Formula", arial10format);
+		WritableCell header3 = new Label(4, 0, "Exact Mass", arial10format);
+		WritableCell header4 = new Label(5, 0, "Database ID", arial10format);
+		WritableCell header5 = new Label(6, 0, "XlogP", arial10format);
+		WritableCell header6 = new Label(7, 0, "AlogP", arial10format);
+		WritableCell header7 = new Label(8, 0, "Peaks Explained", arial10format);
+		WritableCell header8 = new Label(9, 0, "Image", arial10format);
+		WritableCell header9 = new Label(10, 0, "Smiles", arial10format);
 		
 		try
 		{
+			sheet.addCell(header00);
 			sheet.addCell(header0);
 			sheet.addCell(header1);
 			sheet.addCell(header2);
@@ -1877,38 +1879,51 @@ public class MetFragBean extends SortableList{
 			System.out.println("Could not write excel cell");
 			e.printStackTrace();
 		}
-		
+		int rank = 0;
 		for (ResultRowGroupedBean row : resultRowGroupedBeans) {
 			int currentRow = i*4 + 1;
-			
+			rank++;
+
 			WritableImage wi = null;
 			// output is image
 			String imgPath = webRoot + row.getImage() + ".png";
 			File image = new File(imgPath);
 			// write each image into the second column, leave one row space between them and 
 			// resize the image to 1 column width and 2 rows height
-			wi = new WritableImage(8, currentRow, 1, 3, image);
+			wi = new WritableImage(9, currentRow, 1, 3, image);
 			sheet.addImage(wi);
 			
 			// output is text
-			WritableCell cellScore = new Label(0, currentRow, row.getScore().toString());
-			WritableCell cellExplainedPeaks = new Label(1, currentRow, row.getExplainedPeaks() + "");
-			WritableCell cellMolecularFormula = new Label(2, currentRow, row.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
-			WritableCell cellMass = new Label(3, currentRow, row.getMass());
-			WritableCell cellLink = new Label(4, currentRow, row.getID());
+			WritableCell cellRank = new Label(0, currentRow, Integer.toString(rank));
+			WritableCell cellScore = new Label(1, currentRow, row.getScore().toString());
+			WritableCell cellExplainedPeaks = new Label(2, currentRow, row.getExplainedPeaks() + "");
+			WritableCell cellMolecularFormula = new Label(3, currentRow, row.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
+			WritableCell cellMass = new Label(4, currentRow, row.getMass());
+			WritableCell cellLink = new Label(5, currentRow, row.getID());
 			
 			Map<String, Object> descriptors = row.getMoleculeDescriptors();
 			
 			DescriptorValue xLogP = (DescriptorValue)descriptors.get("XLogP");
-			WritableCell cellxLogP = new Label(5, currentRow, xLogP.getValue().toString());
+			WritableCell cellxLogP = new Label(6, currentRow, xLogP.getValue().toString());
 			DescriptorValue aLogP = (DescriptorValue)descriptors.get("ALogP");
-			WritableCell cellaLogP = new Label(6, currentRow, aLogP.getValue().toString());
-			DescriptorValue mLogP = (DescriptorValue)descriptors.get("MannholdLogP");
-			WritableCell cellmLogP = new Label(7, currentRow, mLogP.getValue().toString());
-			WritableCell cellSmiles = new Label(9, currentRow, row.getSmiles());
+			WritableCell cellaLogP = new Label(7, currentRow, aLogP.getValue().toString());
 			
+			
+			String[] peaksArr = row.getPeaksFound().split(",");
+			String[] peaksIntArr = row.getPeaksFoundInt().split(",");
+			String peaksExplainedString = "";
+			for (int j = 0; j < peaksArr.length; j++) {
+				if(j == (peaksArr.length - 1))
+					peaksExplainedString += peaksArr[j] + " " + peaksIntArr[j];
+				else
+					peaksExplainedString += peaksArr[j] + " " + peaksIntArr[j] + " ";
+			}
+			WritableCell peaksExplained = new Label(8, currentRow, peaksExplainedString);
+			WritableCell cellSmiles = new Label(10, currentRow, row.getSmiles());
+		
 			try
 			{
+				sheet.addCell(cellRank);
 				sheet.addCell(cellLink);
 				sheet.addCell(cellScore);
 				sheet.addCell(cellMolecularFormula);
@@ -1916,7 +1931,7 @@ public class MetFragBean extends SortableList{
 				sheet.addCell(cellExplainedPeaks);
 				sheet.addCell(cellxLogP);
 				sheet.addCell(cellaLogP);
-				sheet.addCell(cellmLogP);
+				sheet.addCell(peaksExplained);
 				sheet.addCell(cellSmiles);
 			} catch (WriteException e) {
 				System.out.println("Could not write excel cell");
@@ -1924,6 +1939,68 @@ public class MetFragBean extends SortableList{
 			}
 			
 			i++;
+				
+	
+			if(row.getChildResultRows() != null && row.getChildResultRows().size() > 0)
+			{
+				for (ResultRowGroupedBean rowChild : row.getChildResultRows()) {
+					currentRow = i*4 + 1;
+					wi = null;
+					// output is image
+					imgPath = webRoot + rowChild.getImage() + ".png";
+					image = new File(imgPath);
+					// write each image into the second column, leave one row space between them and 
+					// resize the image to 1 column width and 2 rows height
+					wi = new WritableImage(9, currentRow, 1, 3, image);
+					sheet.addImage(wi);
+					
+					// output is text
+					cellRank = new Label(0, currentRow, Integer.toString(rank));
+					cellScore = new Label(1, currentRow, rowChild.getScore().toString());
+					cellExplainedPeaks = new Label(2, currentRow, rowChild.getExplainedPeaks() + "");
+					cellMolecularFormula = new Label(3, currentRow, rowChild.getMolecularFormula().replaceAll("\\<.*?\\>", ""));
+					cellMass = new Label(4, currentRow, rowChild.getMass());
+					cellLink = new Label(5, currentRow, rowChild.getID());
+					
+					descriptors = rowChild.getMoleculeDescriptors();
+					
+					xLogP = (DescriptorValue)descriptors.get("XLogP");
+					cellxLogP = new Label(6, currentRow, xLogP.getValue().toString());
+					aLogP = (DescriptorValue)descriptors.get("ALogP");
+					cellaLogP = new Label(7, currentRow, aLogP.getValue().toString());
+					
+					peaksArr = rowChild.getPeaksFound().split(",");
+					peaksIntArr = rowChild.getPeaksFoundInt().split(",");
+					peaksExplainedString = "";
+					for (int j = 0; j < peaksArr.length; j++) {
+						if(j == (peaksArr.length - 1))
+							peaksExplainedString += peaksArr[j] + " " + peaksIntArr[j];
+						else
+							peaksExplainedString += peaksArr[j] + " " + peaksIntArr[j] + " ";
+					}
+					peaksExplained = new Label(8, currentRow, peaksExplainedString);
+					cellSmiles = new Label(10, currentRow, rowChild.getSmiles());
+				
+					try
+					{
+						sheet.addCell(cellRank);
+						sheet.addCell(cellLink);
+						sheet.addCell(cellScore);
+						sheet.addCell(cellMolecularFormula);
+						sheet.addCell(cellMass);
+						sheet.addCell(cellExplainedPeaks);
+						sheet.addCell(cellxLogP);
+						sheet.addCell(cellaLogP);
+						sheet.addCell(peaksExplained);
+						sheet.addCell(cellSmiles);
+					} catch (WriteException e) {
+						System.out.println("Could not write excel cell");
+						e.printStackTrace();
+					}
+					
+					i++;
+				}				
+			}
 		}
 		
 		// write the Excel file
