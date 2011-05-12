@@ -167,7 +167,7 @@
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
 													<h:selectBooleanCheckbox value="#{metFragBean.bioCompound}" />
 												</ice:panelGroup>
-												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
+												<ice:panelGroup >
 													<ice:panelGroup panelTooltip="limitTooltip" >
 														<ice:outputText value="Limit # of structures: " />
 													</ice:panelGroup>
@@ -177,8 +177,8 @@
 														</f:facet>
 													</ice:panelTooltip>
 												</ice:panelGroup>
-												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
-													<h:inputText style="width: 300px" id="limit" value="#{metFragBean.limit}"></h:inputText>
+												<ice:panelGroup >
+													<h:inputText style="width: 300px" id="limit" value="#{metFragBean.limit}" required="true"></h:inputText>
 												</ice:panelGroup>
 												<ice:panelGroup rendered="#{not metFragBean.SDFSelected}">
 													<ice:panelGroup panelTooltip="databaseIDTooltip" >
@@ -217,7 +217,7 @@
 													</ice:panelGroup>
 													<ice:panelTooltip id="tdTooltip" styleClass="tooltip">
 														<f:facet name="body">
-																<h:outputText value="Carsten will das." escape="false"/>
+																<h:outputText value="Tree depth of the fragmentation tree." escape="false"/>
 														</f:facet>
 													</ice:panelTooltip>
 												</ice:panelGroup>
@@ -269,7 +269,7 @@
 													</f:facet>
 												</ice:panelTooltip>
 												</div>
-												<h:inputText style="width: 300px" id="mzabs" value="#{metFragBean.mzabs}"></h:inputText>
+												<h:inputText style="width: 300px" id="mzabs" value="#{metFragBean.mzabs}" required="true"></h:inputText>
 												<div>
 												<ice:panelGroup panelTooltip="mzppmTooltip" >
 													<ice:outputText value="Mzppm (e.g. 10): " />
@@ -281,7 +281,7 @@
 													</f:facet>
 												</ice:panelTooltip>
 												</div>
-												<h:inputText style="width: 300px" id="mzppm" value="#{metFragBean.mzppm}"></h:inputText>
+												<h:inputText style="width: 300px" id="mzppm" value="#{metFragBean.mzppm}" required="true"></h:inputText>
 											</h:panelGrid>
 											<!-- Progress bar and command button -->
 									        <div id="progress">
@@ -403,7 +403,7 @@
 
 				            </ice:panelGrid>
 				           
-				           <ice:panelCollapsible id="textPanel" expanded="false" style="width: 98%; margin: -10px 9px 10px;" rendered="#{metFragBean.displayResults}" >
+				           <ice:panelCollapsible id="textPanel" expanded="true" style="width: 98%; margin: -10px 9px 10px;" >
 				                <f:facet name="header">
 				                    <ice:panelGroup>
 				                        <ice:outputText id="textHeader" value="Log"/>
@@ -414,6 +414,8 @@
 				                            escape="false"
 				                            value="#{metFragBean.log}"/>
 				                </ice:panelGroup>
+				                <br />
+				                <ice:messages showDetail="false" ></ice:messages>
 				           </ice:panelCollapsible>
 				           
 				           <!--  Data Exporter   -->
