@@ -57,6 +57,7 @@ import de.ipbhalle.metfrag.spectrum.AssignFragmentPeak;
 import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 
 import de.ipbhalle.metfrag.main.DeleteTempFiles;
+import de.ipbhalle.metfrag.main.MetFrag;
 import de.ipbhalle.metfrag.massbankParser.Peak;
 import de.ipbhalle.metfrag.molDatabase.BeilsteinLocal;
 import de.ipbhalle.metfrag.molDatabase.PubChemLocal;
@@ -170,8 +171,15 @@ public class ParallelFragmentation implements Runnable {
 	        //there is a bug in cdk?? error happens when there is a S or Ti in the molecule
 	        catch(IllegalArgumentException e)
 	        {
+	        	System.err.println(e.getMessage());
+	        	MetFragBean.errorLog.addtoLog(candidateID + ": " + e.getMessage());
 	        	return;
 	        }
+	        catch (CDKException e) {
+				System.err.println(e.getMessage());
+				MetFragBean.errorLog.addtoLog(candidateID + ": " + e.getMessage());
+				return;
+			}
 	        						        
 			String currentFolder = webRoot + sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep;
 			new File(currentFolder).mkdirs();

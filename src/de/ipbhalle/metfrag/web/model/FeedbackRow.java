@@ -41,6 +41,7 @@ public class FeedbackRow {
 	private String fixed;
 	private String answered;
 	private Date date = null;
+	private String charge;
 	
 	/**
 	 * Instantiates a new feedback row.
@@ -63,7 +64,7 @@ public class FeedbackRow {
 	 * @param date the date
 	 * @param id the id
 	 */
-	public FeedbackRow(Integer id, String peaklist, Double exactMass, Integer searchPPM, String molecularFormula, String databaseUsed, Boolean biologicalCompound, Integer limit, String databaseIDs, Integer mode, Double mzAbs, Integer mzPPM, String eMail, String comment, String fixed, String answered, Date date)
+	public FeedbackRow(Integer id, String peaklist, Double exactMass, Integer searchPPM, String molecularFormula, String databaseUsed, Boolean biologicalCompound, Integer limit, String databaseIDs, Integer mode, Double mzAbs, Integer mzPPM, String eMail, String comment, String fixed, String answered, Date date, String charge)
 	{
 		this.id = id;
 		this.peaklist = peaklist;
@@ -82,6 +83,7 @@ public class FeedbackRow {
 		this.fixed = fixed;
 		this.answered = answered;
 		this.date = date;
+		this.charge = charge;
 	}
 
 	public String getPeaklist() {
@@ -218,5 +220,13 @@ public class FeedbackRow {
 
 	public Integer getId() {
 		return id;
+	}
+
+	public void setCharge(String charge) {
+		this.charge = charge;
+	}
+
+	public String getCharge() {
+		return charge;
 	}
 }

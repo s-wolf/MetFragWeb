@@ -306,7 +306,7 @@ public class MetFragBean extends SortableList{
 	private String log = "";
 	
 	private String changelog;
-	
+	public static Log errorLog;
 	   
 	
 	/**
@@ -773,7 +773,6 @@ public class MetFragBean extends SortableList{
 			e.printStackTrace();
 		}	
 		this.rendered = false;
-		
 		return "";
 	}
 	
@@ -785,6 +784,7 @@ public class MetFragBean extends SortableList{
 	 */
 	public String reset()
 	{
+		
 		databaseMessage = "";
 		setStop(true);
 		percentDone = 0;
@@ -799,7 +799,7 @@ public class MetFragBean extends SortableList{
 		//reset old sort to none....so the sorting is working more than once
 		oldSort = "";
 		this.log = "";
-
+		errorLog = new Log();
 		
 		HttpSession session = (HttpSession) fc.getExternalContext().getSession(false);
 		String sessionString = session.getId();
@@ -853,7 +853,7 @@ public class MetFragBean extends SortableList{
 			    
 	
 	            String sql = "INSERT into Feedback (Peaklist, ExactMass, SearchPPM, MolecularFormula, DatabaseUsed, BiologicalCompound, LimitHits, " +
-	            		"DatabaseIDs, Mode, MzAbs, MzPPM, Email, Comment, Date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, now())";
+	            		"DatabaseIDs, Mode, MzAbs, MzPPM, Email, Comment, Date, Charge) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, now(),?)";
 	            PreparedStatement pst = null;
 	            pst = con.prepareStatement(sql);
 	
@@ -887,14 +887,17 @@ public class MetFragBean extends SortableList{
 	            int modeTemp = 1;
 	            if(mode.equals("1"))
 	            	modeTemp = 1;
-	            else
+	            else if(mode.equals("-1"))
 	            	modeTemp = -1;
+	            else if(mode.equals("0"))
+	            	modeTemp = 0;
 	            
 	            pst.setInt(9, modeTemp);
 	            pst.setDouble(10, Double.parseDouble(mzabs));
 	            pst.setInt(11, Integer.parseInt(mzppm));
 	            pst.setString(12, email);
 	            pst.setString(13, comment);
+	            pst.setString(14, charge);
 	
 	            pst.executeUpdate();
 	            pst.close();
@@ -960,7 +963,7 @@ public class MetFragBean extends SortableList{
 			    
 	
 	            String sql = "SELECT ID, Peaklist, ExactMass, SearchPPM, MolecularFormula, DatabaseUsed, BiologicalCompound, LimitHits, " +
-	            		"DatabaseIDs, Mode, MzAbs, MzPPM, Email, Comment, Date, Fixed, Answered FROM Feedback ORDER BY ID desc;";
+	            		"DatabaseIDs, Mode, MzAbs, MzPPM, Email, Comment, Date, Fixed, Answered, Charge FROM Feedback ORDER BY ID desc;";
 	            Statement stmt = con.createStatement();
 	            ResultSet rs = stmt.executeQuery(sql);
 	            while(rs.next())
@@ -980,7 +983,7 @@ public class MetFragBean extends SortableList{
 	            	feedbackList.add(new FeedbackRow(rs.getInt("ID"), rs.getString("Peaklist").replace("%BR%", "\n"), rs.getDouble("ExactMass"), rs.getInt("SearchPPM"), 
 	            			rs.getString("MolecularFormula"), rs.getString("databaseUsed"), rs.getBoolean("BiologicalCompound"), rs.getInt("LimitHits"), 
 	            			rs.getString("DatabaseIDs"), rs.getInt("Mode"), rs.getDouble("MzAbs"), rs.getInt("MzPPM"), rs.getString("Email"), rs.getString("Comment"),
-	            			fixed, answered, rs.getDate("Date")));
+	            			fixed, answered, rs.getDate("Date"), rs.getString("Charge")));
 	            }
 	
 	
@@ -1364,7 +1367,13 @@ public class MetFragBean extends SortableList{
 						if(stop)
 							break;
 							
-						threadExecutor.execute(new ParallelFragmentation(metFragData, pubchemLocal, beilstein, candidateToResult, realScoreMap, sessionString, webRoot, count));
+						try
+						{
+							threadExecutor.execute(new ParallelFragmentation(metFragData, pubchemLocal, beilstein, candidateToResult, realScoreMap, sessionString, webRoot, count));
+						}
+						catch (NullPointerException e) {
+							System.err.println("ERROR" + e.getMessage());
+						}
 		
 						float test = (count[0] / (float)candidates.size()) * (float)100;
 						percentDone = Math.round(test);
@@ -1377,6 +1386,8 @@ public class MetFragBean extends SortableList{
 							break;
 						}
 					}
+					
+					
 					
 					
 					threadExecutor.shutdown();
@@ -1394,6 +1405,8 @@ public class MetFragBean extends SortableList{
 						percentDone = Math.round(test);
 						state.executeAndRender();
 					}
+					
+			        log += "<br />" + errorLog.getLog();
 					
 					// initiate the list
 			        if (resultRowGroupedBeans != null) {
@@ -1693,7 +1706,9 @@ public class MetFragBean extends SortableList{
 		mzppm = currentFeedback.getMzPPM().toString();
 		peaks = currentFeedback.getPeaklist();
 		searchPPM = currentFeedback.getSearchPPM().toString();
-		
+		charge = currentFeedback.getCharge();		
+		if(charge == null || charge.equals(""))
+			charge = "+";
 	}
 	
 	/**
@@ -1849,21 +1864,55 @@ public class MetFragBean extends SortableList{
 		
 		
 		// for each workflow output port, create new sheet inside Excel file and store results
-		int i = 0;
-		WritableCell header00 = new Label(0, 0, "Rank", arial10format);
-		WritableCell header0 = new Label(1, 0, "Score", arial10format);
-		WritableCell header1 = new Label(2, 0, "# of Peaks Explained", arial10format);
-		WritableCell header2 = new Label(3, 0, "Molecular Formula", arial10format);
-		WritableCell header3 = new Label(4, 0, "Exact Mass", arial10format);
-		WritableCell header4 = new Label(5, 0, "Database ID", arial10format);
-		WritableCell header5 = new Label(6, 0, "XlogP", arial10format);
-		WritableCell header6 = new Label(7, 0, "AlogP", arial10format);
-		WritableCell header7 = new Label(8, 0, "Peaks Explained", arial10format);
-		WritableCell header8 = new Label(9, 0, "Image", arial10format);
-		WritableCell header9 = new Label(10, 0, "Smiles", arial10format);
+		int i = 1;
+		
+		//also add seetings to excel sheet
+		WritableCell db = new Label(0,0, "Database: " + database, arial10format);
+		WritableCell em = new Label(0,1, "Exact mass: " + exactMass + " (search ppm: " + searchPPM + ")", arial10format);
+		WritableCell mf = new Label(0,2, "Formula: " + molFormula, arial10format);
+		WritableCell bc = new Label(1,0, "Biological compounds: " + bioCompound, arial10format);
+		WritableCell ls = new Label(1,1, "Limit # of structures: " + limit, arial10format);
+		WritableCell di = new Label(1,2, "Database ID's: " + databaseID, arial10format);
+		
+		String modeTemp = "[M+H]" + charge;
+		if(mode.equals("-1"))
+			modeTemp = "[M-H]" + charge;
+		else if(mode.equals("0"))
+			modeTemp = "[M]" + charge;
+		
+		
+		WritableCell mo = new Label(2,0, "Mode : " + modeTemp, arial10format);
+		WritableCell mza = new Label(2,1, "Mzabs: " + mzabs, arial10format);
+		WritableCell mzp = new Label(2,2, "Mzppm: " + mzppm, arial10format);
+		
+		
+		
+		
+		WritableCell header00 = new Label(0, 4, "Rank", arial10format);
+		WritableCell header0 = new Label(1, 4, "Score", arial10format);
+		WritableCell header1 = new Label(2, 4, "# of Peaks Explained", arial10format);
+		WritableCell header2 = new Label(3, 4, "Molecular Formula", arial10format);
+		WritableCell header3 = new Label(4, 4, "Exact Mass", arial10format);
+		WritableCell header4 = new Label(5, 4, "Database ID", arial10format);
+		WritableCell header5 = new Label(6, 4, "XlogP", arial10format);
+		WritableCell header6 = new Label(7, 4, "AlogP", arial10format);
+		WritableCell header7 = new Label(8, 4, "Peaks Explained", arial10format);
+		WritableCell header8 = new Label(9, 4, "Image", arial10format);
+		WritableCell header9 = new Label(10, 4, "Smiles", arial10format);
 		
 		try
 		{
+			sheet.addCell(db);
+			sheet.addCell(em);
+			sheet.addCell(mf);
+			sheet.addCell(bc);
+			sheet.addCell(ls);
+			sheet.addCell(di);
+			sheet.addCell(mo);
+			sheet.addCell(mza);
+			sheet.addCell(mzp);
+			
+			
 			sheet.addCell(header00);
 			sheet.addCell(header0);
 			sheet.addCell(header1);

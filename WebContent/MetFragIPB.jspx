@@ -403,7 +403,7 @@
 
 				            </ice:panelGrid>
 				           
-				           <ice:panelCollapsible id="textPanel" expanded="true" style="width: 98%; margin: -10px 9px 10px;" >
+				           <ice:panelCollapsible id="textPanel" expanded="false" style="width: 98%; margin: -10px 9px 10px;" >
 				                <f:facet name="header">
 				                    <ice:panelGroup>
 				                        <ice:outputText id="textHeader" value="Log"/>
