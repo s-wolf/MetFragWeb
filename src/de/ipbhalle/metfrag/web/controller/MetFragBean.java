@@ -1339,7 +1339,10 @@ public class MetFragBean extends SortableList{
 						//skip if molecule is not connected
 						boolean isConnected = ConnectivityChecker.isConnected(molecule);
 						if(!isConnected)
+						{
+							log += "Compound: " + candidateID +  " is not connected!<br />"; 
 							continue;
+						}
 						
 						tempCount++;
 						
