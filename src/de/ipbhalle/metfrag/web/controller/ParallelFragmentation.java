@@ -66,6 +66,7 @@ import de.ipbhalle.metfrag.read.Molfile;
 import de.ipbhalle.metfrag.scoring.Scoring;
 import de.ipbhalle.metfrag.spectrum.CleanUpPeakList;
 import de.ipbhalle.metfrag.spectrum.WrapperSpectrum;
+import de.ipbhalle.metfrag.tools.Constants;
 import de.ipbhalle.metfrag.tools.MolecularFormulaTools;
 import de.ipbhalle.metfrag.tools.PPMTool;
 import de.ipbhalle.metfrag.tools.renderer.StructureToFile;
@@ -243,8 +244,7 @@ public class ParallelFragmentation implements Runnable {
 			
 			
 			//clean up peak list
-			CleanUpPeakList cList = new CleanUpPeakList((Vector<Peak>) peakListParsed.clone());
-			Vector<Peak> cleanedPeakList = cList.getCleanedPeakList(spectrum.getExactMass());
+			Vector<Peak> cleanedPeakList = getCleanedPeakList((Vector<Peak>)peakListParsed.clone(), spectrum.getExactMass(), spectrum.getMode(), mzppm);
 			
 			
 			//now find corresponding fragments to the mass
@@ -475,4 +475,32 @@ public class ParallelFragmentation implements Runnable {
 		return ret;
 	}
 
+	
+	/**
+	 * Gets the cleaned peak list.
+	 * 
+	 * @return the cleaned peak list
+	 */
+	public Vector<Peak> getCleanedPeakList(Vector<Peak> peakList, double mass, int mode, double mzppm)
+	{
+		List<Peak> toRemove = new ArrayList<Peak>();
+		for (int i = 0; i < peakList.size(); i++) {
+			if(mode == -1)
+				mass = (mass - (PPMTool.getPPMDeviation(peakList.get(i).getMass(), mzppm))) - Constants.HYDROGEN_MASS;
+			else
+				mass = mass - (PPMTool.getPPMDeviation(peakList.get(i).getMass(), mzppm));
+			if(peakList.get(i).getMass() >= mass)
+			{
+				toRemove.add(peakList.get(i));
+			}
+		}
+		
+		//now remove the peaks
+		for (Peak peak : toRemove) {
+			peakList.remove(peak);
+		}
+		return peakList;
+	}
+	
+	
 }

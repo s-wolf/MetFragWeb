@@ -57,6 +57,8 @@ import javax.faces.event.ValueChangeEvent;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import jena.query;
+
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.write.Label;
@@ -104,6 +106,9 @@ import com.sun.syndication.io.XmlReader;
 
 import de.ipbhalle.metfrag.buildinfo.BuildInfo;
 import de.ipbhalle.metfrag.chemspiderClient.ChemSpider;
+import de.ipbhalle.metfrag.database.Tools;
+import de.ipbhalle.metfrag.databaseMetChem.CandidateMetChem;
+import de.ipbhalle.metfrag.databaseMetChem.Query;
 import de.ipbhalle.metfrag.keggWebservice.KeggWebservice;
 import de.ipbhalle.metfrag.spectrum.PeakMolPair;
 import de.ipbhalle.metfrag.main.MetFrag;
@@ -201,6 +206,9 @@ public class MetFragBean extends SortableList{
 	private String user = "";
 	private String db = "";
 	private String pass = "";
+	private String userPostgres = "";
+	private String dbPostgres = "";
+	private String passPostgres = "";
 	private String adminuser = "";
 	private String adminpass = "";
 	private String adminUserInput = "";
@@ -307,6 +315,8 @@ public class MetFragBean extends SortableList{
 	
 	private String changelog;
 	public static Log errorLog;
+	
+	private Query query = null;
 	   
 	
 	/**
@@ -388,6 +398,9 @@ public class MetFragBean extends SortableList{
 			mailServer = props.getProperty("mailserver");
 			mailFrom = props.getProperty("mailfrom");
 			mailTo = props.getProperty("mailto");
+			dbPostgres = props.getProperty("dbPostgres");
+			userPostgres = props.getProperty("userPostgres");
+			passPostgres = props.getProperty("passwordPostgres");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -644,7 +657,14 @@ public class MetFragBean extends SortableList{
 		else if(this.database.equals("pubchem") && databaseID.equals(""))
 		{			
 			if(this.molFormula != "")
-				candidates = pubchem.getHitsbySumFormula(molFormula, false);
+			{
+				Query query = new Query(userPostgres, passPostgres, dbPostgres);
+				List<CandidateMetChem> temp = query.queryByFormula(molFormula, database);
+				for (CandidateMetChem candidateMetChem : temp) {
+					candidates.add(candidateMetChem.getAccession());
+				}
+//				candidates = pubchem.getHitsbySumFormula(molFormula, false);
+			}				
 			else
 			{
 				//peakListString = peaks;
@@ -660,7 +680,13 @@ public class MetFragBean extends SortableList{
 				System.out.println("Exact mass: " + exactMass +  " Search PPM: " + this.searchPPM);
 				double lowerBound = exactMass - PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM)); 
 				double upperBound = exactMass + PPMTool.getPPMDeviation(exactMass, Double.parseDouble(this.searchPPM));
-				candidates = pubchemLocal.getHitsVector(lowerBound, upperBound);
+				
+				query = new Query(userPostgres, passPostgres, dbPostgres);
+				List<CandidateMetChem> temp = query.queryByMass(lowerBound, upperBound, "pubchem");
+				for (CandidateMetChem candidateMetChem : temp) {
+					candidates.add(candidateMetChem.getAccession());
+				}
+//				candidates = pubchemLocal.getHitsVector(lowerBound, upperBound);
 			}
 		}
 		else if(this.database.equals("beilstein") && databaseID.equals(""))
@@ -1156,16 +1182,31 @@ public class MetFragBean extends SortableList{
 			{
 				try
 				{
-					molecule = pubchemLocal.getMol(candidate, !isBioCompound());
+//					molecule = pubchemLocal.getMol(candidate, !isBioCompound());					
+					molecule = query.getCompoundUsingIdentifierConnectionOpen(candidate, database);
+					String molFormula = MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(molecule));
+					int chonspTest = Tools.checkCHONSP(molFormula);
+					
+					if(bioCompound && (chonspTest == 0))
+						molecule = null;
 				}
 				catch(InvalidSmilesException e)
 				{
 					System.err.println("Skipped invalid smiles!");
+				} catch (Exception e) {
+					System.err.println("Skipped...could not retrieve compound!");
+					e.printStackTrace();
 				}
 			}
 			else if(database.equals("pubchem") && !databaseID.equals(""))
 			{
-				molecule = pubchemLocal.getMol(candidate, true);
+				try {
+					molecule = query.getCompoundUsingIdentifierConnectionOpen(candidate, database);
+				} catch (Exception e) {
+					System.err.println("Skipped...could not retrieve compound!");
+					e.printStackTrace();
+				}
+//				molecule = pubchemLocal.getMol(candidate, true);
 			}
 			else if(database.equals("beilstein") && databaseID.equals(""))
 			{
@@ -1320,6 +1361,8 @@ public class MetFragBean extends SortableList{
 					Map<String, IAtomContainer> candidateToStructure = new HashMap<String, IAtomContainer>();
 					
 					int tempCount = 0;
+					query = new Query(userPostgres, passPostgres, dbPostgres);
+					query.openConnection();
 					
 					for (int c = 0; c < candidates.size(); c++) {
 						
@@ -1390,7 +1433,7 @@ public class MetFragBean extends SortableList{
 						}
 					}
 					
-					
+					query.closeConnection();				
 					
 					
 					threadExecutor.shutdown();
