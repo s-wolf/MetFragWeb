@@ -1329,9 +1329,9 @@ public class MetFragBean extends SortableList{
     			    
         			
 					double exactMassThread = 1000.0;
-					if(exactMass != "")
+					if(exactMass != "" && molFormula.equals(""))
 						exactMassThread = Double.parseDouble(exactMass);
-					else if(molFormula != "")
+					else if(!molFormula.equals(""))
 					{
 						IMolecularFormula formula = new MolecularFormula();
 						formula = MolecularFormulaManipulator.getMolecularFormula(molFormula, formula);

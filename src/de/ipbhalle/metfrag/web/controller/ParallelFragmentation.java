@@ -244,6 +244,8 @@ public class ParallelFragmentation implements Runnable {
 			
 			
 			//clean up peak list
+//			if(spectrum.getFormula())
+//			double maxMass = 
 			Vector<Peak> cleanedPeakList = getCleanedPeakList((Vector<Peak>)peakListParsed.clone(), spectrum.getExactMass(), spectrum.getMode(), mzppm);
 			
 			
