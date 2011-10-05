@@ -1906,6 +1906,7 @@ public class MetFragBean extends SortableList{
 				mol.setProperty("Peaks explained", row.getExplainedPeaks());
 				mol.setProperty("Mass", row.getMass());
 				mol.setProperty("DatabaseID", row.getID());
+				mol.setProperty("cdk:Title", row.getMolName());
 			} catch (InvalidSmilesException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -2034,7 +2035,8 @@ public class MetFragBean extends SortableList{
 				WritableCell header6 = new Label(7, 4, "AlogP", arial10format);
 				WritableCell header7 = new Label(8, 4, "Peaks Explained", arial10format);
 				WritableCell header8 = new Label(9, 4, "Image", arial10format);
-				WritableCell header9 = new Label(10, 4, "Smiles", arial10format);
+				WritableCell header9 = new Label(10, 4, "Name", arial10format);
+				WritableCell header10 = new Label(11, 4, "Smiles", arial10format);
 				
 				sheet.addCell(header00);
 				sheet.addCell(header0);
@@ -2047,6 +2049,7 @@ public class MetFragBean extends SortableList{
 				sheet.addCell(header7);
 				sheet.addCell(header8);
 				sheet.addCell(header9);
+				sheet.addCell(header10);
 			}
 			else
 			{
@@ -2060,7 +2063,8 @@ public class MetFragBean extends SortableList{
 				WritableCell header6 = new Label(7, 4, "AlogP", arial10format);
 				WritableCell header7 = new Label(8, 4, "Peaks Explained", arial10format);
 				WritableCell header8 = new Label(9, 4, "Image", arial10format);
-				WritableCell header9 = new Label(10, 4, "Smiles", arial10format);
+				WritableCell header9 = new Label(10, 4, "Name", arial10format);
+				WritableCell header10 = new Label(11, 4, "Smiles", arial10format);
 				
 				sheet.addCell(header00);
 				sheet.addCell(header0);
@@ -2073,6 +2077,7 @@ public class MetFragBean extends SortableList{
 				sheet.addCell(header7);
 				sheet.addCell(header8);
 				sheet.addCell(header9);
+				sheet.addCell(header10);
 			}
 			
 			sheet.addCell(db);
@@ -2135,7 +2140,8 @@ public class MetFragBean extends SortableList{
 					peaksExplainedString += peaksArr[j] + " " + peaksIntArr[j] + " ";
 			}
 			WritableCell peaksExplained = new Label(8, currentRow, peaksExplainedString);
-			WritableCell cellSmiles = new Label(10, currentRow, row.getSmiles());
+			WritableCell cellName = new Label(10, currentRow, row.getMolName().replaceAll("<[^>]+>", " "));
+			WritableCell cellSmiles = new Label(11, currentRow, row.getSmiles());
 		
 			try
 			{
@@ -2148,6 +2154,7 @@ public class MetFragBean extends SortableList{
 				sheet.addCell(cellxLogP);
 				sheet.addCell(cellaLogP);
 				sheet.addCell(peaksExplained);
+				sheet.addCell(cellName);
 				sheet.addCell(cellSmiles);
 			} catch (WriteException e) {
 				System.out.println("Could not write excel cell");
@@ -2203,7 +2210,8 @@ public class MetFragBean extends SortableList{
 							peaksExplainedString += peaksArr[j] + " " + peaksIntArr[j] + " ";
 					}
 					peaksExplained = new Label(8, currentRow, peaksExplainedString);
-					cellSmiles = new Label(10, currentRow, rowChild.getSmiles());
+					cellName = new Label(10, currentRow, rowChild.getMolName());
+					cellSmiles = new Label(11, currentRow, rowChild.getSmiles());
 				
 					try
 					{
@@ -2216,6 +2224,7 @@ public class MetFragBean extends SortableList{
 						sheet.addCell(cellxLogP);
 						sheet.addCell(cellaLogP);
 						sheet.addCell(peaksExplained);
+						sheet.addCell(cellName);
 						sheet.addCell(cellSmiles);
 					} catch (WriteException e) {
 						System.out.println("Could not write excel cell");
