@@ -22,6 +22,7 @@ package de.ipbhalle.metfrag.web.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -70,6 +71,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
+import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.MoleculeSet;
@@ -80,6 +82,7 @@ import org.openscience.cdk.formula.MolecularFormula;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IMolecularFormula;
@@ -308,6 +311,8 @@ public class MetFragBean extends SortableList{
 	private String resourceNameFrags;
 	private Resource outputResourceSDF = null;
 	private String resourceNameSDF;
+	private Resource outputResourceSDFAll = null;
+	private String resourceNameSDFAll;
 
 	
 	private boolean showSDFLink = false;
@@ -317,6 +322,7 @@ public class MetFragBean extends SortableList{
 	public static Log errorLog;
 	
 	private Query query = null;
+	private boolean isExcelGenerated = false;
 	   
 	
 	/**
@@ -744,6 +750,8 @@ public class MetFragBean extends SortableList{
 		
 		JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), "document.getElementById(\"searchUpstream\").firstChild.disabled = false;");
 
+		isExcelGenerated = false;
+		
 		return "";
 	}
 	
@@ -848,8 +856,9 @@ public class MetFragBean extends SortableList{
 	 */
 	public String stop()
 	{
-		setStop(true);	
-		this.threadExecutor.shutdownNow();
+		setStop(true);
+		if(this.threadExecutor != null)
+			this.threadExecutor.shutdownNow();
 		this.enabled = false;
 		return "";
 	}
@@ -1323,6 +1332,7 @@ public class MetFragBean extends SortableList{
         			//now fill executor!!!
     			    
     			    //thread executor
+//        			threads = 4;
     			    System.out.println("Used Threads: " + threads);
     			    threadExecutor = Executors.newFixedThreadPool(threads);
 
@@ -1614,11 +1624,25 @@ public class MetFragBean extends SortableList{
         }
         
         //generate xls output
-        generateXLSResource();
+//        generateXLSResource(false);
+//        generateSDFDownloadAll();
         
         return resultRowGroupedBeans;
     }
 	
+    
+    /**
+     * Generate xls sdf files
+     *
+     * @return the string
+     */
+    public String generateXlsSDF()
+    {
+		generateXLSResource(false);
+		generateSDFDownloadAll();
+		this.isExcelGenerated = true;
+		return "";
+    }
     
 	protected void sort() {
 		
@@ -1851,11 +1875,74 @@ public class MetFragBean extends SortableList{
 	
 	
 	
+	private void generateSDFDownloadAll() 
+	{
+		ExternalContext ec = fc.getExternalContext();
+		HttpSession session = (HttpSession) ec.getSession(false);
+		String sessionString = session.getId();	
+		long time = new Date().getTime();
+		
+		String currentFolder = webRoot + "FragmentPics" + sep + sessionString + sep;
+		String relPath = "./FragmentPics" + sep + sessionString + sep;
+		new File(currentFolder).mkdirs();
+		
+		File dir = new File(currentFolder);
+		if(!dir.exists())
+			dir.mkdirs();
+		
+		
+		IAtomContainerSet set = new AtomContainerSet();
+		int rank = 0;
+		
+		for (ResultRowGroupedBean row : resultRowGroupedBeans) {
+			
+			rank++;
+			SmilesParser sp = new SmilesParser(NoNotificationChemObjectBuilder.getInstance());
+			IAtomContainer mol = null;
+			try {
+				mol = sp.parseSmiles(row.getSmiles());
+				mol.setProperty("Rank", Integer.toString(rank));
+				mol.setProperty("Score", row.getScore().toString());
+				mol.setProperty("Peaks explained", row.getExplainedPeaks());
+				mol.setProperty("Mass", row.getMass());
+				mol.setProperty("DatabaseID", row.getID());
+			} catch (InvalidSmilesException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			set.addAtomContainer(mol);
+			
+		}
+		
+		
+		resourceNameSDFAll = "MetFragResults_" + time +  ".sdf";
+		File f = new File(dir, resourceNameSDFAll);
+		try {
+			SDFWriter sdw = new SDFWriter(new FileOutputStream(f));
+			sdw.write(set);
+			sdw.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (CDKException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// store the current Excel file as output resource for the current workflow
+        MyResource xlsResource = new MyResource(ec, resourceNameSDFAll, relPath);
+		setOutputResourceSDFAll(xlsResource);
+	}
+	
+	
+	
+	
 	/**  
 	 * Write out the complete results table
 	 *  based on method from Michael Gerlich 
 	 *  */
-	private void generateXLSResource() {
+	private void generateXLSResource(boolean withPicture) {
 		
 		ExternalContext ec = fc.getExternalContext();
 		HttpSession session = (HttpSession) ec.getSession(false);
@@ -1933,21 +2020,61 @@ public class MetFragBean extends SortableList{
 		
 		
 		
-		
-		WritableCell header00 = new Label(0, 4, "Rank", arial10format);
-		WritableCell header0 = new Label(1, 4, "Score", arial10format);
-		WritableCell header1 = new Label(2, 4, "# of Peaks Explained", arial10format);
-		WritableCell header2 = new Label(3, 4, "Molecular Formula", arial10format);
-		WritableCell header3 = new Label(4, 4, "Exact Mass", arial10format);
-		WritableCell header4 = new Label(5, 4, "Database ID", arial10format);
-		WritableCell header5 = new Label(6, 4, "XlogP", arial10format);
-		WritableCell header6 = new Label(7, 4, "AlogP", arial10format);
-		WritableCell header7 = new Label(8, 4, "Peaks Explained", arial10format);
-		WritableCell header8 = new Label(9, 4, "Image", arial10format);
-		WritableCell header9 = new Label(10, 4, "Smiles", arial10format);
-		
 		try
 		{
+			if(withPicture)
+			{
+				WritableCell header00 = new Label(0, 4, "Rank", arial10format);
+				WritableCell header0 = new Label(1, 4, "Score", arial10format);
+				WritableCell header1 = new Label(2, 4, "# of Peaks Explained", arial10format);
+				WritableCell header2 = new Label(3, 4, "Molecular Formula", arial10format);
+				WritableCell header3 = new Label(4, 4, "Exact Mass", arial10format);
+				WritableCell header4 = new Label(5, 4, "Database ID", arial10format);
+				WritableCell header5 = new Label(6, 4, "XlogP", arial10format);
+				WritableCell header6 = new Label(7, 4, "AlogP", arial10format);
+				WritableCell header7 = new Label(8, 4, "Peaks Explained", arial10format);
+				WritableCell header8 = new Label(9, 4, "Image", arial10format);
+				WritableCell header9 = new Label(10, 4, "Smiles", arial10format);
+				
+				sheet.addCell(header00);
+				sheet.addCell(header0);
+				sheet.addCell(header1);
+				sheet.addCell(header2);
+				sheet.addCell(header3);
+				sheet.addCell(header4);
+				sheet.addCell(header5);
+				sheet.addCell(header6);
+				sheet.addCell(header7);
+				sheet.addCell(header8);
+				sheet.addCell(header9);
+			}
+			else
+			{
+				WritableCell header00 = new Label(0, 4, "Rank", arial10format);
+				WritableCell header0 = new Label(1, 4, "Score", arial10format);
+				WritableCell header1 = new Label(2, 4, "# of Peaks Explained", arial10format);
+				WritableCell header2 = new Label(3, 4, "Molecular Formula", arial10format);
+				WritableCell header3 = new Label(4, 4, "Exact Mass", arial10format);
+				WritableCell header4 = new Label(5, 4, "Database ID", arial10format);
+				WritableCell header5 = new Label(6, 4, "XlogP", arial10format);
+				WritableCell header6 = new Label(7, 4, "AlogP", arial10format);
+				WritableCell header7 = new Label(8, 4, "Peaks Explained", arial10format);
+				WritableCell header8 = new Label(9, 4, "Image", arial10format);
+				WritableCell header9 = new Label(10, 4, "Smiles", arial10format);
+				
+				sheet.addCell(header00);
+				sheet.addCell(header0);
+				sheet.addCell(header1);
+				sheet.addCell(header2);
+				sheet.addCell(header3);
+				sheet.addCell(header4);
+				sheet.addCell(header5);
+				sheet.addCell(header6);
+				sheet.addCell(header7);
+				sheet.addCell(header8);
+				sheet.addCell(header9);
+			}
+			
 			sheet.addCell(db);
 			sheet.addCell(em);
 			sheet.addCell(mf);
@@ -1959,34 +2086,28 @@ public class MetFragBean extends SortableList{
 			sheet.addCell(mzp);
 			
 			
-			sheet.addCell(header00);
-			sheet.addCell(header0);
-			sheet.addCell(header1);
-			sheet.addCell(header2);
-			sheet.addCell(header3);
-			sheet.addCell(header4);
-			sheet.addCell(header5);
-			sheet.addCell(header6);
-			sheet.addCell(header7);
-			sheet.addCell(header8);
-			sheet.addCell(header9);
 		} catch (WriteException e) {
 			System.out.println("Could not write excel cell");
 			e.printStackTrace();
 		}
 		int rank = 0;
 		for (ResultRowGroupedBean row : resultRowGroupedBeans) {
-			int currentRow = i*4 + 1;
+			int currentRow = i + 4;
+			if(withPicture)
+				currentRow = i*4 + 1;
 			rank++;
-
-			WritableImage wi = null;
-			// output is image
-			String imgPath = webRoot + row.getImage() + ".png";
-			File image = new File(imgPath);
-			// write each image into the second column, leave one row space between them and 
-			// resize the image to 1 column width and 2 rows height
-			wi = new WritableImage(9, currentRow, 1, 3, image);
-			sheet.addImage(wi);
+			
+			if(withPicture)
+			{
+				WritableImage wi = null;
+				// output is image
+				String imgPath = webRoot + row.getImage() + ".png";
+				File image = new File(imgPath);
+				// write each image into the second column, leave one row space between them and 
+				// resize the image to 1 column width and 2 rows height
+				wi = new WritableImage(9, currentRow, 1, 3, image);
+				sheet.addImage(wi);
+			}
 			
 			// output is text
 			WritableCell cellRank = new Label(0, currentRow, Integer.toString(rank));
@@ -2039,15 +2160,23 @@ public class MetFragBean extends SortableList{
 			if(row.getChildResultRows() != null && row.getChildResultRows().size() > 0)
 			{
 				for (ResultRowGroupedBean rowChild : row.getChildResultRows()) {
-					currentRow = i*4 + 1;
-					wi = null;
-					// output is image
-					imgPath = webRoot + rowChild.getImage() + ".png";
-					image = new File(imgPath);
-					// write each image into the second column, leave one row space between them and 
-					// resize the image to 1 column width and 2 rows height
-					wi = new WritableImage(9, currentRow, 1, 3, image);
-					sheet.addImage(wi);
+					
+					currentRow = i + 4;
+					if(withPicture)
+						currentRow = i*4 + 1;
+					
+					if(withPicture)
+					{
+						WritableImage wi = null;
+						// output is image
+						String imgPath = webRoot + rowChild.getImage() + ".png";
+						File image = new File(imgPath);
+						// write each image into the second column, leave one row space between them and 
+						// resize the image to 1 column width and 2 rows height
+						wi = new WritableImage(9, currentRow, 1, 3, image);
+						sheet.addImage(wi);
+					}
+					
 					
 					// output is text
 					cellRank = new Label(0, currentRow, Integer.toString(rank));
@@ -2917,6 +3046,24 @@ public class MetFragBean extends SortableList{
 	}
 	public String getChangelog() {
 		return changelog;
+	}
+	public Resource getOutputResourceSDFAll() {
+		return outputResourceSDFAll;
+	}
+	public void setOutputResourceSDFAll(Resource outputResourceSDFAll) {
+		this.outputResourceSDFAll = outputResourceSDFAll;
+	}
+	public String getResourceNameSDFAll() {
+		return resourceNameSDFAll;
+	}
+	public void setResourceNameSDFAll(String resourceNameSDFAll) {
+		this.resourceNameSDFAll = resourceNameSDFAll;
+	}
+	public boolean isExcelGenerated() {
+		return isExcelGenerated;
+	}
+	public void setExcelGenerated(boolean isExcelGenerated) {
+		this.isExcelGenerated = isExcelGenerated;
 	}
 
 

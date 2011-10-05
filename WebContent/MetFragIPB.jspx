@@ -420,10 +420,13 @@
 				           
 				           <!--  Data Exporter   -->
 				           <div style="float:right;">
-				           		<ice:panelGrid columns="2" rendered="#{metFragBean.displayResults}">
+				           		<ice:panelGrid columns="4" rendered="#{metFragBean.displayResults}">
 				           			<ice:outputText value="Download complete table:" />
-				           			<ice:outputResource image="./images/xls.png" label="Save the complete results table in Excel file." resource="#{metFragBean.outputResource}"   
-						           		mimeType="application/vnd.ms-excel" fileName="#{metFragBean.resourceName}"  />
+				           			<ice:commandLink action="#{metFragBean.generateXlsSDF}" rendered="#{not metFragBean.excelGenerated}">Generate output files</ice:commandLink>
+				           			<ice:outputResource image="./images/xls.png" label="Save the complete results table in Excel file." resource="#{metFragBean.outputResource}" 
+						           		mimeType="application/vnd.ms-excel" fileName="#{metFragBean.resourceName}" rendered="#{metFragBean.excelGenerated}" />
+						           	<ice:outputResource label="Save results as SDF file." resource="#{metFragBean.outputResourceSDFAll}" 
+				           					fileName="#{metFragBean.resourceNameSDFAll}" image="./images/text-x-generic.png" rendered="#{metFragBean.excelGenerated}" />
 				           		</ice:panelGrid>           
 				           </div>
 

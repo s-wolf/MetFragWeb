@@ -303,7 +303,6 @@ public class ParallelFragmentation implements Runnable {
 			if(realScoreMap.containsKey(currentScore))
 	        {
 	        	Vector<String> tempList = realScoreMap.get(currentScore);
-	        	tempList.add(candidateID);
 	        	realScoreMap.put(currentScore, tempList);
 	        }
 	        else
@@ -392,7 +391,10 @@ public class ParallelFragmentation implements Runnable {
 	        //local sdf file
 	        if(database.equals("sdf"))
 	        {
-	        	namesString = candidateID;
+	        	if(molecule.getProperty("cdk:Title") != null && !molecule.getProperty("cdk:Title").equals(""))
+	        		namesString = (String)molecule.getProperty("cdk:Title");
+	        	else
+	        		namesString = candidateID;
 				databaseLink = "";
 	        }
 			//real result vector
