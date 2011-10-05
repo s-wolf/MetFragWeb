@@ -1725,9 +1725,11 @@ public class MetFragBean extends SortableList{
 			}
 		}
 
+		
 		//now set the score
 		for (String cand : candidateToResult.keySet()){
-			Double score = Math.round((candidateToCombinedScore.get(candidateToResult.get(cand).getID()) / maxNormalizedScore ) * 1000.0) / 1000.0;
+			String scoreTemp = candidateToResult.get(cand).getID();
+			Double score = Math.round((candidateToCombinedScore.get(scoreTemp) / maxNormalizedScore ) * 1000.0) / 1000.0;
 			candidateToResult.get(cand).setScore(score);
 		}
 	}	

@@ -303,6 +303,7 @@ public class ParallelFragmentation implements Runnable {
 			if(realScoreMap.containsKey(currentScore))
 	        {
 	        	Vector<String> tempList = realScoreMap.get(currentScore);
+	        	tempList.add(candidateID);
 	        	realScoreMap.put(currentScore, tempList);
 	        }
 	        else
