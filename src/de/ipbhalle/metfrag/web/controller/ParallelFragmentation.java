@@ -87,6 +87,8 @@ public class ParallelFragmentation implements Runnable {
 	private Map<String, ResultRow> candidateToResult;
 	private Map<Double, Vector<String>> realScoreMap;
 	private int[] count;
+	private boolean isSDFFile;
+	private String sdfName;
 	
 	/**
 	 * Instantiates a new parallel fragmentation. (This is one thread)
@@ -97,7 +99,7 @@ public class ParallelFragmentation implements Runnable {
 	 * @param candidateToResult the candidate to result
 	 */
 	public ParallelFragmentation(MetFragObject metFragData, PubChemLocal pubchemLocal, BeilsteinLocal beilstein, Map<String, ResultRow> candidateToResult, Map<Double, Vector<String>> realScoreMap,
-			String sessionString, String webRoot, int[] count) {
+			String sessionString, String webRoot, int[] count, boolean isSDFFile) {
 		this.metFragData = metFragData;
 		this.pubchemLocal = pubchemLocal;
 		this.beilstein = beilstein;
@@ -106,6 +108,7 @@ public class ParallelFragmentation implements Runnable {
 		this.sessionString = sessionString;
 		this.webRoot = webRoot;
 		this.count = count;
+		this.isSDFFile = isSDFFile;
 	}
 	
 	/**
@@ -130,6 +133,7 @@ public class ParallelFragmentation implements Runnable {
 		WrapperSpectrum spectrum = this.metFragData.getSpectrum();
 		boolean bondEnergyScoring = this.metFragData.isBondEnergyScoring();
 		Integer mode = this.metFragData.getMode();
+		
 		
 		SmilesGenerator sg = new SmilesGenerator();
 		sg.setUseAromaticityFlag(true);
@@ -194,12 +198,20 @@ public class ParallelFragmentation implements Runnable {
 	//	        adder.addImplicitHydrogens(molecule);
 	//	        AtomContainerManipulator.convertImplicitToExplicitHydrogens(molecule); 
 			
+			String picPath = candidateID + "_" + countTemp;
+			if(isSDFFile)
+				picPath = sdfName + "_" + candidateID + "_" + countTemp;
+			
+			String picPathLarge = candidateID + "_" + countTemp + "_Large.png";
+			if(isSDFFile)
+				picPathLarge = sdfName + "_" + candidateID + "_" + countTemp + "_Large.png";
+			
 			StructureToFile dsvOrig = new StructureToFile(200,200, currentFolder, false, true);
 //			DisplayStructureVector dsvOrig = new DisplayStructureVector(200,200, currentFolder, false, true);
-			dsvOrig.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + ".png");
+			dsvOrig.writeMOL2PNGFile(molecule, picPath + ".png");
 			StructureToFile dsvOrigLarge = new StructureToFile(350,350, currentFolder, false, true);
 //			DisplayStructureVector dsvOrigLarge = new DisplayStructureVector(350,350, currentFolder, false, true);
-			dsvOrigLarge.writeMOL2PNGFile(molecule, candidateID + "_" + countTemp + "_Large.png");
+			dsvOrigLarge.writeMOL2PNGFile(molecule, picPathLarge);
 			
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(molecule);
 			Double massDoubleOrig = MolecularFormulaTools.getMonoisotopicMass(molFormula);
@@ -212,7 +224,7 @@ public class ParallelFragmentation implements Runnable {
 			else
 				chargeString = "-";
 			
-			fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, massOrig + " [" + MolecularFormulaManipulator.getHTML(molFormula) + "]" + "<br />(Original Compound)", MolecularFormulaManipulator.getHTML(molFormula)));
+			fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + picPath, massOrig + " [" + MolecularFormulaManipulator.getHTML(molFormula) + "]" + "<br />(Original Compound)", MolecularFormulaManipulator.getHTML(molFormula)));
 			countTemp++;
 			        
 	        Fragmenter fragmenter = new Fragmenter((Vector<Peak>)spectrum.getPeakList().clone(), mzabs, mzppm, mode, true, this.metFragData.isMolFormulaRedundancyCheck(), false, false);     
@@ -271,15 +283,24 @@ public class ParallelFragmentation implements Runnable {
 					
 				dsvLarge = new StructureToFile(350,350, currentFolder, false, false);
 				
-				dsv.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + ".png");
-				dsvLarge.writeMOL2PNGFile(peakMolPair.getFragment(), candidateID + "_" + countTemp + "_Large.png");
+
+				String picPathFragments = candidateID + "_" + countTemp;
+				if(isSDFFile)
+					picPathFragments = sdfName + "_" + candidateID + "_" + countTemp;
+				
+				String picPathLargeFragments = candidateID + "_" + countTemp + "_Large.png";
+				if(isSDFFile)
+					picPathLargeFragments = sdfName + "_" + candidateID + "_" + countTemp + "_Large.png";
+				
+				dsv.writeMOL2PNGFile(peakMolPair.getFragment(), picPathFragments + ".png");
+				dsvLarge.writeMOL2PNGFile(peakMolPair.getFragment(), picPathLargeFragments);
 				
 				IMolecularFormula fragMolFormula = MolecularFormulaManipulator.getMolecularFormula(peakMolPair.getFragment());
 				Double massDouble = MolecularFormulaTools.getMonoisotopicMass(fragMolFormula);
 				
 				massDouble = (double)Math.round(((mode * MolecularFormulaTools.getMonoisotopicMass("H1")) + massDouble)*10000)/10000;
 								
-				fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + candidateID + "_" + countTemp, peakMolPair.getMatchedMass() + " [" + peakMolPair.getMolecularFormula() + "]" + chargeString + "<br />(" + PPMTool.getPPMWeb(peakMolPair.getMatchedMass(), peakMolPair.getPeak().getMass()) + " ppm)", MolecularFormulaManipulator.getHTML(fragMolFormula)));
+				fragsPics.add(new ResultPic(sep + "FragmentPics" + sep + sessionString + sep + candidateID + sep + picPathFragments, peakMolPair.getMatchedMass() + " [" + peakMolPair.getMolecularFormula() + "]" + chargeString + "<br />(" + PPMTool.getPPMWeb(peakMolPair.getMatchedMass(), peakMolPair.getPeak().getMass()) + " ppm)", MolecularFormulaManipulator.getHTML(fragMolFormula)));
 				//ds.drawStructure(peakMolPair.getFragment(), countTemp);
 				countTemp++;
 			}
@@ -505,6 +526,14 @@ public class ParallelFragmentation implements Runnable {
 			peakList.remove(peak);
 		}
 		return peakList;
+	}
+
+	public String getSdfName() {
+		return sdfName;
+	}
+
+	public void setSdfName(String sdfName) {
+		this.sdfName = sdfName;
 	}
 	
 	

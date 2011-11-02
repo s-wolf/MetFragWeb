@@ -615,8 +615,9 @@ public class MetFragBean extends SortableList{
 		{
 			uploadedSDFCompounds = SDFFile.ReadSDFFile(fileLocation);
 			Vector<String> tempCandidates = new Vector<String>();
+			File tempFile = new File(fileLocation);
 			for (int i = 0; i < uploadedSDFCompounds.size(); i++) {
-				tempCandidates.add(i + "");
+				tempCandidates.add(Integer.toString(i));
 			}
 			candidates = tempCandidates;
 		}	
@@ -1425,7 +1426,13 @@ public class MetFragBean extends SortableList{
 							
 						try
 						{
-							threadExecutor.execute(new ParallelFragmentation(metFragData, pubchemLocal, beilstein, candidateToResult, realScoreMap, sessionString, webRoot, count));
+							ParallelFragmentation threadMetFrag = new ParallelFragmentation(metFragData, pubchemLocal, beilstein, candidateToResult, realScoreMap, sessionString, webRoot, count, isSDFFile);
+							if(isSDFFile)
+							{
+								File tempFile = new File(fileLocation);
+								threadMetFrag.setSdfName(tempFile.getName());
+							}
+							threadExecutor.execute(threadMetFrag);
 						}
 						catch (NullPointerException e) {
 							System.err.println("ERROR" + e.getMessage());
