@@ -136,7 +136,7 @@ public class ParallelFragmentation implements Runnable {
 		
 		
 		SmilesGenerator sg = new SmilesGenerator();
-		sg.setUseAromaticityFlag(true);
+//		sg.setUseAromaticityFlag(true);
 		IMolecule mol = new Molecule(molecule);
 		String smiles = sg.createSMILES(mol);
 		

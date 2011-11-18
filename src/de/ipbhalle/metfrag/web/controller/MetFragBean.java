@@ -1333,7 +1333,7 @@ public class MetFragBean extends SortableList{
         			//now fill executor!!!
     			    
     			    //thread executor
-//        			threads = 4;
+        			//threads = 2;
     			    System.out.println("Used Threads: " + threads);
     			    threadExecutor = Executors.newFixedThreadPool(threads);
 
@@ -1372,8 +1372,11 @@ public class MetFragBean extends SortableList{
 					Map<String, IAtomContainer> candidateToStructure = new HashMap<String, IAtomContainer>();
 					
 					int tempCount = 0;
-					query = new Query(userPostgres, passPostgres, dbPostgres);
-					query.openConnection();
+					if(!isSDFFile)
+					{
+						query = new Query(userPostgres, passPostgres, dbPostgres);
+						query.openConnection();
+					}					
 					
 					for (int c = 0; c < candidates.size(); c++) {
 						
@@ -1450,7 +1453,8 @@ public class MetFragBean extends SortableList{
 						}
 					}
 					
-					query.closeConnection();				
+					if(!isSDFFile)
+						query.closeConnection();				
 					
 					
 					threadExecutor.shutdown();
@@ -1922,7 +1926,28 @@ public class MetFragBean extends SortableList{
 			}
 			
 			set.addAtomContainer(mol);
+
+			if(row.getChildResultRows() != null && row.getChildResultRows().size() > 0)
+			{
+				for (ResultRowGroupedBean rowChild : row.getChildResultRows()) {
+					sp = new SmilesParser(NoNotificationChemObjectBuilder.getInstance());
+					mol = null;
+					try {
+						mol = sp.parseSmiles(rowChild.getSmiles());
+						mol.setProperty("Rank", Integer.toString(rank));
+						mol.setProperty("Score", rowChild.getScore().toString());
+						mol.setProperty("Peaks explained", rowChild.getExplainedPeaks());
+						mol.setProperty("Mass", rowChild.getMass());
+						mol.setProperty("DatabaseID", rowChild.getID());
+						mol.setProperty("cdk:Title", rowChild.getMolName());
+					} catch (InvalidSmilesException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 			
+					set.addAtomContainer(mol);
+				}
+			}		
 		}
 		
 		
