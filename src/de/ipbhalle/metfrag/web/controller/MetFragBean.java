@@ -219,6 +219,7 @@ public class MetFragBean extends SortableList{
 	private String adminError = "";
 	private boolean showLoginData = true;
 	
+	private String chemspiderToken = "";
 	
 	//feedback data
 	private String email = "";
@@ -407,6 +408,7 @@ public class MetFragBean extends SortableList{
 			dbPostgres = props.getProperty("dbPostgres");
 			userPostgres = props.getProperty("userPostgres");
 			passPostgres = props.getProperty("passwordPostgres");
+			chemspiderToken = props.getProperty("chemspiderToken");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -776,7 +778,7 @@ public class MetFragBean extends SortableList{
 			}
 			else if(this.database.equals("chemspider"))
 			{
-				test = ChemSpider.getMol(id, true);
+				test = ChemSpider.getMol(id, true, chemspiderToken);
 			}
 			else if(this.database.equals("pubchem"))
 			{
@@ -1182,11 +1184,11 @@ public class MetFragBean extends SortableList{
 			}
 			else if(database.equals("chemspider") && databaseID.equals(""))
 			{
-				molecule = ChemSpider.getMol(candidate, !isBioCompound());
+				molecule = ChemSpider.getMol(candidate, !isBioCompound(), chemspiderToken);
 			}
 			else if(database.equals("chemspider") && !databaseID.equals(""))
 			{
-				molecule = ChemSpider.getMol(candidate, true);
+				molecule = ChemSpider.getMol(candidate, true, chemspiderToken);
 			}
 			else if(database.equals("pubchem") && databaseID.equals(""))
 			{
